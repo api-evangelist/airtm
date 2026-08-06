@@ -1,0 +1,21 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (info.description — "Introduction → Rate Limits" and
+  "Connecting → Rate Limits")
+docs: https://docs.airtm.com/
+rate_limits:
+- name: Enterprise API global
+  scope: per API key
+  limit_count: 10
+  limit_period: second
+  applies_to: all endpoints, both sandbox and production
+  exceeded_status: 429
+  retry_after_header: false
+  rate_limit_headers: false
+  guidance: >-
+    Implement exponential backoff on 429. Contact enterprise support to request a higher limit.
+notes: >-
+  Airtm publishes a single flat rate limit and no per-endpoint tiers. No X-RateLimit-* or Retry-After
+  headers are documented, so a client cannot read remaining quota from a response — the only signal
+  is the 429 itself.

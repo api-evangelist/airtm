@@ -1,0 +1,73 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  openapi/airtm-enterprise-v1-openapi.json, openapi/airtm-enterprise-v2-openapi.json (securitySchemes)
+  upgraded from the "Authentication", "OAuth 2.0 / OIDC Authorization" and "Wallet Resource API"
+  guides in https://api.enterprise.airtm.com/openapi.json info.description
+docs: https://docs.airtm.com/
+summary:
+  types: [http, oauth2, openIdConnect]
+  http_schemes: [basic, bearer]
+  oauth2_flows: [authorizationCode, clientCredentials, refreshToken]
+  api_key_in: []
+schemes:
+- name: basicAuth
+  type: http
+  scheme: basic
+  description: >-
+    HTTP Basic authentication with the Enterprise API key as the username and the secret key as the
+    password (base64 of "api_key:secret_key"). Used by every operation in both the V1 and V2
+    Enterprise APIs. Keys are generated in the Enterprise dashboard under Settings → API Keys; the
+    secret is shown once. Separate keys per environment (sandbox vs production) are required.
+  sources:
+  - openapi/airtm-enterprise-v1-openapi.json
+  - openapi/airtm-enterprise-v2-openapi.json
+  management:
+    console: https://enterprise.airtm.com/settings
+    api_operations: [CreateApiKey, ListApiKeys, RevokeApiKey, ToggleAllowedIp]
+    ip_allowlist: true
+    rotation_guidance: every 90 days (documented recommendation)
+- name: Airtm OIDC
+  type: openIdConnect
+  openIdConnectUrl: https://api.enterprise.airtm.com/oidc/.well-known/openid-configuration
+  description: >-
+    OAuth 2.0 / OpenID Connect authorization server backing the Wallet Resource (Connect) API.
+    Authorization Code (PKCE S256 mandatory), Refresh Token (rotating), and Client Credentials
+    grants. Access tokens are OPAQUE — resource servers must introspect them at
+    POST /oidc/token/introspection rather than verifying a JWT signature. The id_token is RS256.
+  sources:
+  - well-known/airtm-openid-configuration.json
+  - docs
+  endpoints:
+    issuer: https://api.enterprise.airtm.com/oidc
+    authorization: https://api.enterprise.airtm.com/oidc/auth
+    token: https://api.enterprise.airtm.com/oidc/token
+    userinfo: https://api.enterprise.airtm.com/oidc/me
+    jwks: https://api.enterprise.airtm.com/oidc/jwks
+    introspection: https://api.enterprise.airtm.com/oidc/token/introspection
+    revocation: https://api.enterprise.airtm.com/oidc/token/revocation
+    end_session: https://api.enterprise.airtm.com/oidc/session/end
+    pushed_authorization_request: https://api.enterprise.airtm.com/oidc/request
+  client_auth_methods: [client_secret_basic, client_secret_jwt, client_secret_post, private_key_jwt, none]
+  dpop_supported: true
+  dpop_algs: [ES256, Ed25519, EdDSA]
+  scopes: scopes/airtm-scopes.yml
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: opaque
+  description: >-
+    Bearer access token issued by the Airtm OIDC server, spent against the Wallet Resource (Connect)
+    API at /api/connect/v1. There are no API keys in that API — the token and the scopes baked into
+    it are the credential. Missing/expired/revoked tokens return 401 invalid_token; a valid token
+    without the required scope returns 403 insufficient_scope.
+  sources:
+  - docs
+second_factor:
+  per_transaction_2fa: true
+  description: >-
+    Every wallet:send transaction is created in pending_user_confirmation and only dispatched after
+    the user confirms a one-time code via POST /transactions/{transactionId}/2fa. Users with 2FA
+    configured receive the code on their own channel (SMS, WhatsApp, or authenticator app); users
+    without 2FA configured are emailed the code. POST /transactions/{transactionId}/2fa/resend
+    re-issues it.

@@ -1,0 +1,103 @@
+generated: '2026-08-06'
+method: searched
+source: 'https://api.enterprise.airtm.com/openapi.json (info.description — "Changelog" section)'
+docs: https://docs.airtm.com/
+scheme: dated-monthly
+current_version: 1.155.0
+current_api: v2
+format: >-
+  Airtm does not publish a standalone dated changelog feed. The changelog is embedded in the
+  OpenAPI info.description and is grouped by month with emoji-labelled categories (Security, New
+  Features, Improvements, Bug Fixes, Breaking Changes) plus a collapsed Archive.
+entries:
+- date: '2026-07'
+  breaking: false
+  security:
+  - >-
+      Every wallet:send is now user-confirmed. A newly created wallet:send transaction is returned as
+      pending_user_confirmation and only dispatched after the user confirms a one-time code via
+      POST /transactions/{transactionId}/2fa. Users with 2FA configured receive the code on their own
+      channel (SMS, WhatsApp, authenticator app); users with none are emailed the code.
+  additions:
+  - 'Resend 2FA code: POST /transactions/{transactionId}/2fa/resend re-issues a fresh confirmation code for a parked wallet:send.'
+- date: '2025-08'
+  breaking: false
+  additions:
+  - 'API Withdrawals: new enterprise withdrawal endpoints.'
+  - 'External Account Management: full CRUD for bank and crypto external accounts.'
+  - 'ID Verification Controls: enterprise-level setting to require ID verification for payouts.'
+  improvements:
+  - Webhook application portal introduced.
+  - Advanced user search — search users by hash.
+  - Improved bulk payout processing and status tracking.
+- date: '2025-07'
+  breaking: false
+  additions:
+  - Payin events added to Svix (payin creation and cancellation).
+  - State validation added for US users.
+  improvements:
+  - Webhook infrastructure migrated to Svix for more reliable delivery and management.
+  - Payout search enhanced using the notes field.
+  fixes:
+  - Metadata merging fixed to prevent data overwriting.
+  - Statement download audit trail corrected to the right user.
+  - Automatic email trimming.
+  - Fixed bulk payouts stuck in progress status.
+  - Resolved missing bridge transactions in activity reports.
+- date: '2025-06'
+  breaking: false
+  additions:
+  - Support for payout codes and unique identifiers.
+  - Automatic cancellation of payouts when users are disabled.
+  - Custom cancellation URLs.
+  improvements:
+  - Enhanced withdrawal processing and status tracking.
+  - Improved validation for external accounts and currency handling.
+  - Enhanced report validation and CSV formatting.
+  release: V2 API Beta launched — bulk operations, enhanced payouts, user management, advanced reporting, streamlined authentication.
+- date: '2025-05'
+  breaking: true
+  breaking_changes:
+  - version: V0.3.0
+    change: >-
+      Enhanced recipient validation now performs comprehensive checks when creating and committing
+      payouts. May affect existing integrations that do not supply complete recipient information.
+  additions:
+  - Timezone support added to all reporting features.
+  - Automatic refund system for failed completed payouts.
+  - Enhanced recipient validation.
+  fixes:
+  - Fixed timezone handling in reports.
+  - Improved webhook monitoring and reliability.
+  - Enhanced error reporting with detailed reason codes.
+- date: '2025-04'
+  breaking: true
+  breaking_changes:
+  - version: V0.2.0
+    change: >-
+      Payout status flow standardized. All payouts now use a consistent two-step process with CREATED
+      and COMMITTED statuses having updated meanings.
+  additions:
+  - Automatic retry of pending payouts when users complete required actions.
+  - Configurable timeout for pending payout cancellation.
+  - Support for payouts to third-party users.
+  improvements:
+  - Expanded payout eligibility for additional US users.
+  - Better retry mechanisms for failed payouts.
+- date: '2025-03'
+  breaking: false
+  additions:
+  - PDF generation for audit reports.
+  - Automatic retry system for volume-limited payouts.
+  - Custom aliases for crypto withdrawals.
+  improvements:
+  - Enhanced direct withdrawal functionality.
+  - Improved pending balance calculations.
+archive:
+- {date: '2025-02', summary: Enhanced security measures, improved error handling, performance optimizations for large-scale operations.}
+- {date: '2025-01', summary: Infrastructure improvements, enhanced monitoring, bug fixes and stability.}
+- {date: '2024', summary: Integration with third-party liquidity providers, core payout functionality, basic reporting.}
+notes: >-
+  Changes prior to 2025 are not published — the docs direct readers to contact support. There is no
+  RSS/Atom feed, no per-entry permalink and no version-tagged diff, so a consumer cannot subscribe
+  to changes programmatically.

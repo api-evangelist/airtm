@@ -1,0 +1,286 @@
+generated: '2026-08-06'
+method: derived
+status: candidate
+source: openapi/airtm-enterprise-v2-openapi.json
+published_server: null
+search_evidence:
+- url: https://api.enterprise.airtm.com/mcp
+  status: 404
+- url: https://mcp.airtm.com/
+  status: 0
+  note: DNS does not resolve
+- url: https://api.enterprise.airtm.com/.well-known/ai-plugin.json
+  status: 404
+notes: Airtm publishes NO hosted or remote MCP server as of this pass — no /mcp endpoint, no mcp.airtm.com, no listing
+  in the public MCP registries, and no mention of MCP anywhere in the Enterprise API documentation. The tool list
+  below is a CANDIDATE derived one-to-one from the V2 OpenAPI operations so the surface is ready to forge; it is
+  not a claim that Airtm operates an MCP server. Each tool's real inputSchema is the referenced operation's parameters
+  + requestBody in openapi/airtm-enterprise-v2-openapi.json. Note that money-moving tools (CreatePayout, CommitPayout,
+  CreateWithdrawal, CreateBulkPayout, CreateTransaction) should carry human-in-the-loop gating — see agentic-access/airtm-agentic-access.yml.
+server:
+  name: airtm
+  transport: http
+  url: null
+auth:
+  methods:
+  - basic
+  basic:
+    username: API key
+    password: secret key
+tool_count: 51
+tools:
+- name: CreateWithdrawal
+  category: Withdrawals
+  description: Create a withdrawal
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateWithdrawal
+  http: POST /withdrawals
+- name: ListWithdrawals
+  category: Withdrawals
+  description: List withdrawals
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListWithdrawals
+  http: GET /withdrawals
+- name: GetWithdrawalById
+  category: Withdrawals
+  description: Get a single withdrawal
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetWithdrawalById
+  http: GET /withdrawals/{id}
+- name: GetUserByEmail
+  category: Users
+  description: Get user details by email.
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetUserByEmail
+  http: GET /users/{email}
+- name: GenerateReport
+  category: Reports
+  description: Create a Report
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GenerateReport
+  http: POST /reports
+- name: ListReports
+  category: Reports
+  description: List Reports
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListReports
+  http: GET /reports
+- name: GetReport
+  category: Reports
+  description: Get Report Details
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetReport
+  http: GET /reports/{id}
+- name: GetReportFile
+  category: Reports
+  description: Get Report File
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetReportFile
+  http: GET /reports/{id}/file
+- name: CreatePayout
+  category: Payouts
+  description: Create a payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreatePayout
+  http: POST /payouts
+- name: ListPayouts
+  category: Payouts
+  description: List payouts
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListPayouts
+  http: GET /payouts
+- name: GetPayout
+  category: Payouts
+  description: Get a single payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetPayout
+  http: GET /payouts/{id}
+- name: CancelPayout
+  category: Payouts
+  description: Cancel a pending payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CancelPayout
+  http: DELETE /payouts/{id}
+- name: GetPayoutByCode
+  category: Payouts
+  description: Get a single payout by code
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetPayoutByCode
+  http: GET /payouts/by-code/{code}
+- name: GetPayoutEvents
+  category: Payouts
+  description: Get the events for a single payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetPayoutEvents
+  http: GET /payouts/{id}/events
+- name: CommitPayout
+  category: Payouts
+  description: Commit a payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CommitPayout
+  http: POST /payouts/{id}/commit
+- name: CreatePayin
+  category: Payins
+  description: Create a Payin
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreatePayin
+  http: POST /payins
+- name: ListPayins
+  category: Payins
+  description: List payins
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListPayins
+  http: GET /payins
+- name: GetPayinById
+  category: Payins
+  description: Get payin details
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetPayinById
+  http: GET /payins/{id}
+- name: CancelPayin
+  category: Payins
+  description: Cancel a payin
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CancelPayin
+  http: DELETE /payins/{id}
+- name: GetPayinByCode
+  category: Payins
+  description: Get payin by code
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetPayinByCode
+  http: GET /payins/by-code/{code}
+- name: GetMe
+  category: Me
+  description: Get enterprise details
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetMe
+  http: GET /me
+- name: GeBalance
+  category: Me
+  description: Get balance
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GeBalance
+  http: GET /me/balance
+- name: CreateExternalCryptoAccount
+  category: External Crypto Account
+  description: Create a crypto external account
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateExternalCryptoAccount
+  http: POST /crypto-accounts
+- name: ListExternalCryptoAccounts
+  category: External Crypto Account
+  description: List external crypto accounts
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListExternalCryptoAccounts
+  http: GET /crypto-accounts
+- name: CreateExternalBankAccount
+  category: External Bank Account
+  description: Create a bank external account
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateExternalBankAccount
+  http: POST /bank-accounts
+- name: ListExternalBankAccounts
+  category: External Bank Account
+  description: List external bank accounts
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListExternalBankAccounts
+  http: GET /bank-accounts
+- name: GetPortalUrl
+  category: Webhooks
+  description: Get portal URL
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetPortalUrl
+  http: GET /embedded/webhooks/portal-url
+- name: ListTransactions
+  category: Embedded Transactions
+  description: List transactions
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListTransactions
+  http: GET /embedded/transactions
+- name: CreateTransaction
+  category: Embedded Transactions
+  description: Create transaction
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateTransaction
+  http: POST /embedded/transactions
+- name: GetTransactionById
+  category: Embedded Transactions
+  description: Get transaction by id
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetTransactionById
+  http: GET /embedded/transactions/{id}
+- name: CreateSender
+  category: Embedded Senders
+  description: Create sender
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateSender
+  http: POST /embedded/senders
+- name: GetSenderByExternalId
+  category: Embedded Senders
+  description: Get sender by external id
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetSenderByExternalId
+  http: GET /embedded/senders
+- name: GetSenderById
+  category: Embedded Senders
+  description: Get sender by id
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetSenderById
+  http: GET /embedded/senders/{senderId}
+- name: UpdateSenderById
+  category: Embedded Senders
+  description: Update sender
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#UpdateSenderById
+  http: PUT /embedded/senders/{senderId}
+- name: CreateReceiver
+  category: Embedded Receivers
+  description: Create receiver
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateReceiver
+  http: POST /embedded/receivers
+- name: GetReceiverByExternalId
+  category: Embedded Receivers
+  description: Get receiver by external id
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetReceiverByExternalId
+  http: GET /embedded/receivers
+- name: GetReceiverById
+  category: Embedded Receivers
+  description: Get receiver by id
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetReceiverById
+  http: GET /embedded/receivers/{receiverId}
+- name: UpdateReceiver
+  category: Embedded Receivers
+  description: Update receiver
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#UpdateReceiver
+  http: PUT /embedded/receivers/{receiverId}
+- name: AddPaymentRailInstance
+  category: Embedded Receivers
+  description: Add payment rail instance
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#AddPaymentRailInstance
+  http: POST /embedded/receivers/{receiverId}/payment-rail-instance
+- name: RemovePaymentRailInstance
+  category: Embedded Receivers
+  description: Remove payment rail instance
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#RemovePaymentRailInstance
+  http: DELETE /embedded/receivers/{receiverId}/payment-rail-instance/{paymentRailInstanceId}
+- name: CreateQuote
+  category: Embedded Quotes
+  description: Create quote
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateQuote
+  http: POST /embedded/quotes
+- name: ListCatalog
+  category: Embedded Catalog
+  description: List payment rail catalog
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListCatalog
+  http: GET /embedded/catalog
+- name: ListDeposits
+  category: Deposits
+  description: List deposits
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListDeposits
+  http: GET /deposits
+- name: GetDeposit
+  category: Deposits
+  description: Get deposit details
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetDeposit
+  http: GET /deposits/{id}
+- name: CreateBulkPayout
+  category: Bulk Payouts
+  description: Create a bulk payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateBulkPayout
+  http: POST /bulk-payouts
+- name: ListBulkPayouts
+  category: Bulk Payouts
+  description: List bulk payouts
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListBulkPayouts
+  http: GET /bulk-payouts
+- name: GetBulkPayout
+  category: Bulk Payouts
+  description: Get bulk payout
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#GetBulkPayout
+  http: GET /bulk-payouts/{id}
+- name: CreateApiKey
+  category: ApiKeys
+  description: Create api keys.
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#CreateApiKey
+  http: POST /api-keys
+- name: ListApiKeys
+  category: ApiKeys
+  description: List api keys.
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ListApiKeys
+  http: GET /api-keys
+- name: RevokeApiKey
+  category: ApiKeys
+  description: Revoke an API key.
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#RevokeApiKey
+  http: DELETE /api-keys/{id}
+- name: ToggleAllowedIp
+  category: ApiKeys
+  description: Toggle an allowed IP for an API key.
+  source_operation: openapi/airtm-enterprise-v2-openapi.json#ToggleAllowedIp
+  http: POST /api-keys/{id}/allowed-ips

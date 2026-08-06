@@ -1,0 +1,65 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Airtm Enterprise API V2
+  version: 1.0.0
+extends: openapi/airtm-enterprise-v2-openapi.json
+x-generated: '2026-08-06'
+x-method: generated
+x-source: >-
+  API Evangelist enrichment pass 2026-08-06. Captures our derived/searched findings as an Overlay so
+  the harvested spec at openapi/airtm-enterprise-v2-openapi.json is never mutated.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-enriched: '2026-08-06'
+    x-error-catalog: errors/airtm-error-codes.yml
+    x-conventions: conventions/airtm-conventions.yml
+    x-rate-limits: rate-limits/airtm-rate-limits.yml
+    x-sandbox: sandbox/airtm-sandbox.yml
+    x-webhooks-catalog: asyncapi/airtm-webhooks.yml
+    x-data-model: data-model/airtm-data-model.yml
+- target: $.info
+  description: >-
+    OBSERVATION (API Evangelist): the full developer narrative — authentication, OIDC guide, Wallet
+    Resource API reference, connecting/rate limits, the ~69-entry reason-code registry, FAQ and the
+    entire changelog — is packed into this single info.description field (~95KB of markdown) rather
+    than being served as addressable documentation pages. That makes the spec self-contained but makes
+    every one of those sections unlinkable and unsearchable outside a rendered docs viewer.
+- target: $.servers
+  update:
+  - url: https://api.enterprise.airtm.com/v2
+    description: Production
+  - url: https://api.stg.enterprise.airtm.com/v2
+    description: Sandbox — testing with fake money; requires separate sandbox API keys
+- target: $.components.securitySchemes.basicAuth
+  update:
+    description: >-
+      HTTP Basic with the Enterprise API key as username and the secret key as password. Keys are
+      generated at https://enterprise.airtm.com/settings; the secret is displayed once. Airtm
+      recommends rotating every 90 days and supports a per-key inbound IP allowlist (ToggleAllowedIp).
+    x-key-management-operations: [CreateApiKey, ListApiKeys, RevokeApiKey, ToggleAllowedIp]
+- target: $
+  update:
+    x-apievangelist-gaps:
+      global_security_missing: >-
+        The document declares components.securitySchemes.basicAuth but sets NO top-level `security`
+        requirement and no per-operation `security`, so a generated client cannot tell from the spec
+        alone that every operation requires Basic auth. Adding `security: [{basicAuth: []}]` at the
+        root would fix this.
+      no_enumerated_error_responses: >-
+        Every operation declares a single `default` response. None enumerates 401, 403, 409, 422 or
+        429 explicitly, so code generators produce no typed error handling despite a rich published
+        reason-code registry.
+      few_examples: >-
+        Only 3 of 51 operations carry request or response examples.
+      rate_limit_headers_undocumented: >-
+        A flat 10 rps per API key is documented in prose and 429 is the only signal; no
+        X-RateLimit-* or Retry-After headers are described.
+      webhooks_in_a_3_0_document: >-
+        A top-level `webhooks` object with 8 events is present, but the document declares
+        openapi 3.0.0, where `webhooks` is not a valid keyword. Declaring 3.1.0 would make the
+        event surface legal and machine-consumable.
+      wallet_connect_api_unspecified: >-
+        The OAuth-gated Wallet Resource API at /api/connect/v1 is fully documented in prose inside
+        info.description but has no paths, no schemas and no operationIds. It is invisible to every
+        code generator and every agent.

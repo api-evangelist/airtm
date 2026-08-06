@@ -1,0 +1,71 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  npm registry search + registry.npmjs.org metadata, https://pypi.org/pypi/airtm/json, and the
+  Airtm developer docs. Maven Central, NuGet, pkg.go.dev, RubyGems, Packagist and crates.io were
+  checked and returned no first-party Airtm client.
+docs: https://docs.airtm.com/
+summary:
+  official_count: 3
+  languages: [javascript, python]
+  source_host: Bitbucket (bitbucket.org/airtm) — Airtm has no public GitHub organization (api.github.com/orgs/airtm returns 404)
+  currency_warning: >-
+    Every first-party client library targets the LEGACY payments API and has been unmaintained since
+    2022. Airtm's own V2 documentation shows raw cURL / fetch / requests examples and no SDK — there
+    is no maintained SDK for the current Enterprise API V2.
+packages:
+- language: javascript
+  registry: npm
+  name: airtm
+  version: 0.1.0
+  url: https://www.npmjs.com/package/airtm
+  install: npm install airtm
+  repository: https://bitbucket.org/airtm/payments-sdk-javascript/src
+  official: true
+  description: A javascript library for interfacing with the AirTM API.
+  first_published: '2018-11-26'
+  last_modified: '2022-04-11'
+  status: unmaintained
+  targets: legacy payments API (payments.air-pay.io), not Enterprise API V2
+- language: python
+  registry: pypi
+  name: airtm
+  version: 0.1.1
+  url: https://pypi.org/project/airtm/
+  install: pip install airtm
+  repository: https://bitbucket.org/airtm/payments-sdk-python
+  official: true
+  author: AirTM <partners@airtm.io>
+  description: A python library for interfacing with the AirTM API.
+  status: unmaintained
+  targets: legacy payments API (payments.air-pay.io), not Enterprise API V2
+- language: javascript
+  registry: npm
+  name: airtm-bulk-payments
+  version: 1.0.31
+  url: https://www.npmjs.com/package/airtm-bulk-payments
+  install: npm install airtm-bulk-payments
+  repository: https://bitbucket.org/airtm/airtm-bulk-payments
+  official: true
+  description: Small, bulk payment utility.
+  last_modified: '2022-08-30'
+  status: unmaintained
+- language: javascript
+  registry: npm
+  name: '@airtm/uuid-base32'
+  version: 1.0.1
+  url: https://www.npmjs.com/package/@airtm/uuid-base32
+  install: npm install @airtm/uuid-base32
+  official: true
+  description: Base32 UUID helper published under the @airtm npm scope. An internal utility, not an API client.
+  kind: utility
+third_party:
+- language: javascript
+  registry: npm
+  name: '@dinels/airtm'
+  version: 0.1.1
+  url: https://www.npmjs.com/package/@dinels/airtm
+  repository: https://github.com/dinels12/airtm
+  official: false
+  description: Unofficial community wrapper for the public Airtm API.
+registries_checked_no_result: [maven-central, nuget, pkg.go.dev, rubygems, packagist, crates.io]

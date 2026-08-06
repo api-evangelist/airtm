@@ -1,0 +1,78 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (info.description — "Changelog", "Connecting",
+  "Transaction Fees, Limits & Processing Times") + live probes of https://status.airtm.com/
+docs: https://docs.airtm.com/
+versioning:
+  scheme: uri-path
+  current: v2
+  current_spec_version: 1.155.0
+  versions:
+  - version: v2
+    status: current
+    spec: openapi/airtm-enterprise-v2-openapi.json
+    base_url: https://api.enterprise.airtm.com/v2
+    released: '2025-06'
+    note: Launched June 2025 as "V2 API Beta"; the info.version string is now 1.155.0.
+  - version: v1
+    status: legacy
+    spec: openapi/airtm-enterprise-v1-openapi.json
+    base_url: https://payments.air-pay.io
+    note: >-
+      Still served and still published as OpenAPI 3.1.0, but superseded by V2 for new integrations.
+      Airtm publishes no sunset date, no deprecation notice and no migration deadline for it.
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  deprecated_operations: []
+  breaking_change_policy:
+    published: true
+    source: 'https://api.enterprise.airtm.com/openapi.json (Changelog → Stay Informed)'
+    statement: >-
+      "Breaking Changes: Always marked with a warning and include migration guidance. Security
+      Updates: Critical security fixes are released immediately. API Versioning: We maintain
+      backward compatibility whenever possible."
+    historical_breaking_changes:
+    - {version: V0.3.0, date: '2025-05', change: Enhanced recipient validation now performs comprehensive checks when creating and committing payouts.}
+    - {version: V0.2.0, date: '2025-04', change: 'Payout status flow standardized — all payouts use a two-step process with updated CREATED and COMMITTED meanings.'}
+  gap: >-
+    Airtm documents a breaking-change *communication* policy but publishes no deprecation policy, no
+    RFC 8594 Sunset/Deprecation header support, and no end-of-life date for the V1 API that is still
+    live at payments.air-pay.io. A consumer cannot programmatically learn that an operation is going
+    away.
+sla:
+  url: null
+  uptime_target: null
+  note: No public SLA or uptime target is published; commercial terms are handled per-account.
+status_page:
+  url: https://status.airtm.com/
+  platform: FireHydrant
+  http_status: 200
+  note: >-
+    airtm.statuspage.io also resolves but is an unconfigured Atlassian Statuspage carrying only
+    placeholder components named "API (example)" and "Management Portal (example)" — status.airtm.com
+    is the real page.
+changelog:
+  url: https://docs.airtm.com/
+  artifact: changelog/airtm-changelog.yml
+  location: published inside the OpenAPI info.description, not as a standalone dated feed
+support:
+  email: enterprise@airtm.com
+  help_center: https://help.airtm.com/en/support/home
+expiration_rules:
+  payins: 15 days
+  payouts_to_unregistered_users: 90 days (configurable in the dashboard)
+  report_download_urls: 1 hour
+  authorization_code: 10 minutes
+  access_token: 1 hour
+  refresh_token: 30 days
+processing_times:
+  payouts_existing_verified_users: up to 2 minutes
+  payouts_new_users: up to 90 days (pending account creation)
+  payins: immediate after user confirmation
+  bulk_payouts: typically 15-30 minutes, depends on batch size
+  reports: 5-15 minutes
+  withdrawals: 1-3 business days

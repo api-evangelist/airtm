@@ -1,0 +1,82 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (the `webhooks` object of the V2 OpenAPI, plus the
+  "Webhooks & Notifications" and Wallet Resource API "Webhooks" guides in info.description)
+docs: https://docs.airtm.com/
+spec_type: Webhooks
+asyncapi_published: false
+asyncapi_note: >-
+  Airtm publishes NO AsyncAPI document — /asyncapi.json and /asyncapi.yaml return 404 on the API
+  host. The event surface is real and machine-readable only insofar as the V2 OpenAPI declares a
+  top-level `webhooks` object with eight events carrying full request-body schemas. That is captured
+  verbatim in openapi/airtm-enterprise-v2-openapi.json; this file is the catalog view.
+delivery:
+  provider: Svix
+  migrated: '2025-07'
+  configuration_url: https://enterprise.airtm.com/settings/webhooks
+  portal_operation: GetPortalUrl (GET /v2/embedded/webhooks/portal-url)
+  signature_verification: true
+  retries: automatic retries for failed deliveries
+  transport: HTTPS POST
+  acknowledgement: return a 2xx status
+  source_ips_published: true
+  source_ips_docs_section: 'Connecting → IP Addresses'
+events:
+- name: payout.created
+  summary: Payout Created
+  description: Triggered when a payout has been created.
+  payload_schema: PayoutResponse
+  envelope: {type: string, data: PayoutResponse}
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payout.created
+- name: payout.completed
+  summary: Payout completed
+  description: A payout has completed.
+  payload_schema: PayoutResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payout.completed
+- name: payout.failed
+  summary: Payout failed
+  payload_schema: PayoutResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payout.failed
+- name: payout.canceled
+  summary: Payout canceled
+  payload_schema: PayoutResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payout.canceled
+- name: payin.created
+  summary: Payin created
+  payload_schema: PayinResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payin.created
+- name: payin.confirmed
+  summary: Payin confirmed
+  payload_schema: PayinResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payin.confirmed
+- name: payin.failed
+  summary: Payin failed
+  payload_schema: PayinResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payin.failed
+- name: payin.canceled
+  summary: Payin canceled
+  payload_schema: PayinResponse
+  declared_in: openapi/airtm-enterprise-v2-openapi.json#/webhooks/payin.canceled
+wallet_resource_events:
+  note: >-
+    The OAuth-gated Wallet Resource (Connect) API emits four further events over the same Svix
+    delivery. These are documented in prose only — they are NOT declared in the OpenAPI `webhooks`
+    object, so no machine-readable payload schema is published for them.
+  events:
+  - {name: oidc.transaction.created, fired_when: 'A transaction is registered (status created or pending_user_confirmation).'}
+  - {name: oidc.transaction.pendingSettlement, fired_when: 'The Stellar transaction is broadcast and observed (status pending_settlement).'}
+  - {name: oidc.transaction.completed, fired_when: 'The transaction settles successfully (status completed).'}
+  - {name: oidc.transaction.failed, fired_when: 'The transaction fails terminally (status failed).'}
+  payload_note: >-
+    Every event wraps the same transaction object returned by the REST endpoints. On a terminal event
+    where the underlying quote can no longer be loaded, amountToSend / amountToReceive / fees are
+    delivered as null so the status change is never dropped; the REST read endpoints never return
+    those as null.
+consumer_guidance:
+- Return a 2xx HTTP status to acknowledge receipt.
+- Implement signature verification (Svix).
+- Use HTTPS for all webhook URLs.
+- Handle idempotency to prevent duplicate processing.
+- Implement retry logic for temporary failures.
+- Allowlist the published Airtm egress IPs.

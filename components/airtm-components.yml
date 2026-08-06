@@ -1,0 +1,45 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (payin `confirmationUri` / `cancelUri` /
+  `failureUri` fields and the GetPortalUrl operation) and the "Webhooks & Notifications" guide
+docs: https://docs.airtm.com/
+summary: >-
+  Airtm ships no client-side element/web-component library. What it does ship are two HOSTED,
+  redirect-or-embed surfaces that a partner hands the end user, both driven from the REST API.
+families:
+- family: hosted-checkout
+  kind: hosted redirect surface
+  description: >-
+    Creating a payin returns a `confirmationUri` — an Airtm-hosted checkout page the payer is sent to
+    in order to confirm and fund the payment. The create call also accepts `cancelUri`, `failureUri`
+    and `callbackUri` so the partner controls where the payer lands on each outcome.
+  driven_by:
+    operations: [CreatePayin, GetPayinById, GetPayinByCode, CancelPayin]
+    spec: openapi/airtm-enterprise-v2-openapi.json
+  loader_library: none — plain redirect, no JavaScript SDK
+- family: webhook-management-portal
+  kind: embeddable hosted dashboard
+  description: >-
+    GET /v2/embedded/webhooks/portal-url (operationId GetPortalUrl) returns a signed URL to the Svix
+    application portal, where the enterprise's own users configure webhook endpoints, inspect
+    deliveries and replay failures without Airtm building that UI. Introduced August 2025 as the
+    "webhook application portal".
+  driven_by:
+    operations: [GetPortalUrl]
+    spec: openapi/airtm-enterprise-v2-openapi.json
+  vendor: Svix
+  loader_library: none — signed URL, embedded in an iframe or opened directly
+- family: user-confirmation-2fa
+  kind: out-of-band confirmation surface
+  description: >-
+    Every wallet:send transaction on the Wallet Resource API parks at pending_user_confirmation and
+    is dispatched only after the user confirms a one-time code delivered on their own channel (SMS,
+    WhatsApp, authenticator app, or email fallback). The partner collects the code and submits it.
+  driven_by:
+    endpoints: ['POST /api/connect/v1/transactions/{transactionId}/2fa', 'POST /api/connect/v1/transactions/{transactionId}/2fa/resend']
+  loader_library: none
+not_published:
+- Web components / custom elements
+- A JavaScript Elements-style field library (no card entry — Airtm is not a card acquirer)
+- Embedded analytics or reporting dashboards

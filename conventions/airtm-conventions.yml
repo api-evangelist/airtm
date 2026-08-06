@@ -1,0 +1,107 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (info.description guides: Introduction,
+  Authentication, Wallet Resource API, Connecting, Reason Codes, FAQ) + derived from the V2
+  OpenAPI parameters and response shapes
+docs: https://docs.airtm.com/
+authentication:
+  style: HTTP Basic (api_key:secret_key) on the Enterprise API; OAuth 2.0 bearer on the Wallet Resource API
+  artifact: authentication/airtm-authentication.yml
+idempotency:
+  supported: true
+  header: Idempotency-Key
+  spec_parameter_name: idempotency-key
+  required_on:
+  - POST /api/connect/v1/quotes
+  - POST /api/connect/v1/transactions
+  - POST /v2/embedded/transactions (CreateTransaction — declared required in the OpenAPI)
+  key_format: caller-generated unique string per logical request; a UUID is recommended
+  replay_same_body: returns the original resource with HTTP 200 instead of 201 — no duplicate transfer is created
+  replay_different_body: 409 conflict ("Idempotency key already associated to another transaction")
+  omitted: 400
+  retention: not published
+  exclusions:
+  - >-
+      POST /transactions/{transactionId}/2fa and .../2fa/resend do NOT take an Idempotency-Key. They
+      are made safe by the transaction's own state — an already-confirmed send returns its current
+      state without re-verifying the single-use code, and resend is naturally repeatable subject to
+      rate limiting.
+  note: >-
+    Idempotency is scoped to the money-movement surface (quotes and transactions). The classic
+    payout/payin create operations are instead de-duplicated by a caller-supplied unique `code`
+    (reason code 415056 "Payout code already exists", 415029 "Payin code already exists") and by
+    partnerReference uniqueness on the Connect API (409 "partnerReference already in use").
+pagination:
+  style: cursor
+  parameters:
+  - name: before
+    in: query
+    description: cursor — return records before this position
+  - name: after
+    in: query
+    description: cursor — return records after this position
+  - name: perPage
+    in: query
+    description: page size
+  - name: order
+    in: query
+    description: sort direction (ListPayouts)
+  applies_to: 11 list operations across payouts, payins, deposits, withdrawals, reports, bulk payouts, external accounts, transactions
+  invalid_sort_field: reason code 415054
+field_expansion:
+  supported: false
+sparse_fieldsets:
+  supported: false
+metadata:
+  supported: true
+  fields: [notes, internalNote, description, metadata]
+  note: >-
+    Changelog (July 2025) records a fix to "metadata merging to prevent data overwriting"; payouts
+    are searchable by the notes field.
+request_tracing:
+  request_id_header: not published
+versioning:
+  scheme: uri-path
+  current: v2
+  versions: [v1 (legacy, payments.air-pay.io), v2 (https://api.enterprise.airtm.com/v2)]
+  artifact: lifecycle/airtm-lifecycle.yml
+error_envelope:
+  format: proprietary JSON object (NOT RFC 9457 application/problem+json)
+  content_type: application/json
+  shape:
+    code: string — machine-friendly Airtm reason code, e.g. "415096"
+    message: string — human-readable error message
+    data: object — optional additional data related to the error
+  required: [code, message]
+  catalog: errors/airtm-error-codes.yml
+  note: >-
+    Every operation in the V2 OpenAPI declares a `default` response carrying this envelope; there
+    are no enumerated 4xx/5xx response objects per operation. Two conflict conditions on the Connect
+    API POST /transactions return a 409 with a plain `message` and NO reason code.
+rate_limiting:
+  limit: 10 requests per second per API key
+  scope: per API key, all endpoints, both environments
+  exceeded_status: 429
+  headers: none published
+  guidance: exponential backoff (documented with a JavaScript reference implementation)
+  artifact: rate-limits/airtm-rate-limits.yml
+ip_allowlisting:
+  outbound_ips_published: true
+  description: >-
+    Airtm publishes the sandbox and production egress IPv4/IPv6 addresses its webhooks originate
+    from, for customer firewall allowlisting; and API keys can carry an inbound allowed-IP list
+    toggled via ToggleAllowedIp.
+  docs_section: Connecting → IP Addresses
+webhooks:
+  delivery: Svix
+  signature_verification: true
+  artifact: asyncapi/airtm-webhooks.yml
+cross_links:
+  errors: errors/airtm-error-codes.yml
+  problem_types: errors/airtm-problem-types.yml
+  lifecycle: lifecycle/airtm-lifecycle.yml
+  authentication: authentication/airtm-authentication.yml
+  scopes: scopes/airtm-scopes.yml
+  rate_limits: rate-limits/airtm-rate-limits.yml
+  sandbox: sandbox/airtm-sandbox.yml

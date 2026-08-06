@@ -1,0 +1,50 @@
+generated: '2026-08-06'
+method: searched
+source: live probes of every Airtm host in apis.yml and the OpenAPI servers[]
+notes: >-
+  Airtm's OIDC discovery document is NOT at the RFC 8414 / OIDC root of the API host — it is served
+  under the /oidc issuer path (https://api.enterprise.airtm.com/oidc/.well-known/openid-configuration).
+  The host root returns 404 for /.well-known/openid-configuration and /.well-known/oauth-authorization-server.
+  The only /.well-known/ document on the marketing host is a security.txt whose Expires date has passed.
+hosts:
+- host: https://api.enterprise.airtm.com
+  documents:
+  - path: /oidc/.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: airtm-openid-configuration.json
+  - path: /oidc/jwks
+    status: 200
+    content_type: application/jwk-set+json
+    file: airtm-oidc-jwks.json
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://www.airtm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain
+    file: airtm-security.txt
+    note: Expires 2025-06-30T15:00:00Z — the published document is past its own expiry date.
+  - path: /.well-known/agent-card.json
+    status: 301
+    note: 301 to the site root, which then answers 403 with a Cloudflare bot challenge — not an agent card.
+  - path: /.well-known/agent.json
+    status: 301
+    note: same catch-all redirect; no agent card served.
+- host: https://payments.air-pay.io
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 404

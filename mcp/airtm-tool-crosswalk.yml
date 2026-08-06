@@ -1,0 +1,373 @@
+generated: '2026-08-06'
+method: derived
+source: mcp/airtm-mcp.yml + openapi/airtm-enterprise-v2-openapi.json + openapi/airtm-enterprise-v1-openapi.json
+purpose: 'Bind each candidate MCP tool to its backing OpenAPI operation so the tool inherits a REAL inputSchema
+  rather than a guessed one. Because Airtm ships no MCP server, this crosswalk is 1:1 by construction on the V2
+  surface — its value here is the DIVERGENCE section: the capabilities that exist in Airtm''s other surfaces and
+  would be missing from a naive V2-only MCP server.'
+surfaces:
+  rest_openapi_v2: 'openapi/airtm-enterprise-v2-openapi.json  # 51 operations, live at https://api.enterprise.airtm.com/openapi.json'
+  rest_openapi_v1: 'openapi/airtm-enterprise-v1-openapi.json  # 18 operations, live at https://api.enterprise.airtm.com/v1/openapi.json'
+  wallet_connect_api: 'https://api.enterprise.airtm.com/api/connect/v1  # OAuth-gated, documented in prose only
+    — NO machine-readable spec'
+  graphql: null
+  mcp: null
+crosswalk:
+- tool: CreateWithdrawal
+  category: Withdrawals
+  rest:
+  - CreateWithdrawal
+  binding: rest
+  confidence: high
+- tool: ListWithdrawals
+  category: Withdrawals
+  rest:
+  - ListWithdrawals
+  binding: rest
+  confidence: high
+- tool: GetWithdrawalById
+  category: Withdrawals
+  rest:
+  - GetWithdrawalById
+  binding: rest
+  confidence: high
+- tool: GetUserByEmail
+  category: Users
+  rest:
+  - GetUserByEmail
+  binding: rest
+  confidence: high
+- tool: GenerateReport
+  category: Reports
+  rest:
+  - GenerateReport
+  binding: rest
+  confidence: high
+- tool: ListReports
+  category: Reports
+  rest:
+  - ListReports
+  binding: rest
+  confidence: high
+- tool: GetReport
+  category: Reports
+  rest:
+  - GetReport
+  binding: rest
+  confidence: high
+- tool: GetReportFile
+  category: Reports
+  rest:
+  - GetReportFile
+  binding: rest
+  confidence: high
+- tool: CreatePayout
+  category: Payouts
+  rest:
+  - CreatePayout
+  binding: rest
+  confidence: high
+- tool: ListPayouts
+  category: Payouts
+  rest:
+  - ListPayouts
+  binding: rest
+  confidence: high
+- tool: GetPayout
+  category: Payouts
+  rest:
+  - GetPayout
+  binding: rest
+  confidence: high
+- tool: CancelPayout
+  category: Payouts
+  rest:
+  - CancelPayout
+  binding: rest
+  confidence: high
+- tool: GetPayoutByCode
+  category: Payouts
+  rest:
+  - GetPayoutByCode
+  binding: rest
+  confidence: high
+- tool: GetPayoutEvents
+  category: Payouts
+  rest:
+  - GetPayoutEvents
+  binding: rest
+  confidence: high
+- tool: CommitPayout
+  category: Payouts
+  rest:
+  - CommitPayout
+  binding: rest
+  confidence: high
+- tool: CreatePayin
+  category: Payins
+  rest:
+  - CreatePayin
+  binding: rest
+  confidence: high
+- tool: ListPayins
+  category: Payins
+  rest:
+  - ListPayins
+  binding: rest
+  confidence: high
+- tool: GetPayinById
+  category: Payins
+  rest:
+  - GetPayinById
+  binding: rest
+  confidence: high
+- tool: CancelPayin
+  category: Payins
+  rest:
+  - CancelPayin
+  binding: rest
+  confidence: high
+- tool: GetPayinByCode
+  category: Payins
+  rest:
+  - GetPayinByCode
+  binding: rest
+  confidence: high
+- tool: GetMe
+  category: Me
+  rest:
+  - GetMe
+  binding: rest
+  confidence: high
+- tool: GeBalance
+  category: Me
+  rest:
+  - GeBalance
+  binding: rest
+  confidence: high
+- tool: CreateExternalCryptoAccount
+  category: External Crypto Account
+  rest:
+  - CreateExternalCryptoAccount
+  binding: rest
+  confidence: high
+- tool: ListExternalCryptoAccounts
+  category: External Crypto Account
+  rest:
+  - ListExternalCryptoAccounts
+  binding: rest
+  confidence: high
+- tool: CreateExternalBankAccount
+  category: External Bank Account
+  rest:
+  - CreateExternalBankAccount
+  binding: rest
+  confidence: high
+- tool: ListExternalBankAccounts
+  category: External Bank Account
+  rest:
+  - ListExternalBankAccounts
+  binding: rest
+  confidence: high
+- tool: GetPortalUrl
+  category: Webhooks
+  rest:
+  - GetPortalUrl
+  binding: rest
+  confidence: high
+- tool: ListTransactions
+  category: Embedded Transactions
+  rest:
+  - ListTransactions
+  binding: rest
+  confidence: high
+- tool: CreateTransaction
+  category: Embedded Transactions
+  rest:
+  - CreateTransaction
+  binding: rest
+  confidence: high
+- tool: GetTransactionById
+  category: Embedded Transactions
+  rest:
+  - GetTransactionById
+  binding: rest
+  confidence: high
+- tool: CreateSender
+  category: Embedded Senders
+  rest:
+  - CreateSender
+  binding: rest
+  confidence: high
+- tool: GetSenderByExternalId
+  category: Embedded Senders
+  rest:
+  - GetSenderByExternalId
+  binding: rest
+  confidence: high
+- tool: GetSenderById
+  category: Embedded Senders
+  rest:
+  - GetSenderById
+  binding: rest
+  confidence: high
+- tool: UpdateSenderById
+  category: Embedded Senders
+  rest:
+  - UpdateSenderById
+  binding: rest
+  confidence: high
+- tool: CreateReceiver
+  category: Embedded Receivers
+  rest:
+  - CreateReceiver
+  binding: rest
+  confidence: high
+- tool: GetReceiverByExternalId
+  category: Embedded Receivers
+  rest:
+  - GetReceiverByExternalId
+  binding: rest
+  confidence: high
+- tool: GetReceiverById
+  category: Embedded Receivers
+  rest:
+  - GetReceiverById
+  binding: rest
+  confidence: high
+- tool: UpdateReceiver
+  category: Embedded Receivers
+  rest:
+  - UpdateReceiver
+  binding: rest
+  confidence: high
+- tool: AddPaymentRailInstance
+  category: Embedded Receivers
+  rest:
+  - AddPaymentRailInstance
+  binding: rest
+  confidence: high
+- tool: RemovePaymentRailInstance
+  category: Embedded Receivers
+  rest:
+  - RemovePaymentRailInstance
+  binding: rest
+  confidence: high
+- tool: CreateQuote
+  category: Embedded Quotes
+  rest:
+  - CreateQuote
+  binding: rest
+  confidence: high
+- tool: ListCatalog
+  category: Embedded Catalog
+  rest:
+  - ListCatalog
+  binding: rest
+  confidence: high
+- tool: ListDeposits
+  category: Deposits
+  rest:
+  - ListDeposits
+  binding: rest
+  confidence: high
+- tool: GetDeposit
+  category: Deposits
+  rest:
+  - GetDeposit
+  binding: rest
+  confidence: high
+- tool: CreateBulkPayout
+  category: Bulk Payouts
+  rest:
+  - CreateBulkPayout
+  binding: rest
+  confidence: high
+- tool: ListBulkPayouts
+  category: Bulk Payouts
+  rest:
+  - ListBulkPayouts
+  binding: rest
+  confidence: high
+- tool: GetBulkPayout
+  category: Bulk Payouts
+  rest:
+  - GetBulkPayout
+  binding: rest
+  confidence: high
+- tool: CreateApiKey
+  category: ApiKeys
+  rest:
+  - CreateApiKey
+  binding: rest
+  confidence: high
+- tool: ListApiKeys
+  category: ApiKeys
+  rest:
+  - ListApiKeys
+  binding: rest
+  confidence: high
+- tool: RevokeApiKey
+  category: ApiKeys
+  rest:
+  - RevokeApiKey
+  binding: rest
+  confidence: high
+- tool: ToggleAllowedIp
+  category: ApiKeys
+  rest:
+  - ToggleAllowedIp
+  binding: rest
+  confidence: high
+mcp_only: []
+rest_only:
+- group: Wallet Resource (Connect) API
+  reason: OAuth-scoped user-delegated wallet operations (GET /balance, GET /kyc, POST /quotes, POST /transactions,
+    2FA confirm/resend) are documented in prose only and have no OpenAPI operationId, so no tool can be derived
+    with a real inputSchema.
+  endpoints:
+  - GET /balance
+  - GET /kyc
+  - POST /quotes
+  - POST /transactions
+  - POST /transactions/{id}/2fa
+  - POST /transactions/{id}/2fa/resend
+- group: Legacy V1 operations
+  reason: The V1 spec is a separate document on a separate host (payments.air-pay.io) with operationIds that are
+    path-derived strings rather than clean identifiers; superseded by V2.
+  operations:
+  - Purchases _ Payins_purchases-payins/create-purchase
+  - Purchases _ Payins_purchases-payins/get-purchase
+  - Payments _ Payouts_payments-payouts/create-payout
+  - Payments _ Payouts_payments-payouts/commit-payout
+  - Payments _ Payouts_payments-payouts/one-step-payout
+  - Payments _ Payouts_payments-payouts/get-payout-event
+  - Payments _ Payouts_payments-payouts/cancel-pending-payments-copy-1
+  - Operations_operations/list-operations
+  - Operations_operations/get-operation-detail
+  - Operations_operations/get-operation-by-code
+  - Partner_partner/my-balance
+  - Bulk Payments_bulk-payments/new-bulk-payment
+  - Bulk Payments_bulk-payments/get-bulk-payments-history
+  - Bulk Payments_bulk-payments/get-bulk-payments-details
+  - Bulk Payments_bulk-payments/get-failed-bulk-payments
+  - Bulk Payments_bulk-payments/get-bulk-payments-by-id
+  - Bulk Payments_bulk-payments/cancel-pending-payments-1
+  - Account Status_account-status/get-account-status
+- group: OIDC authorization server
+  reason: Standard OAuth/OIDC endpoints are protocol surface, not tool surface.
+  endpoints:
+  - /oidc/auth
+  - /oidc/token
+  - /oidc/me
+  - /oidc/token/introspection
+  - /oidc/token/revocation
+coverage:
+  tools_named: 51
+  tools_bound: 51
+  mcp_only: 0
+  rest_ops_v2_total: 51
+  rest_ops_v2_with_tool: 51
+  rest_ops_v1_total: 18
+  rest_ops_v1_with_tool: 0
+  wallet_connect_ops_with_tool: 0

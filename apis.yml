@@ -1,23 +1,201 @@
 aid: airtm
 name: Airtm
-description: 'Airtm is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Airtm is a US-registered (Airtm Inc., Delaware; FinCEN MSB #31000329787639) digital dollar wallet
+  and cross-border payments network operating since 2015, built for freelancers, remote workers,
+  contractors and businesses in emerging markets. Balances are held as USDC on Stellar and can be
+  moved in and out through 500+ local payment methods, a US virtual account with ACH details, a USD
+  virtual card, and peer-to-peer transfer. For businesses, Airtm publishes the Enterprise Payments
+  API — a REST API for programmatic payouts to recipients in 190+ countries, hosted-checkout payins,
+  bulk payouts, external bank and crypto accounts, withdrawals and reporting — plus an OAuth 2.0 /
+  OIDC authorization server and a Wallet Resource (Connect) API that lets a partner application move
+  value in and out of an individual user's Airtm wallet on that user's behalf.
 url: https://raw.githubusercontent.com/api-evangelist/airtm/refs/heads/main/apis.yml
+image: https://app.airtm.com/favicon.ico
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
-specificationVersion: '0.20'
+specificationVersion: '0.21'
 created: '2026-08-06'
 modified: '2026-08-06'
 tags:
-- Company
-apis: []
+- payments
+- payouts
+- cross-border-payments
+- fintech
+- digital-wallet
+- stablecoin
+- usdc
+- stellar
+- mass-payouts
+- remittances
+- latin-america
+- emerging-markets
+- money-services-business
+- oauth2
+- openid-connect
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- name: Airtm Enterprise API V2
+  description: >-
+    The current generation of the Airtm Enterprise Payments API. REST over HTTPS with HTTP Basic
+    authentication (API key + secret), covering payouts (two-step create/commit), bulk payouts,
+    payins with hosted checkout, deposits, withdrawals, external bank and crypto accounts, user
+    lookup, reports, API key management, and an embedded money-movement surface (senders, receivers,
+    quotes, transactions, payment-rail catalog). Ships 51 operations and 121 component schemas, and
+    declares eight webhook events delivered via Svix.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - payments
+  - payouts
+  - payins
+  - bulk-payouts
+  - cross-border-payments
+  - reporting
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-enterprise-v2-openapi.json
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Overlay
+    url: overlays/airtm-enterprise-v2-overlay.yaml
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- name: Airtm Enterprise API V1
+  description: >-
+    The legacy first-generation Airtm payments API, still published as OpenAPI 3.1.0 and served from
+    the payments.air-pay.io host. Covers purchases/payins, payouts (including a one-step payout),
+    operations lookup, partner balance, bulk payments and account status across 18 operations.
+    Superseded by the V2 Enterprise API for new integrations.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://payments.air-pay.io
+  tags:
+  - payments
+  - payouts
+  - payins
+  - bulk-payouts
+  - legacy
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-enterprise-v1-openapi.json
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: Overlay
+    url: overlays/airtm-enterprise-v1-overlay.yaml
+- name: Airtm Wallet Resource (Connect) API
+  description: >-
+    The OAuth 2.0 resource server that lets a partner application move USDC in and out of an
+    individual Airtm user's wallet on that user's behalf, read the wallet balance, and check KYC
+    status. Authorized with bearer access tokens issued by the Airtm OIDC authorization server and
+    gated per endpoint by the wallet:read, wallet:receive, wallet:send and kyc:status scopes.
+    Quotes and transactions require an Idempotency-Key header; every wallet:send transaction is
+    confirmed by the user with a one-time code. Documented in the Enterprise API reference; no
+    standalone machine-readable spec is published for it.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/api/connect/v1
+  tags:
+  - wallet
+  - oauth2
+  - openid-connect
+  - stablecoin
+  - usdc
+  - stellar
+  properties:
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: OAuthScopes
+    url: scopes/airtm-scopes.yml
+  - type: OpenIDConnect
+    url: well-known/airtm-openid-configuration.json
 common:
 - type: Website
-  url: https://www.hiive.com/securities/airtm-stock
+  url: https://www.airtm.com/
+- type: DeveloperPortal
+  url: https://docs.airtm.com/
+- type: Documentation
+  url: https://docs.airtm.com/
+- type: APIReference
+  url: https://docs.airtm.com/
+- type: GettingStarted
+  url: https://help.airtm.com/en/support/solutions/folders/47000770266
+- type: Support
+  url: https://help.airtm.com/en/support/home
+- type: Blog
+  url: https://www.airtm.com/en/blog/
+- type: SignUp
+  url: https://www.airtm.com/en/select-account/
+- type: Login
+  url: https://app.airtm.com/login
+- type: TermsOfService
+  url: https://www.airtm.com/en/terms-and-conditions/
+- type: PrivacyPolicy
+  url: https://www.airtm.com/en/terms-and-conditions/
+- type: StatusPage
+  url: https://status.airtm.com/
+- type: TrustCenter
+  url: security/airtm-trust-center.yml
+- type: ChangeLog
+  url: changelog/airtm-changelog.yml
+- type: Lifecycle
+  url: lifecycle/airtm-lifecycle.yml
+- type: Authentication
+  url: authentication/airtm-authentication.yml
+- type: OAuthScopes
+  url: scopes/airtm-scopes.yml
+- type: Conventions
+  url: conventions/airtm-conventions.yml
+- type: Idempotency
+  url: conventions/airtm-conventions.yml
+- type: RateLimits
+  url: rate-limits/airtm-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/airtm-error-codes.yml
+- type: ErrorCatalog
+  url: errors/airtm-problem-types.yml
+- type: Conformance
+  url: conformance/airtm-conformance.yml
+- type: Packages
+  url: packages/airtm-packages.yml
+- type: SDKs
+  url: packages/airtm-packages.yml
+- type: Sandbox
+  url: sandbox/airtm-sandbox.yml
+- type: Components
+  url: components/airtm-components.yml
+- type: DataModel
+  url: data-model/airtm-data-model.yml
+- type: Webhooks
+  url: asyncapi/airtm-webhooks.yml
+- type: WellKnown
+  url: well-known/airtm-well-known.yml
+- type: SecurityTxt
+  url: well-known/airtm-security.txt
+- type: LLMsTxt
+  url: llms/airtm-llms.txt
+- type: ToolCrosswalk
+  url: mcp/airtm-tool-crosswalk.yml
+# NOTE: no `type: MCPServer` pointer is emitted. mcp/airtm-mcp.yml is a DERIVED CANDIDATE tool list —
+# Airtm operates no MCP server (/mcp 404, mcp.airtm.com does not resolve, no docs mention). Wiring
+# MCPServer would award the agent-readiness mcp_server dimension for a surface that does not exist.
+- type: AgentSkill
+  url: skills/_index.yml
+- type: AgenticAccess
+  url: agentic-access/airtm-agentic-access.yml
+- type: Security
+  url: https://www.airtm.com/.well-known/security.txt
+- type: VulnerabilityDisclosure
+  url: security/airtm-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/airtm-domain-security.yml
+
+x-enrichment:
+  date: '2026-08-06'
+  status: enriched
+  artifacts_added: 35
+  pass: local-v1

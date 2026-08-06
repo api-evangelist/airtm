@@ -1,0 +1,124 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (info.description — "Reason Codes" guide, plus the
+  Wallet Resource API "Error codes" table)
+docs: https://docs.airtm.com/
+format: proprietary
+envelope:
+  content_type: application/json
+  fields:
+    code: Machine-friendly Airtm reason code (string, e.g. "415096")
+    message: Human-readable error message
+    data: Optional object with additional data related to the error
+  required: [code, message]
+  note: >-
+    Not RFC 9457. There is no `type` URI, no `title`/`detail` split, and no application/problem+json
+    media type. Webhook payloads carry the same code on `reasonCode` / `reasonDescription`.
+categories:
+- id: authentication-authorization
+  codes:
+  - {code: '415006', meaning: No API keys configured, action: Set up API keys in settings}
+  - {code: '415024', meaning: Maximum API keys reached, action: Delete unused keys}
+  - {code: '415025', meaning: API key not found, action: Verify the key exists}
+  - {code: '415028', meaning: Enterprise account required, action: Contact support}
+  - {code: '415904', meaning: Unauthorized request, action: Check your API key and Authorization header}
+  - {code: '415905', meaning: Insufficient permissions, action: Contact account manager to verify account permissions}
+- id: validation
+  codes:
+  - {code: '415054', meaning: Invalid sort field, action: Check sort parameter}
+  - {code: '415901', meaning: Invalid request format, action: Check JSON syntax and request body}
+  - {code: '415902', meaning: Item not found, action: Verify resource ID}
+  - {code: '415903', meaning: Request cannot be processed, action: Check request parameters}
+  - {code: '415906', meaning: Invalid request, action: Validate request format}
+- id: user
+  codes:
+  - {code: '415008', meaning: Recipient address not active, action: Retry later}
+  - {code: '415009', meaning: Recipient address inactive, action: Contact recipient}
+  - {code: '415010', meaning: User deleted or banned, action: User must contact support}
+  - {code: '415034', meaning: User insufficient balance, action: User must add funds}
+  - {code: '415059', meaning: Recipient not found, action: Verify recipient information}
+  - {code: '415060', meaning: Recipient cannot receive payouts, action: Contact recipient}
+  - {code: '415061', meaning: Recipient from restricted territory, action: Use a different recipient}
+  - {code: '415062', meaning: Invalid recipient payment method, action: Recipient must reconfigure}
+  - {code: '415064', meaning: Invalid recipient payment method, action: Recipient must reconfigure}
+  - {code: '415065', meaning: User has violated the AML policy, action: Contact support}
+  - {code: '415103', meaning: User is missing required information, action: User must have first and last name to receive payouts}
+  - {code: '415912', meaning: Waiting for recipient to create an Airtm account, action: Wait or notify the recipient}
+- id: payout
+  codes:
+  - {code: '415005', meaning: Payout not found, action: Verify payout ID}
+  - {code: '415016', meaning: Insufficient balance for payout, action: Add funds to wallet}
+  - {code: '415027', meaning: Payout already processed, action: Check payout status}
+  - {code: '415035', meaning: Payout amount too small, action: Increase payout amount}
+  - {code: '415055', meaning: Cannot cancel non-pending payout, action: Check payout status}
+  - {code: '415056', meaning: Payout code already exists, action: Use a unique code}
+  - {code: '415057', meaning: Payout exceeds maximum limit, action: Reduce payout amount}
+  - {code: '415058', meaning: Payout below minimum limit, action: Increase payout amount}
+  - {code: '415073', meaning: The payment provider could not deliver the funds to the user's payment method, action: Retry or use another payment method}
+- id: payin
+  codes:
+  - {code: '415029', meaning: Payin code already exists, action: Use a unique code}
+  - {code: '415030', meaning: Cannot confirm or cancel payin, action: Check payin status}
+  - {code: '415031', meaning: Payin not found, action: Verify payin ID}
+  - {code: '415032', meaning: Payin already completed, action: Check payin status}
+  - {code: '415053', meaning: US users cannot make payins, action: Use an alternative payment method}
+- id: bulk-operations
+  codes:
+  - {code: '415011', meaning: Invalid file upload, action: Check file format and resubmit}
+  - {code: '415012', meaning: Duplicate payouts detected, action: Remove duplicates}
+  - {code: '415013', meaning: Bulk payout not in pending status, action: Check payout status}
+  - {code: '415014', meaning: Insufficient balance, action: Add funds to wallet}
+  - {code: '415015', meaning: Daily limit exceeded ($250000), action: Wait for the next day or contact support}
+  - {code: '415017', meaning: Cannot reject bulk payout, action: Check if already in progress}
+  - {code: '415019', meaning: Bulk payout not finished, action: Wait for completion}
+  - {code: '415041', meaning: Bulk payout not found, action: Verify bulk payout ID}
+- id: account-management
+  codes:
+  - {code: '415022', meaning: Must empty balance before account deletion, action: Withdraw all funds}
+  - {code: '415045', meaning: Deposit account type exists, action: Use a different account type}
+  - {code: '415047', meaning: Insufficient balance for withdrawal, action: Check currency balance}
+- id: payment-infrastructure
+  codes:
+  - {code: '415003', meaning: Error reaching external service, action: Contact account manager}
+  - {code: '415036', meaning: No active payment provider, action: Contact account manager}
+  - {code: '415046', meaning: Country not supported, action: Contact account manager}
+  - {code: '415048', meaning: Invalid payment rail, action: Verify account configuration}
+  - {code: '415049', meaning: Bridge account not found, action: Contact account manager}
+  - {code: '415050', meaning: Invalid crypto payment rail, action: Use Ethereum or Stellar}
+  - {code: '415051', meaning: Crypto wallet not found, action: Contact account manager}
+- id: reports-operations
+  codes:
+  - {code: '415039', meaning: Operation not found, action: Verify operation ID}
+  - {code: '415042', meaning: Statement not found, action: Verify statement ID}
+  - {code: '415043', meaning: Statement not pending, action: Check statement status}
+  - {code: '415044', meaning: Statement not completed, action: Wait for completion}
+- id: wallet-resource-api
+  note: Codes specific to the OAuth-gated Wallet Resource (Connect) API; each carries an HTTP status.
+  codes:
+  - {code: '415115', http: 422, meaning: The quote has expired, action: Request a new quote}
+  - {code: '415116', http: 422, meaning: The quote's scope does not match the requested transaction scope, action: Create a quote with the matching scope}
+  - {code: '415117', http: 422, meaning: The requested scope is not supported for transactions, action: Use wallet:send or wallet:receive}
+  - {code: '415119', http: 400, meaning: wallet:send is missing the required destination.stellarAddress, action: Supply destination.stellarAddress}
+  - {code: '415120', http: 422, meaning: The Stellar memo exceeds the 28-byte MEMO_TEXT limit, action: Shorten the memo}
+  - {code: '415122', http: 409, meaning: The transaction is not awaiting 2FA confirmation (wrong state or scope), action: Check transaction status}
+  - {code: '415123', http: 422, meaning: The submitted 2FA code is invalid or expired, action: Resend and re-enter the code}
+  - {code: '415124', http: 503, meaning: The user's 2FA settings could not be verified, action: Retryable — retry with backoff}
+- id: system
+  codes:
+  - {code: '415998', meaning: Unexpected error, action: Contact account manager}
+  - {code: '415999', meaning: Unknown error, action: Contact account manager}
+uncoded_conflicts:
+- condition: partnerReference already in use
+  http: 409
+  note: Returned with a plain `message` and no reason code.
+- condition: Idempotency key already associated to another transaction
+  http: 409
+  note: Returned with a plain `message` and no reason code.
+shared_platform_codes:
+- {name: minimum_amount_not_met, http: 422}
+- {name: maximum_amount_exceeded, http: 422}
+- {condition: user already has an open withdrawal, http: 409}
+bearer_auth_failures:
+- {error: invalid_token, http: 401, cause: missing, expired or revoked token}
+- {error: insufficient_scope, http: 403, cause: token lacks the required scope}

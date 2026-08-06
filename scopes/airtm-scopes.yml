@@ -1,0 +1,91 @@
+generated: '2026-08-06'
+method: searched
+source: >-
+  https://api.enterprise.airtm.com/openapi.json (info.description — "OAuth 2.0 / OIDC Authorization"
+  and "Wallet Resource API" guides) plus the live discovery document
+  https://api.enterprise.airtm.com/oidc/.well-known/openid-configuration
+docs: https://docs.airtm.com/
+issuer: https://api.enterprise.airtm.com/oidc
+sandbox_issuer: https://api.stg.enterprise.airtm.com/oidc
+schemes:
+- name: Airtm OIDC
+  type: oauth2
+  source: docs + well-known/airtm-openid-configuration.json
+  pkce_required: true
+  pkce_methods: [S256]
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://api.enterprise.airtm.com/oidc/auth
+    tokenUrl: https://api.enterprise.airtm.com/oidc/token
+  - flow: clientCredentials
+    tokenUrl: https://api.enterprise.airtm.com/oidc/token
+  - flow: refreshToken
+    tokenUrl: https://api.enterprise.airtm.com/oidc/token
+    note: refresh tokens rotate on every use; replay of a consumed token revokes the whole grant.
+scopes:
+- scope: openid
+  description: Required for all authorization code flows. Returns an ID token.
+  kind: oidc
+  flows: [authorizationCode]
+  advertised_in_discovery: true
+- scope: email
+  description: Adds the email claim to the ID token.
+  kind: oidc
+  flows: [authorizationCode]
+  advertised_in_discovery: true
+- scope: profile
+  description: Adds name, given_name, family_name, preferred_username and updated_at claims to the ID token.
+  kind: oidc
+  flows: [authorizationCode]
+  advertised_in_discovery: true
+- scope: offline_access
+  description: >-
+    Requests a refresh token. Requires prompt=consent in the authorization request; without it the
+    scope is silently dropped.
+  kind: oidc
+  flows: [authorizationCode]
+  advertised_in_discovery: false
+- scope: wallet:read
+  description: Read the user's Airtm wallet balance, limits, and channel address (read-only). Grants GET /balance.
+  kind: resource
+  flows: [authorizationCode, clientCredentials]
+  advertised_in_discovery: false
+- scope: wallet:receive
+  description: >-
+    Create quotes and transactions that move funds INTO the user's Airtm wallet (deposits, funded by
+    the partner sending USDC on Stellar to a pooled Airtm address tagged with a per-transaction memo).
+  kind: resource
+  flows: [authorizationCode, clientCredentials]
+  advertised_in_discovery: false
+- scope: wallet:send
+  description: >-
+    Create quotes and transactions that move funds OUT of the user's Airtm wallet to an external
+    Stellar address, and confirm the per-transaction 2FA code. Every wallet:send transaction is
+    parked at pending_user_confirmation until the user confirms a one-time code.
+  kind: resource
+  flows: [authorizationCode, clientCredentials]
+  advertised_in_discovery: false
+- scope: kyc:status
+  description: Verify the user's identity status and retrieve their legal name and country. Grants GET /kyc.
+  kind: resource
+  flows: [authorizationCode, clientCredentials]
+  advertised_in_discovery: false
+enforcement:
+  missing_token: 401 with WWW-Authenticate Bearer error="invalid_token"
+  insufficient_scope: 403 with WWW-Authenticate Bearer error="insufficient_scope", scope="<required>"
+  unapproved_scope: >-
+    Scopes must be pre-approved per client at registration. Requesting an unapproved scope returns
+    error=invalid_scope before the user sees any consent screen.
+token_lifetimes:
+  access_token: 1h
+  id_token: 1h
+  authorization_code: 10m
+  refresh_token: 30d
+  client_credentials: 1h
+  session_cookie: 24h
+notes: >-
+  The discovery document advertises only the three standard OIDC scopes (openid, email, profile).
+  The four resource scopes (wallet:read, wallet:receive, wallet:send, kyc:status) are documented in
+  the Wallet Resource API guide but are NOT listed in scopes_supported — a client reading only the
+  well-known document would not discover them. Access tokens are opaque, not JWTs: resource servers
+  must call POST /oidc/token/introspection per request rather than verifying a signature locally.

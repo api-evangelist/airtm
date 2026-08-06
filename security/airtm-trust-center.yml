@@ -1,0 +1,30 @@
+generated: '2026-08-06'
+method: probed
+probe: true
+source: https://trust.airtm.com/
+url: https://trust.airtm.com/
+http_status: 200
+platform: Vanta Trust Center
+certifications: []
+certifications_verified: false
+evidence:
+- source: https://trust.airtm.com/
+  status: 200
+  observed: >-
+    Vanta-hosted trust report (assets.vanta.com bundle, data-slugid 1x4jbk23wvdq69ilj2dtx0, canonical
+    link to trust.airtm.com). Page title "Airtm Trust Center".
+- source: https://api.vanta.com/v1/trust-pages/1x4jbk23wvdq69ilj2dtx0
+  status: 401
+  observed: Vanta's data API rejects anonymous reads.
+limitation: >-
+  The trust center EXISTS and is live, but its control/certification list is fetched client-side from
+  Vanta's API, which returns 401 to an anonymous client. Every /api/* path on trust.airtm.com answers
+  200 with the SPA HTML shell (a catch-all), so a 200 there is not evidence of data. No named
+  certification (SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP, CSA STAR) could be verified without
+  requesting access, and none is asserted here.
+related_regulatory_posture:
+  registration: FinCEN Money Services Business
+  registration_number: '31000329787639'
+  entity: Airtm Inc. (Delaware, USA)
+  source: https://www.airtm.com/en/
+  note: A money-transmission registration, not an information-security certification.

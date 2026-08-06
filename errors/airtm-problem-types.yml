@@ -1,0 +1,68 @@
+generated: '2026-08-06'
+method: derived
+source: openapi/airtm-enterprise-v2-openapi.json, openapi/airtm-enterprise-v1-openapi.json (4xx/5xx and
+  default responses)
+format: proprietary
+rfc9457: false
+notes: Airtm's OpenAPI does not enumerate per-operation 4xx/5xx response objects. Every V2 operation declares
+  a single `default` response carrying the shared {code, message, data} error envelope; the V1 spec declares
+  no error responses at all. The real, human-published error surface is the reason-code registry captured
+  in errors/airtm-error-codes.yml — that is the artifact to read, not this one. This file records what
+  is machine-readable in the specs, which is the gap.
+envelope:
+  media_type: application/json
+  schema:
+    code: string (Airtm reason code)
+    message: string
+    data: object (optional)
+  required:
+  - code
+  - message
+problems:
+- status: default
+  description: Error
+  media_types:
+  - application/json
+  source_spec: openapi/airtm-enterprise-v2-openapi.json
+- status: '403'
+  description: Duplicated Code
+  media_types:
+  - application/json
+  source_spec: openapi/airtm-enterprise-v1-openapi.json
+- status: '500'
+  description: Internal Server Error
+  media_types:
+  - application/json
+  source_spec: openapi/airtm-enterprise-v1-openapi.json
+- status: '404'
+  description: Payout not found
+  media_types:
+  - application/graphql
+  source_spec: openapi/airtm-enterprise-v1-openapi.json
+- status: '400'
+  description: Payout is not in pending status.
+  media_types:
+  - application/json
+  source_spec: openapi/airtm-enterprise-v1-openapi.json
+- status: '422'
+  description: Unprocessable Entity
+  media_types:
+  - application/json
+  source_spec: openapi/airtm-enterprise-v1-openapi.json
+documented_http_statuses_outside_spec:
+- status: 400
+  meaning: Missing Idempotency-Key on POST /quotes or POST /transactions
+- status: 401
+  meaning: Unauthorized — bad Basic credentials, or Bearer invalid_token
+- status: 403
+  meaning: Forbidden — account permissions, or Bearer insufficient_scope
+- status: 409
+  meaning: Conflict — idempotency-key replay with a different body, duplicate partnerReference, open withdrawal,
+    wrong 2FA state
+- status: 422
+  meaning: Unprocessable — expired/mismatched quote, memo too long, amount window, invalid 2FA code
+- status: 429
+  meaning: Rate limit exceeded (10 rps per API key)
+- status: 503
+  meaning: User's 2FA settings could not be verified — retryable
+catalog: errors/airtm-error-codes.yml

@@ -1,0 +1,37 @@
+generated: '2026-08-06'
+method: generated
+source: >-
+  openapi/airtm-enterprise-v2-openapi.json (every operationId verified against the spec) plus the
+  Wallet Resource API guide in https://api.enterprise.airtm.com/openapi.json info.description
+skills:
+- file: airtm-single-payout.md
+  name: Send a single payout with Airtm
+  description: Verify a recipient, create a payout, commit it, and track it to a terminal state.
+  api: openapi/airtm-enterprise-v2-openapi.json
+  operations: [GetMe, GeBalance, GetUserByEmail, CreatePayout, CommitPayout, GetPayout, GetPayoutEvents, CancelPayout]
+- file: airtm-bulk-payout.md
+  name: Run a bulk payout with Airtm
+  description: Submit a batch of payouts, watch it through validation and processing, and reconcile per-payout results.
+  api: openapi/airtm-enterprise-v2-openapi.json
+  operations: [GeBalance, CreateBulkPayout, GetBulkPayout, ListBulkPayouts, GetPayout, ListPayouts]
+- file: airtm-collect-payin.md
+  name: Collect a payment with an Airtm payin
+  description: Create a hosted-checkout payin, redirect the payer, and confirm the outcome via webhooks.
+  api: openapi/airtm-enterprise-v2-openapi.json
+  operations: [CreatePayin, GetPayinById, GetPayinByCode, ListPayins, CancelPayin]
+- file: airtm-wallet-connect-transfer.md
+  name: Move funds in an Airtm user's wallet via OAuth (Connect)
+  description: >-
+    Run the PKCE authorization-code flow, quote, then execute a scoped wallet:receive or wallet:send
+    transaction with idempotency and per-transaction 2FA.
+  api: https://api.enterprise.airtm.com/api/connect/v1
+  operations: ['GET /balance', 'GET /kyc', 'POST /quotes', 'POST /transactions', 'POST /transactions/{transactionId}/2fa', 'POST /transactions/{transactionId}/2fa/resend']
+  note: The Wallet Resource API has no OpenAPI document, so these are documented paths rather than operationIds.
+- file: airtm-reporting-and-reconciliation.md
+  name: Generate and download an Airtm activity report
+  description: Request a report, poll it to completion, and fetch the time-limited download URL.
+  api: openapi/airtm-enterprise-v2-openapi.json
+  operations: [GenerateReport, ListReports, GetReport, GetReportFile, ListDeposits, GetDeposit, ListWithdrawals]
+provider_published_skills:
+  found: false
+  checked: ['https://www.airtm.com/llms.txt', 'https://docs.airtm.com/llms.txt', 'AGENTS.md in a public repo (Airtm has no public GitHub org)']
