@@ -39,64 +39,15 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 apis:
-- name: Airtm Enterprise API V2
-  description: >-
-    The current generation of the Airtm Enterprise Payments API. REST over HTTPS with HTTP Basic
-    authentication (API key + secret), covering payouts (two-step create/commit), bulk payouts,
-    payins with hosted checkout, deposits, withdrawals, external bank and crypto accounts, user
-    lookup, reports, API key management, and an embedded money-movement surface (senders, receivers,
-    quotes, transactions, payment-rail catalog). Ships 51 operations and 121 component schemas, and
-    declares eight webhook events delivered via Svix.
-  humanURL: https://docs.airtm.com/
-  baseURL: https://api.enterprise.airtm.com/v2
-  tags:
-  - payments
-  - payouts
-  - payins
-  - bulk-payouts
-  - cross-border-payments
-  - reporting
-  properties:
-  - type: OpenAPI
-    url: openapi/airtm-enterprise-v2-openapi.json
-  - type: Documentation
-    url: https://docs.airtm.com/
-  - type: APIReference
-    url: https://docs.airtm.com/
-  - type: Overlay
-    url: overlays/airtm-enterprise-v2-overlay.yaml
-  - type: Webhooks
-    url: asyncapi/airtm-webhooks.yml
-- name: Airtm Enterprise API V1
-  description: >-
-    The legacy first-generation Airtm payments API, still published as OpenAPI 3.1.0 and served from
-    the payments.air-pay.io host. Covers purchases/payins, payouts (including a one-step payout),
-    operations lookup, partner balance, bulk payments and account status across 18 operations.
-    Superseded by the V2 Enterprise API for new integrations.
-  humanURL: https://docs.airtm.com/
-  baseURL: https://payments.air-pay.io
-  tags:
-  - payments
-  - payouts
-  - payins
-  - bulk-payouts
-  - legacy
-  properties:
-  - type: OpenAPI
-    url: openapi/airtm-enterprise-v1-openapi.json
-  - type: Documentation
-    url: https://docs.airtm.com/
-  - type: Overlay
-    url: overlays/airtm-enterprise-v1-overlay.yaml
 - name: Airtm Wallet Resource (Connect) API
   description: >-
-    The OAuth 2.0 resource server that lets a partner application move USDC in and out of an
-    individual Airtm user's wallet on that user's behalf, read the wallet balance, and check KYC
-    status. Authorized with bearer access tokens issued by the Airtm OIDC authorization server and
-    gated per endpoint by the wallet:read, wallet:receive, wallet:send and kyc:status scopes.
-    Quotes and transactions require an Idempotency-Key header; every wallet:send transaction is
-    confirmed by the user with a one-time code. Documented in the Enterprise API reference; no
-    standalone machine-readable spec is published for it.
+    The OAuth 2.0 resource server that lets a partner application move USDC in and out of an individual
+    Airtm user's wallet on that user's behalf, read the wallet balance, and check KYC status. Authorized
+    with bearer access tokens issued by the Airtm OIDC authorization server and gated per endpoint by
+    the wallet:read, wallet:receive, wallet:send and kyc:status scopes. Quotes and transactions require
+    an Idempotency-Key header; every wallet:send transaction is confirmed by the user with a one-time
+    code. Documented in the Enterprise API reference; no standalone machine-readable spec is published
+    for it.
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/api/connect/v1
   tags:
@@ -113,7 +64,1679 @@ apis:
     url: scopes/airtm-scopes.yml
   - type: OpenIDConnect
     url: well-known/airtm-openid-configuration.json
+- aid: airtm:airtm-account-status-api
+  name: Airtm Account Status API
+  description: >-
+    ## Overview
+
+
+    The Account Status endpoint enables your organization to verify recipient account information before
+    initiating payments. This powerful verification tool helps prevent payment failures, reduces transaction
+    costs, and ensures smooth payment processing by validating recipient details and account capabilities
+    in advance.
+
+
+    ## What is Account Status Verification?
+
+
+    Account Status Verification allows you to check the current status and capabilities of any Airtm user
+    account by providing their email address. This pre-payment verification process helps identify potential
+    issues before processing transactions, improving success rates and reducing operational overhead.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Account Status
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-account-status-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-apikeys-api
+  name: Airtm API Keys API
+  description: The ApiKeys API from Airtm — 3 operation(s) for apikeys.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - ApiKeys
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-apikeys-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-bulk-payments-api
+  name: Airtm Bulk Payments API
+  description: >-
+    ## Overview
+
+
+    Bulk Payments enable your organization to process multiple payouts simultaneously through a single
+    API operation. This powerful feature is designed for businesses that need to send payments to large
+    numbers of recipients efficiently, such as payroll processing, affiliate commissions, contractor payments,
+    or distribution of rewards and bonuses.
+
+
+    ## What are Bulk Payments?
+
+
+    Bulk Payments allow you to upload a batch of payout instructions and process them all at once, rather
+    than making individual API calls for each payment. This approach offers significant advantages in
+    terms of efficiency, cost-effectiveness, and operational simplicity.
+
+
+    ### Key Features
+
+
+    - **High-Volume Processing** - Handle thousands of payments in a single operation
+
+    - **Asynchronous Processing** - Non-blocking operations that scale with your needs
+
+    - **Real-Time Progress Tracking** - Monitor batch processing status in real-time
+
+    - **Detailed Reporting** - Comprehensive success and failure reporting
+
+    - **Cost Efficiency** - Reduced API calls and processing overhead
+
+
+    ### Use Cases
+
+
+    - **Payroll Processing** - Monthly/weekly employee salary payments
+
+    - **Contractor Payments** - Freelancer and contractor compensation
+
+    - **Affiliate Commissions** - Partner and affiliate reward distribution
+
+    - **Prize Distribution** - Contest and promotion prize payments
+
+    - **Supplier Payments** - Vendor and supplier payment processing
+
+    - **Refund Processing** - Bulk customer refund operations
+
+
+    ## Bulk Payment Workflow
+
+
+    ### 1. Preparation Phase
+
+
+    - Validate recipient information
+
+    - Calculate total amounts and fees
+
+    - Ensure sufficient account balance
+
+
+    ### 2. Upload Phase
+
+
+    - Submit bulk payment request
+
+    - Receive batch ID for tracking
+
+    - System validates all entries
+
+    - Initial status: `pending`
+
+
+    ### 3. Processing Phase
+
+
+    - Individual payments are processed asynchronously
+
+    - Real-time status updates available
+
+    - Status changes to `running`
+
+    - Progress tracking via API
+
+
+    ### 4. Completion Phase
+
+
+    - All payments processed (success or failure)
+
+    - Final status: `done`
+
+    - Detailed reports available
+
+    - Success and failure breakdowns provided
+
+
+    ## Status Management
+
+
+    ### Bulk Payment Status Values
+
+
+    | Status    | Description                                                | Actions Available                         |
+
+    | --------- | ---------------------------------------------------------- | -----------------------------------------
+    |
+
+    | `pending` | The bulk payment was received but it has yet to be started | Cancel entire batch                       |
+
+    | `running` | Individual payments being processed                        | Monitor progress, cancel
+    pending payments |
+
+    | `done`    | All payments processed (success or failure)                | View reports, download
+    results            |
+
+    | `failed`  | An error occurred during processing                        | check the errors endpoint                 |
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Bulk Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-bulk-payments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-bulk-payouts-api
+  name: Airtm Bulk Payouts API
+  description: >-
+    # Bulk Payouts
+
+
+    Process multiple payouts efficiently in a single batch operation. Ideal for payroll, affiliate payments,
+    or mass distributions.
+
+
+    ## Overview
+
+
+    Bulk payouts allow you to submit hundreds or thousands of payout instructions and process them as
+    a coordinated batch, providing better performance and easier management than individual payouts.
+
+
+    ## How It Works
+
+
+    1. **Prepare** your payout data with recipient emails and amounts
+
+    2. **Submit** the bulk payout request
+
+    3. **Validation** - System validates all payouts and checks balance
+
+    4. **Processing** - Individual payouts are processed in parallel
+
+    5. **Track** progress and handle any failures
+
+
+    ## Validation Rules
+
+
+    ### Amount Validation
+
+
+    - Minimum amount: $0.01. If the recipient is a US resident, the minimum amount may be larger.
+
+    - Maximum 2 decimal places allowed
+
+    - Enterprise fee cannot equal or exceed payout amount (unless negative for bonuses)
+
+    - Airtm fee cannot equal or exceed net amount (amount - enterprise fee)
+
+
+    ### Data Validation
+
+
+    - Email addresses must be valid format and correspond to active Airtm accounts
+
+    - Notes field is required and cannot exceed 255 characters
+
+    - No malicious patterns allowed in text fields (SQL injection protection)
+
+    - URLs must be valid format when provided
+
+
+    ### Batch Validation
+
+
+    - No duplicate payouts within batch (based on email + amount + notes)
+
+    - Total batch amount cannot exceed available account balance
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Bulk Payouts
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-bulk-payouts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-deposits-api
+  name: Airtm Deposits API
+  description: >-
+    # Deposits
+
+
+    The Deposits API provides comprehensive tracking and management of funding transactions for your Airtm
+    Enterprise account. This endpoint enables you to monitor incoming funds, track deposit history, and
+    manage your account's funding sources for seamless payment operations.
+
+
+    ## Overview
+
+
+    Deposits represent incoming funds to your enterprise account from various sources including bank transfers,
+    wire transfers, and other funding methods. The API provides detailed tracking of these transactions,
+    enabling better cash flow management and financial reconciliation.
+
+
+    ## Key Features
+
+
+    - **Transaction Tracking**: Monitor all incoming fund deposits with detailed status information
+
+    - **Multi-Source Support**: Track deposits from various funding sources and payment methods
+
+    - **Real-time Status**: Get current deposit status and processing information
+
+    - **Historical Data**: Access complete deposit history with filtering and pagination
+
+    - **Metadata Access**: Retrieve detailed transaction information and processing details
+
+    - **Balance Integration**: Understand how deposits affect your account balance
+
+
+    ## How Deposits Work
+
+
+    ### Funding Process
+
+
+    1. **Initiate Funding**: Start a deposit through your preferred funding method
+
+    2. **Processing**: External payment systems process the incoming transfer
+
+    3. **Tracking**: Monitor deposit status through the API
+
+    4. **Completion**: Funds become available in your enterprise account
+
+    5. **Notification**: Receive confirmation of successful deposit
+
+    6. **Balance Update**: Account balance reflects the new funds
+
+
+    ### Deposit Sources
+
+
+    Deposits can originate from various sources:
+
+
+    - Bank wire transfers
+
+    - ACH transfers
+
+    - International bank transfers
+
+    - Partner funding arrangements
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Deposits
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-deposits-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-embedded-catalog-api
+  name: Airtm Embedded Catalog API
+  description: The Embedded Catalog API from Airtm — 1 operation(s) for embedded catalog.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Embedded Catalog
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-embedded-catalog-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-embedded-quotes-api
+  name: Airtm Embedded Quotes API
+  description: The Embedded Quotes API from Airtm — 1 operation(s) for embedded quotes.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Embedded Quotes
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-embedded-quotes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-embedded-receivers-api
+  name: Airtm Embedded Receivers API
+  description: The Embedded Receivers API from Airtm — 4 operation(s) for embedded receivers.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Embedded Receivers
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-embedded-receivers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-embedded-senders-api
+  name: Airtm Embedded Senders API
+  description: The Embedded Senders API from Airtm — 2 operation(s) for embedded senders.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Embedded Senders
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-embedded-senders-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-embedded-transactions-api
+  name: Airtm Embedded Transactions API
+  description: The Embedded Transactions API from Airtm — 2 operation(s) for embedded transactions.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Embedded Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-embedded-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-external-bank-account-api
+  name: Airtm External Bank Account API
+  description: >-
+    # External Bank Account
+
+
+    The external bank account API provides the capability to register an external bank account where you
+    can withdraw your funds to.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - External Bank Account
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-external-bank-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-external-crypto-account-api
+  name: Airtm External Crypto Account API
+  description: >-
+    # External Crypto Account
+
+
+    The external crypto account API provides the capability to register an external crypto account where
+    you can withdraw your funds to.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - External Crypto Account
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-external-crypto-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-me-api
+  name: Airtm Me API
+  description: >-
+    # Account Management
+
+
+    The Account Management API provides essential information about your Airtm Enterprise account, including
+    account details, balance information, and configuration settings. This endpoint serves as your primary
+    source for account status and financial data.
+
+
+    ## Overview
+
+
+    Account management functionality enables you to monitor your enterprise account status, check available
+    balances, and access important configuration details needed for payment processing. This information
+    is crucial for managing cash flow, monitoring transaction capacity, and ensuring smooth payment operations.
+
+
+    ## Key Features
+
+
+    - **Account Information**: Access enterprise account details and settings
+
+    - **Balance Monitoring**: Real-time balance information
+
+    - **Configuration Access**: Retrieve account settings and limits
+
+    - **Administrative Data**: Access enterprise-specific configuration details
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Me
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-me-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-operations-api
+  name: Airtm Operations API
+  description: >-
+    ## Overview
+
+
+    The Operations endpoint serves as the central hub for tracking all transaction-related activities
+    within the Airtm Enterprise ecosystem. This comprehensive endpoint consolidates information about
+    **Purchases**, **Pay-ins**, **Payouts**, and **Payments**, providing a unified view of all financial
+    movements between Airtm accounts.
+
+
+    ## What are Operations?
+
+
+    Operations represent any transaction that involves the movement of funds within the Airtm platform.
+    Every financial activity generates an operation record that can be tracked and monitored through this
+    endpoint.
+
+
+    ### Operation Types
+
+
+    | Type                   | Description                                    | Use Case                                    |
+
+    | ---------------------- | ---------------------------------------------- | -------------------------------------------
+    |
+
+    | **Purchases / Payins** | Payments made by users for products/services   | E-commerce transactions,
+    service payments   |
+
+    | **Payments / Payouts** | Outgoing payments from your enterprise account | Employee payments, contractor
+    fees, refunds |
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Operations
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-operations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-partner-api
+  name: Airtm Partner API
+  description: >-
+    ## Overview
+
+
+    The Partner endpoint provides essential information about your Airtm Enterprise account, including
+    account details, configuration settings, balance information, and operational status. This endpoint
+    serves as the central hub for managing your partner account and accessing critical business information.
+
+
+    ## What is a Partner Account?
+
+
+    A Partner account is your organization's primary interface with the Airtm Enterprise ecosystem. It
+    represents your business entity within the platform and contains all the necessary information for
+    API operations, financial transactions, and account management.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Partner
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-partner-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-payins-api
+  name: Airtm Payins API
+  description: >-
+    # Payins
+
+
+    The Payins API enables you to collect payments from users worldwide through their Airtm accounts.
+    This is ideal for e-commerce platforms, service providers, and any business that needs to accept payments
+    from customers across different countries and currencies.
+
+
+    ## Overview
+
+
+    Payins allow you to create payment requests that customers can fulfill using their Airtm account balance
+    or connected payment methods. The system handles currency conversion, fee calculation, and provides
+    a seamless checkout experience for your users.
+
+
+    ## Key Features
+
+
+    - **Global Payment Collection**: Accept payments from users in 190+ countries
+
+    - **Multiple Payment Methods**: Users can pay with Airtm balance, bank transfers, or connected payment
+    sources
+
+    - **Itemized Billing**: Support for multiple items with quantities and individual pricing
+
+    - **Automatic Currency Conversion**: Handle multiple currencies seamlessly
+
+    - **Secure Checkout**: Hosted payment pages with built-in security
+
+    - **Real-time Status Updates**: Track payment progress with webhooks and status polling
+
+    - **Mobile Optimized**: Responsive design works across all devices
+
+
+    ## How Payins Work
+
+
+    ### Payment Flow
+
+
+    1. **Create Payment Request**: Generate a payin with item details and amounts
+
+    2. **Redirect Customer**: Send customer to Airtm's secure checkout page
+
+    3. **Customer Authentication**: User logs into their Airtm account
+
+    4. **Payment Processing**: Customer completes payment using available methods
+
+    5. **Confirmation**: Receive real-time notification of payment status
+
+    6. **Fulfillment**: Deliver goods or services upon successful payment
+
+
+    ### Checkout Experience
+
+
+    Customers are redirected to a secure Airtm-hosted checkout page where they can:
+
+
+    - Review itemized billing and total amounts
+
+    - Select their preferred payment method
+
+    - Complete the transaction securely
+
+    - Receive confirmation and receipts
+
+
+    ## Checkout Integration
+
+
+    ### Redirect URL Structure
+
+
+    The checkout URL follows the pattern: `{baseUrl}/checkout/{id}`
+
+
+    Where:
+
+
+    - `baseUrl` is your environment's base URL
+
+    - `id` is the payin identifier returned from creation
+
+
+    ### Mobile Considerations
+
+
+    For mobile applications, configure redirection links to open in the device's default browser rather
+    than in-app web views. This ensures proper authentication flow and better user experience.
+
+
+    ### Callback URLs
+
+
+    Configure callback URLs to handle different payment outcomes:
+
+
+    - **Confirmation URL**: Where customers are redirected after successful payment
+
+    - **Failure URL**: Where customers go if payment fails
+
+    - **Cancel URL**: Where customers are sent if they cancel the payment
+
+
+    ## Item Management
+
+
+    ### Itemized Billing
+
+
+    Payins support detailed itemization with:
+
+
+    - Individual item descriptions
+
+    - Quantity and unit pricing
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Payins
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-payins-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-payments-payouts-api
+  name: Airtm Payments / Payouts API
+  description: >-
+    ## Overview
+
+
+    The Payouts endpoint enables your organization to send payments to recipients worldwide through the
+    Airtm platform. This powerful endpoint supports both individual and bulk payment processing, making
+    it ideal for paying employees, contractors, freelancers, vendors, or any other recipients who have
+    Airtm accounts.
+
+
+    ## What are Payouts?
+
+
+    Payouts represent outgoing payments from your enterprise account to recipient users. The payout process
+    is designed to be flexible, secure, and reliable, with multiple options for creating and managing
+    payments based on your specific needs.
+
+
+    ### Key Features
+
+
+    - **Two-Step or One-Step Processing** - Choose your preferred workflow
+
+    - **Real-Time Status Tracking** - Monitor payment progress instantly
+
+    - **Comprehensive Recipient Management** - Support for new and existing users
+
+    - **Webhook Integration** - Receive instant status notifications
+
+
+    ## Payment Processing Options
+
+
+    ### 1. Two-Step Process (Create + Commit)
+
+
+    **Best for:** Careful review and approval workflows
+
+
+    1. **Create Payout** - Generate payout instruction
+
+    2. **Review Details** - Verify recipient and amount information
+
+    3. **Commit Payout** - Execute the payment
+
+
+    ### 2. One-Step Process (Direct)
+
+
+    **Best for:** Automated systems and immediate processing
+
+
+    - **Create and Execute** - Single API call processes payment immediately
+
+    - **Streamlined Workflow** - Reduces API calls and complexity
+
+    - **Instant Processing** - Payment begins processing immediately
+
+
+    ## Status Management
+
+
+    ### Payout Status Values
+
+
+    | Status      | Final? | Description                                                      | Next Actions                |
+
+    | ----------- | ------ | ---------------------------------------------------------------- | ---------------------------
+    |
+
+    | `created`   | No     | Payout instruction created, awaiting commit                      | Call commit
+    endpoint        |
+
+    | `committed` | No     | Payout committed and queued for processing                       | Monitor
+    status updates      |
+
+    | `pending`   | No     | Awaiting recipient action (account creation, verification, etc.) | Wait for
+    recipient action   |
+
+    | `completed` | Yes    | Payment successfully delivered to recipient                      | None -
+    payment complete     |
+
+    | `canceled`  | Yes    | Payout canceled, funds returned to sender                        | None -
+    transaction reversed |
+
+    | `failed`    | Yes    | Payment failed due to processing error                           | Contact
+    support if needed   |
+
+
+    ### Detailed Status Descriptions
+
+
+    #### Created Status
+
+
+    - Payout instruction has been successfully created
+
+    - Funds are not yet committed from your account
+
+    - You can still modify or cancel the payout
+
+    - Must call commit endpoint to proceed
+
+
+    #### Committed Status
+
+
+    - Payout has been committed for processing
+
+    - Funds are placed in escrow
+
+    - Processing has begun but not yet completed
+
+    - Cannot be canceled once committed
+
+
+    #### Pending Status
+
+
+    The payout is waiting for recipient action:
+
+
+    - **New User:** Recipient needs to create an Airtm account
+
+    - **Verification Required:** Recipient exceeds $1,000 threshold and needs ID verification
+
+    - **US Recipients:** Must complete ID verification and configure payment method
+
+    - **Account Issues:** Recipient account may have restrictions
+
+
+    A pending payout can still be canceled before it is processed.
+
+
+    #### Completed Status
+
+
+    - Payment has been successfully processed
+
+    - Funds have been credited to recipient's account
+
+    - Final status - no further action needed
+
+    - Success webhook sent (if configured)
+
+
+    #### Canceled Status
+
+
+    - Payout was canceled before or during processing
+
+    - Funds have been returned to your account
+
+    - Can occur due to:
+      - Manual cancellation
+      - Recipient unable to receive funds
+      - Account restrictions
+      - Compliance issues
+
+    #### Failed Status
+
+
+    - Rare occurrence of processing failure
+
+    - Contact [enterprise@airtm.com](mailto:enterprise@airtm.com) for assistance
+
+    - May require manual intervention to resolve
+
+
+    ## Recipient Management
+
+
+    ### New Recipients
+
+
+    When sending to users who don't have Airtm accounts:
+
+
+    1. **Payout Created** - Payment is created with recipient email
+
+    2. **Email Notification** - Recipient receives invitation to join Airtm
+
+    3. **Account Creation** - Recipient creates Airtm account
+
+    4. **Payment Completion** - Funds are automatically credited
+
+
+    ### Existing Recipients
+
+
+    For users with existing Airtm accounts:
+
+
+    - Payments are typically processed faster
+
+    - Fewer verification requirements
+
+    - Direct credit to their account balance
+
+
+    ### Recipient Verification Requirements
+
+
+    #### $1,000+ Threshold
+
+
+    Recipients receiving amounts that bring their total inflow over $1,000 must:
+
+
+    - Complete ID verification
+
+    - Provide government-issued identification
+
+    - Verify personal information
+
+
+    #### US Recipients
+
+
+    All US-based recipients must:
+
+
+    - Complete ID verification regardless of amount
+
+    - Configure a valid payment method
+
+    - Meet additional compliance requirements
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Payments / Payouts
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-payments-payouts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-payouts-api
+  name: Airtm Payouts API
+  description: >-
+    # Payouts
+
+
+    Send money to recipients worldwide through their Airtm accounts. Payouts use a secure two-step process
+    to prevent accidental payments.
+
+
+    ## How Payouts Work
+
+
+    ### Two-Step Process
+
+
+    1. **Create** - Validates recipient and reserves funds
+
+    2. **Commit** - Actually sends the money
+
+
+    This prevents accidental payments and allows for approval workflows.
+
+
+    ### One-Step Option
+
+
+    Set `commit: true` when creating to skip the manual commit step for automated workflows.
+
+
+    ## Integration Workflows
+
+
+    ### Standard Two-Step
+
+
+    Create payout → Review details → Commit when approved
+
+
+    ### Automated Processing
+
+
+    Create with `commit: true` for immediate processing
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Payouts
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-payouts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-purchases-payins-api
+  name: Airtm Purchases / Payins API
+  description: >-
+    ## Overview
+
+
+    The Payins endpoint (also known as Purchases) enables your organization to accept payments from users
+    for products, services, or any other transactions. This endpoint is essential for e-commerce platforms,
+    service providers, and any business that needs to collect payments from customers through the Airtm
+    platform.
+
+
+    ## What are Payins?
+
+
+    Payins represent incoming payments to your enterprise account. When a user makes a purchase or payment
+    to your organization, it creates a payin operation that can be tracked and managed through this endpoint.
+
+
+    ### Key Features
+
+
+    - **Flexible Payment Processing** - Accept payments for various products and services
+
+    - **Multi-Currency Support** - Process payments in different currencies
+
+    - **Real-Time Status Updates** - Track payment progress in real-time
+
+    - **Secure Checkout Process** - Redirect users to secure Airtm payment pages
+
+    - **Webhook Integration** - Receive instant notifications on payment status changes
+
+    - **Reference Code Tracking** - Link payments to your internal order systems
+
+
+    ## Payment Flow
+
+
+    1. **Create Purchase** - Your system creates a purchase request with payment details
+
+    2. **User Checkout** - User is redirected to Airtm's secure checkout page
+
+    3. **Authentication** - User logs into their Airtm account to complete payment
+
+    4. **Processing** - Payment is processed and status updates are provided
+
+    5. **Completion** - Payment is completed and funds are transferred to your account
+
+
+    ## Status Management
+
+
+    ### Purchase Status Values
+
+
+    | Status      | Final? | Description                                       |
+
+    | ----------- | ------ | ------------------------------------------------- |
+
+    | `created`   | No     | Purchase created, awaiting user payment           |
+
+    | `confirmed` | Yes    | Payment completed successfully, funds transferred |
+
+    | `canceled`  | Yes    | User canceled the purchase, no funds transferred  |
+
+    | `failed`    | Yes    | Payment processing failed                         |
+
+
+    > [!TIP]
+
+    > Implement case-insensitive status comparisons in your code to handle potential variations.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Purchases / Payins
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-purchases-payins-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-reports-api
+  name: Airtm Reports API
+  description: >-
+    # Reports
+
+
+    Generate detailed financial reports for your Airtm Enterprise account. Reports provide transaction
+    data, audit trails, and downloadable CSV files for accounting and compliance.
+
+
+    ## How Reports Work
+
+
+    Reports are generated asynchronously to handle large datasets efficiently:
+
+
+    1. **Create** - Submit report request for specific month/year
+
+    2. **Monitor** - Check status until completed
+
+    3. **Download** - Get secure CSV file when ready
+
+
+    ## Report Types
+
+
+    ### Transaction Reports
+
+
+    Complete transaction data including all payouts and payins with amounts, fees, recipients, and status
+    information.
+
+
+    ### Audit Reports
+
+
+    Comprehensive audit trails including account balance changes, administrative actions, and system events.
+
+
+    ## Core Operations
+
+
+    ### Create Report
+
+
+    Generate a new report for a specific month and year. Reports are processed asynchronously.
+
+
+    ### List Reports
+
+
+    Get paginated list of your reports with filtering by type and status.
+
+
+    ### Get Report Details
+
+
+    Retrieve information about a specific report including generation status and metadata.
+
+
+    ### Download Report File
+
+
+    Get secure download URL for completed reports. URLs expire after 1 hour for security.
+
+
+    ## Report Statuses
+
+
+    | Status       | Description        | Next Steps          |
+
+    | ------------ | ------------------ | ------------------- |
+
+    | `PENDING`    | Report queued      | Wait for processing |
+
+    | `PROCESSING` | Being generated    | Monitor status      |
+
+    | `COMPLETED`  | Ready for download | Download file       |
+
+    | `FAILED`     | Generation failed  | Check error, retry  |
+
+
+    ## Report Contents
+
+
+    ### CSV Format
+
+
+    Reports include comprehensive data with columns for transaction IDs, types, statuses, amounts, fees,
+    recipients, and timestamps.
+
+
+    ### Data Scope
+
+
+    - All transactions for the specified month
+
+    - Complete fee breakdowns
+
+    - Currency conversion details
+
+    - Compliance and regulatory information
+
+
+    ## Best Practices
+
+
+    - Generate reports during off-peak hours when possible
+
+    - Use monthly ranges for better performance
+
+    - Download reports immediately after completion
+
+    - Implement proper retry logic for failed generations
+
+    - Store downloaded reports securely
+
+
+    ## Common Issues
+
+
+    **Report Stuck in Pending**
+
+
+    - Check for high system load
+
+    - Contact support if stuck over 30 minutes
+
+
+    **Empty Reports**
+
+
+    - Verify transactions exist for the date range
+
+    - Check timezone settings
+
+
+    **Download URL Expired**
+
+
+    - Generate new download URL
+
+    - URLs expire after 1 hour
+
+
+    ## Error Handling
+
+
+    - **Report Not Found (415042)**: Check report ID
+
+    - **Report Not Completed (415044)**: Wait for processing to finish
+
+    - **Invalid Parameters (415054)**: Verify month/year values
+
+
+    For complete error reference, see [Reason Codes](#description/reason-codes).
+
+
+    ## Getting Started
+
+
+    1. Set up [authentication](#description/authentication)
+
+    2. Test report generation in sandbox
+
+    3. Implement status monitoring
+
+    4. Set up secure file download
+
+
+    ## Related Resources
+
+
+    - [Payouts](#tag/payouts) - Transaction data included in reports
+
+    - [Account Management](#tag/me) - Check account details
+
+    - [Error Codes](#description/reason-codes) - Troubleshoot issues
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Reports
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-reports-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-users-api
+  name: Airtm Users API
+  description: >-
+    # Users
+
+
+    The Users API provides essential user management capabilities for your Airtm Enterprise integration.
+    This endpoint allows you to verify recipient information, check account status, and ensure successful
+    payout delivery before initiating transactions.
+
+
+    ## Overview
+
+
+    User verification is a critical step in the payout process that helps prevent failed transactions,
+    reduces processing delays, and improves overall payment success rates. The API provides comprehensive
+    user information including account status, verification level, and eligibility for receiving payments.
+
+
+    ## Key Features
+
+
+    - **User Verification**: Validate recipient accounts before creating payouts
+
+    - **Status Checking**: Determine if users can receive payments
+
+    - **Account Details**: Access user profile information and verification status
+
+    - **Eligibility Validation**: Confirm compliance and geographic restrictions
+
+    - **Real-time Data**: Get current user status and account information
+
+
+    ## Why Verify Users
+
+
+    ### Prevent Failed Payouts
+
+
+    Verifying users before creating payouts helps identify potential issues early:
+
+
+    - Inactive or suspended accounts
+
+    - Unverified users who cannot receive payments
+
+    - Geographic restrictions or compliance issues
+
+    - Account limitations or restrictions
+
+
+    ### Improve Success Rates
+
+
+    Pre-verification significantly improves payout success rates by:
+
+
+    - Ensuring recipients can actually receive payments
+
+    - Identifying verification requirements in advance
+
+    - Confirming account status before reserving funds
+
+    - Reducing processing delays and failures
+
+
+    ### Better User Experience
+
+
+    User verification enables better customer service:
+
+
+    - Provide clear error messages for invalid recipients
+
+    - Guide users through account setup requirements
+
+    - Offer alternative solutions for ineligible recipients
+
+    - Reduce failed payment frustrations
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-users-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-webhooks-api
+  name: Airtm Webhooks API
+  description: >-
+    Webhooks are how services notify each other of events.
+
+
+    At their core they are just a POST request to a pre-determined endpoint.
+
+    The endpoint can be whatever you want, and you can just add them from the UI.
+
+    You normally use one endpoint per service, and that endpoint listens to all of the event types.
+
+
+    For example, if you receive webhooks from Airtm, you can structure your URL like: `https://www.example.com/webhooks/airtm`.
+
+
+    The way to indicate that a webhook has been processed is by returning a 2xx (status code 200-299)
+    response to the webhook message within a reasonable time-frame (15s).
+
+
+    It's also important to disable CSRF protection for this endpoint if the framework you use enables
+    them by default.
+
+
+    Another important aspect of handling webhooks is to verify the signature and timestamp when processing
+    them.
+
+
+    You can learn more about it in the signature verification section.
+
+
+    # Adding an Endpoint
+
+
+    In order to start listening to messages, you will need to configure your endpoints.
+
+
+    Adding an endpoint is as simple as providing a URL that you control and selecting the event types
+    that you want to listen to. You can do this by navigating to the "Webhooks" section in the [enterprise
+    dashboard](https://enterprise.airtm.com/settings/webhooks).
+
+
+    If you don't specify any event types, by default, your endpoint will receive all events, regardless
+    of type.
+
+
+    This can be helpful for getting started and for testing, but we recommend changing this to a subset
+    later on to avoid receiving extraneous messages.
+
+
+    If your endpoint isn't quite ready to start receiving events, you can press the "with Svix Play" button
+    to have a unique URL generated for you.
+
+
+    You'll be able to view and inspect webhooks sent to your Svix Play URL, making it effortless to get
+    started.
+
+
+    # Testing Endpoints
+
+
+    Once you've added an endpoint, you'll want to make sure its working.
+
+
+    The "Testing" tab lets you send test events to your endpoint.
+
+
+    After sending an example event, you can click into the message to view the message payload, all of
+    the message attempts, and whether it succeeded or failed.
+
+
+    # Verifying Signatures
+
+
+    Webhook signatures let you verify that webhook messages are actually sent by us and not a malicious
+    actor.
+
+
+    For a more detailed explanation, check out this article on [why you should verify webhooks](https://docs.svix.com/receiving/verifying-payloads/why).
+
+
+    Our webhook partner Svix offers a set of useful libraries that make verifying webhooks very simple.
+    Here is a an example using Javascript:
+
+
+    ```javascript
+
+    import { Webhook } from 'svix';
+
+
+    const secret = 'whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw';
+
+
+    // These were all sent from the server
+
+    const headers = {
+      'svix-id': 'msg_p5jXN8AQM9LWM0D4loKWxJek',
+      'svix-timestamp': '1614265330',
+      'svix-signature': 'v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=',
+    };
+
+    const payload = '{"test": 2432232314}';
+
+
+    const wh = new Webhook(secret);
+
+    // Throws on error, returns the verified content on success
+
+    const payload = wh.verify(payload, headers);
+
+    ```
+
+
+    For more instructions and examples of how to verify signatures, check out their [webhook verification
+    documentation](https://docs.svix.com/receiving/verifying-payloads/how).
+
+
+    # Retries
+
+
+    We attempt to deliver each webhook message based on a retry schedule with exponential backoff.
+
+
+    ## The schedule
+
+
+    Each message is attempted based on the following schedule, where each period is started following
+    the failure of the preceding attempt:
+
+
+    - Immediately
+
+    - 5 seconds
+
+    - 5 minutes
+
+    - 30 minutes
+
+    - 2 hours
+
+    - 5 hours
+
+    - 10 hours
+
+    - 10 hours (in addition to the previous)
+
+
+    If an endpoint is removed or disabled delivery attempts to the endpoint will be disabled as well.
+
+
+    For example, an attempt that fails three times before eventually succeeding will be delivered roughly
+    35 minutes and 5 seconds following the first attempt.
+
+
+    ## Manual retries
+
+
+    You can also use the application portal to manually retry each message at any time, or automatically
+    retry ("Recover") all failed messages starting from a given date.
+
+
+    # Troubleshooting Tips
+
+
+    There are some common reasons why your webhook endpoint is failing:
+
+
+    ## Not using the raw payload body
+
+
+    This is the most common issue. When generating the signed content, we use the raw string body of the
+    message payload.
+
+
+    If you convert JSON payloads into strings using methods like stringify, different implementations
+    may produce different string representations of the JSON object, which can lead to discrepancies when
+    verifying the signature. It's crucial to verify the payload exactly as it was sent, byte-for-byte
+    or string-for-string, to ensure accurate verification.
+
+
+    ## Missing the secret key
+
+
+    From time to time we see people simple using the wrong secret key. Remember that keys are unique to
+    endpoints.
+
+
+    ## Sending the wrong response codes
+
+
+    When we receive a response with a 2xx status code, we interpret that as a successful delivery even
+    if you indicate a failure in the response payload. Make sure to use the right response status codes
+    so we know when message are supposed to succeed vs fail.
+
+
+    ## Responses timing out
+
+
+    We will consider any message that fails to send a response within 15 seconds a failed message. If
+    your endpoint is also processing complicated workflows, it may timeout and result in failed messages.
+
+
+    We suggest having your endpoint simply receive the message and add it to a queue to be processed asynchronously
+    so you can respond promptly and avoiding getting timed out.
+
+
+    # Failure Recovery
+
+
+    ## Re-enable a disabled endpoint
+
+
+    If all attempts to a specific endpoint fail for a period of 5 days, the endpoint will be disabled.
+    To re-enable a disabled endpoint, go to the webhook dashboard, find the endpoint from the list and
+    select "Enable Endpoint".
+
+
+    ## Recovering/Resending failed messages
+
+
+    If your service has downtime or if your endpoint was misconfigured, you probably want to recover any
+    messages that failed during the downtime.
+
+
+    If you want to replay a single event, you can find the message from the UI and click the options menu
+    next to any of the attempts.
+
+
+    From there, click "resend" to have the same message send to your endpoint again.
+
+
+    If you need to recover from a service outage and want to replay all the events since a given time,
+    you can do so from the Endpoint page. On an endpoint's details page, click "Options > Recover Failed
+    Messages".
+
+
+    From there, you can choose a time window to recover from.
+
+
+    For a more granular recovery - for example, if you know the exact timestamp that you want to recover
+    from - you can click the options menu on any message from the endpoint page.
+
+
+    From there, you can click "Replay..." and choose to "Replay all failed messages since this time."
+
+
+    # IP Addresses
+
+
+    Webhooks are sent from the following IP addresses:
+
+
+    - `44.228.126.217`
+
+    - `50.112.21.217`
+
+    - `52.24.126.164`
+
+    - `54.148.139.208`
+
+    - `2600:1f24:64:8000::/56`
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-webhooks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-withdrawals-api
+  name: Airtm Withdrawals API
+  description: >-
+    # Withdrawals
+
+
+    The withdrawals API provides the capability to withdraw your funds to a previously registered external
+    account (Bank or Crypto)
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/v2
+  tags:
+  - Withdrawals
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-withdrawals-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
 common:
+- type: Overlay
+  url: overlays/airtm-enterprise-v1-overlay.yaml
 - type: Website
   url: https://www.airtm.com/
 - type: DeveloperPortal
