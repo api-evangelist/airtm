@@ -1,0 +1,80 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V1 Operations API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Operations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List operations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iooperations",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "An operation is an abstraction of the more specific entities: purchase\nand payout. Operations are used when referring to all of the\ntransactions within an account. This schema also applies to the other\nresponses under `/operations`.\n"
+        },
+        {
+          "info": {
+            "name": "Get operation detail",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iooperations/:operationId",
+            "params": [
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint will return an operation corresponding to the specified\nID. Fields may differ depending on `operation_type` field, which can be\n`purchase` or `payout`. For payout operations, the status included in\nthe response can be either `committed` or `completed` depending on\nwether the payout execution has finished or still being carried out.\nCommitted status will eventually move to completed. Completed payouts\nwill populate the `airtm_operation_hash` related to the completed\ntransaction\n"
+        },
+        {
+          "info": {
+            "name": "Get operation by code",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iocode/:code",
+            "params": [
+              {
+                "name": "code",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint will return an operation corresponding to the specified\n`code` used to create a payout.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

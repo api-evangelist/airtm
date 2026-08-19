@@ -1,0 +1,101 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Embedded Transactions API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Embedded Transactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/transactions",
+            "params": [
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Gets results before the specified cursor."
+              },
+              {
+                "name": "after",
+                "value": "",
+                "type": "query",
+                "description": "Gets results after the specified cursor."
+              },
+              {
+                "name": "perPage",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of items to fetch."
+              },
+              {
+                "name": "senderId",
+                "value": "",
+                "type": "query",
+                "description": "Filter transactions by sender id."
+              },
+              {
+                "name": "order",
+                "value": "",
+                "type": "query",
+                "description": "Sort by transaction creation date."
+              }
+            ]
+          },
+          "docs": "List partner transactions with cursor-based pagination."
+        },
+        {
+          "info": {
+            "name": "Create transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/transactions",
+            "headers": [
+              {
+                "name": "idempotency-key",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a transaction for an embedded payment using a locked-in quote.\nReturns the transaction record and deposit instructions for the sender."
+        },
+        {
+          "info": {
+            "name": "Get transaction by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/transactions/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The transaction id."
+              }
+            ]
+          },
+          "docs": "Get an embedded transaction by id (scoped to the authenticated partner)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

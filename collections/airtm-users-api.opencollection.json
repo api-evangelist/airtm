@@ -1,0 +1,42 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Users API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get user details by email.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/users/:email",
+            "params": [
+              {
+                "name": "email",
+                "value": "",
+                "type": "path",
+                "description": "The email of the user to retrieve"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Retrieve the current status of any user's account by email.\n\n> [!important]\n> The email parameter should be [URL Encoded](https://www.w3schools.com/tags/ref_urlencode.ASP)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

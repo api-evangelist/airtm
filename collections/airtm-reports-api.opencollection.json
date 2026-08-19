@@ -1,0 +1,134 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Reports API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Reports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Reports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/reports",
+            "params": [
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Gets results before the specified cursor."
+              },
+              {
+                "name": "after",
+                "value": "",
+                "type": "query",
+                "description": "Gets results after the specified cursor."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "The type of report to filter by"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "The status to filter by"
+              },
+              {
+                "name": "perPage",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of items to fetch."
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "List existing reports"
+        },
+        {
+          "info": {
+            "name": "Create a Report",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/reports",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Generate a new report for a given year/month.\n\nTo get a PDF or CSV report, you must first request its generation if it does not already exist.\nTo do so, you must provide the year and month"
+        },
+        {
+          "info": {
+            "name": "Get Report Details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/reports/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The report's id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Get Report Details"
+        },
+        {
+          "info": {
+            "name": "Get Report File",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/reports/:id/file",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The report's id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Get a report file"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

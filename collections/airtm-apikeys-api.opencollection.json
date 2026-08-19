@@ -1,0 +1,122 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 API Keys API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ApiKeys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List api keys.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/api-keys",
+            "params": [
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Gets results before the specified cursor."
+              },
+              {
+                "name": "after",
+                "value": "",
+                "type": "query",
+                "description": "Gets results after the specified cursor."
+              },
+              {
+                "name": "perPage",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of items to fetch."
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Endpoint to list all api keys associated with your account."
+        },
+        {
+          "info": {
+            "name": "Create api keys.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/api-keys",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Endpoint to create new api keys for your account."
+        },
+        {
+          "info": {
+            "name": "Revoke an API key.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.enterprise.airtm.com/v2/api-keys/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The API key id."
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Revoke an existing API key."
+        },
+        {
+          "info": {
+            "name": "Toggle an allowed IP for an API key.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/api-keys/:id/allowed-ips",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The API key id."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Toggle an IPv4 address on this API key's allowlist. If the IP is already\nallowed, it is removed; otherwise it is added. Returns the resulting\nallowlist."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

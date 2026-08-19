@@ -1,0 +1,666 @@
+openapi: 3.2.0
+info:
+  title: Airtm Enterprise API V1 Purchases / Payins API
+  version: 1.0.0
+  description: "## Introduction\n\nWelcome to Airtm's Enterprise Payments API - a comprehensive solution for programmatic payment processing that enables organizations worldwide to send and receive payments efficiently and securely.\n\n### What is Airtm Enterprise API?\n\nAirtm's Payments API empowers organizations of all sizes to:\n\n- **Receive payments** from users globally\n- **Distribute payments** in bulk or individually\n- **Pay employees, contractors, and freelancers** worldwide\n- **Process donations** and other payment types\n- **Manage cross-border transactions** with ease\n\n### Getting Started\n\nIf you have a business or non-profit and would like to partner with Airtm, please contact our Airtm Partnerships team to set up your Airtm Enterprise Partner account.\n\n**[Contact Airtm Partnerships Team →](https://airtm-product.typeform.com/to/ggXbsJpl?typeform-source=api-docs)**\n\n> [!TIP]\n> Once you have an Airtm Enterprise Account, you can create your API keys in your Account Settings.\n\n**[Airtm Account Settings →](https://app.airtm.com/settings/apps)**\n\n\n---\n\n## Authentication\n\n### Basic Authentication\n\nEvery request to the Airtm Payments API requires proper authentication to identify the partner making the request.\n\n**Authentication Method:** HTTP Basic Authorization\n\n- **Username:** Your Partner ID (API Key)\n- **Password:** Your Partner Secret (Secret Key)\n\n#### Manual Header Composition\n\nTo compose the authorization header manually:\n\n1. Combine your credentials: `<API_Key>:<Secret_Key>`\n2. Base64 encode the string\n3. Add the header: `Authorization: Basic <encoded_string>`\n\n**Example:**\n\n```\nPartner ID: 123\nSecret: abc\nCombined: 123:abc\nBase64 Encoded: MTIzOmFiYw==\nHeader: Authorization: Basic MTIzOmFiYw==\n```\n\n> [!NOTE]\n> Most API clients handle Basic Auth encoding automatically when you select \"Basic Auth\" authentication.\n\n#### Environment-Specific Keys\n\n- **Production API keys** cannot be used in the Sandbox environment\n- **Sandbox API keys** are required for testing and development\n- Contact your Airtm representative or [enterprise@airtm.com](mailto:enterprise@airtm.com) for Sandbox API keys\n\n### Security Best Practices\n\n- ✅ Store credentials securely on private servers only\n- ✅ Use HTTPS for all API communications\n- ✅ Never share access credentials\n- ✅ Implement proper credential rotation policies\n- ❌ Never connect to Airtm directly from client-side applications\n- ❌ Never expose credentials in public repositories or logs\n\n\n---\n\n## API Environments\n\nAirtm provides two environments for development and production use:\n\n| Environment    | Base URL                                      | Purpose                 |\n| -------------- | --------------------------------------------- | ----------------------- |\n| **Sandbox**    | `https://payments.static-stg.tests.airtm.org` | Testing and development |\n| **Production** | `https://api.enterprise.airtm.com`            | Live transactions       |\n\n### Callback IP Addresses\n\nWhen implementing webhooks, whitelist these IP addresses to receive callbacks:\n\n#### Sandbox Environment\n\n- `3.229.5.186`\n- `3.229.158.255`\n- `52.72.100.238`\n- `18.207.25.189`\n- `100.25.93.6`\n- `44.206.130.250`\n\n#### Production Environment\n\n- `34.223.198.111`\n- `34.223.166.175`\n- `34.223.169.181`\n- `35.155.119.51`\n\n\n---\n\n## Request Format\n\n### Required Headers\n\nAll API requests must include these headers:\n\n```http\nContent-Type: application/json\nAuthorization: Basic <your_base64_encoded_credentials>\n```\n\n### Request Example\n\n```http\nPOST /api/v1/payouts\nContent-Type: application/json\nAuthorization: Basic MTIzOmFiYw==\n\n{\n  \"amount\": 100.00,\n  \"currency\": \"USD\",\n  \"recipient\": \"user@example.com\",\n  \"description\": \"Payment for services\"\n}\n```\n\n\n---\n\n## Rate Limits\n\n### Current Limits\n\n- **Rate Limit:** 10 requests per second per partner\n- **Response Code:** `429 Too Many Requests` when limit exceeded\n- **Retry Strategy:** Implement exponential backoff\n\n### Requesting Higher Limits\n\nIf your use case requires higher rate limits, please contact [enterprise@airtm.com](mailto:enterprise@airtm.com) with:\n\n- Current usage patterns\n- Expected request volume\n- Business justification\n\n\n---\n\n## Error Handling\n\n### Standard HTTP Status Codes\n\n| Code  | Status                | Description                   |\n| ----- | --------------------- | ----------------------------- |\n| `200` | OK                    | Request successful            |\n| `201` | Created               | Resource created successfully |\n| `400` | Bad Request           | Invalid request format        |\n| `401` | Unauthorized          | Authentication required       |\n| `403` | Forbidden             | Access denied                 |\n| `404` | Not Found             | Resource not found            |\n| `429` | Too Many Requests     | Rate limit exceeded           |\n| `500` | Internal Server Error | Server error                  |\n\n### Error Response Format\n\n```json\n{\n  \"error\": {\n    \"code\": \"415001\",\n    \"message\": \"Detailed error description\",\n    \"details\": {\n      \"field\": \"specific_field_error\"\n    }\n  }\n}\n```\n\n\n---\n\n## Reason Codes Reference\n\n| Code     | Description                                                                   |\n| -------- | ----------------------------------------------------------------------------- |\n| `415003` | Error reaching external service                                               |\n| `415005` | Payout not found                                                              |\n| `415006` | No API keys configured                                                        |\n| `415008` | Recipient address not active                                                  |\n| `415009` | Recipient address inactive                                                    |\n| `415010` | User deleted or banned                                                        |\n| `415011` | Invalid file upload                                                           |\n| `415012` | Duplicate payouts detected                                                    |\n| `415013` | Bulk payout not in pending status                                             |\n| `415014` | Insufficient balance                                                          |\n| `415015` | Daily limit exceeded ($250,000)                                               |\n| `415016` | Insufficient balance for payout                                               |\n| `415017` | Cannot reject bulk payout                                                     |\n| `415019` | Bulk payout not finished                                                      |\n| `415022` | Must empty balance before account deletion                                    |\n| `415024` | Maximum API keys reached                                                      |\n| `415025` | API key not found                                                             |\n| `415027` | Payout already processed                                                      |\n| `415028` | Enterprise account required                                                   |\n| `415029` | Payin code already exists                                                     |\n| `415030` | Cannot confirm or cancel payin                                                |\n| `415031` | Payin not found                                                               |\n| `415032` | Payin already completed                                                       |\n| `415034` | User insufficient balance                                                     |\n| `415035` | Payout amount too small                                                       |\n| `415036` | No active payment provider                                                    |\n| `415039` | Operation not found                                                           |\n| `415041` | Bulk payout not found                                                         |\n| `415042` | Statement not found                                                           |\n| `415043` | Statement not pending                                                         |\n| `415044` | Statement not completed                                                       |\n| `415045` | Deposit account type exists                                                   |\n| `415046` | Country not supported                                                         |\n| `415047` | Insufficient balance for withdrawal                                           |\n| `415048` | Invalid payment rail                                                          |\n| `415049` | Bridge account not found                                                      |\n| `415050` | Invalid crypto payment rail                                                   |\n| `415051` | Crypto wallet not found                                                       |\n| `415053` | US users cannot make payins                                                   |\n| `415054` | Invalid sort field                                                            |\n| `415055` | Cannot cancel non-pending payout                                              |\n| `415056` | Payout code already exists                                                    |\n| `415057` | Payout exceeds maximum limit                                                  |\n| `415058` | Payout below minimum limit                                                    |\n| `415059` | Recipient not found                                                           |\n| `415060` | Recipient cannot receive payouts                                              |\n| `415061` | Recipient from restricted territory                                           |\n| `415062` | Invalid recipient payment method                                              |\n| `415064` | Invalid recipient payment method                                              |\n| `415065` | User has violated the AML policy                                              |\n| `415073` | The payment provider could not deliver the funds to the user's payment method |\n| `415103` | User is missing required information                                          |\n| `415912` | Waiting for recipient to create an Airtm account                              |\n| `415901` | Invalid request format                                                        |\n| `415902` | Item not found                                                                |\n| `415903` | Request cannot be processed                                                   |\n| `415904` | Unauthorized request                                                          |\n| `415905` | Insufficient permissions                                                      |\n| `415906` | Invalid request                                                               |\n| `415998` | Unexpected error                                                              |\n| `415999` | Unknown error                                                                 |\n\n\n---\n\n## Next Steps\n\n1. **Set up your account** - Contact partnerships team\n2. **Get API credentials** - Generate keys in your settings\n3. **Test in Sandbox** - Use sandbox environment for development\n4. **Implement authentication** - Set up Basic Auth\n5. **Start with simple operations** - Begin with basic payouts or payins\n6. **Add error handling** - Implement proper error handling\n7. **Go live** - Switch to production environment\n\n## Support\n\nFor technical support, integration questions, or account issues:\n\n- **Email:** [enterprise@airtm.com](mailto:enterprise@airtm.com)\n- **Documentation:** This API documentation\n- **Status Page:** [Monitor API status and uptime](https://status.airtm.com/)\n\n\n---\n\n## Frequently Asked Questions\n\n### API Credentials\n\n#### Generating API Credentials (API Key & Secret)\n\n1. Log in to your Airtm Enterprise account\n2. Go to: **Settings → Payments API**\n3. Generate your credentials\n\n> ⚠️ **Important**: Credentials are displayed only once—store them securely.\n\n#### Key Considerations\n\n- **One credential per account**: Only one API credential can be generated per Enterprise account\n- **Role requirements**: Only users with Owner or Admin roles can access this feature\n\n---\n\n### Getting Started with the API\n\n#### Scope of the Airtm API\n\n✅ **The Airtm API enables:**\n\n- Initiating payments from an Enterprise account to Airtm users\n- Retrieving account balances and transaction history\n- Verifying the status of user accounts\n- Accessing detailed transaction information\n\n❌ **Not supported:**\n\n- P2P functionality\n- Card operations\n- Third-party bulk account creation\n\n#### Supported Regions\n\n\U0001F30D Airtm operates globally, but certain jurisdictions are restricted.\n→ [Check the list of unsupported regions](https://help.airtm.com/en/support/solutions/articles/47001177565-where-are-airtm-s-products-and-services-available-)\n\n#### iFrames & Embedded Pages\n\n\U0001F6AB Embedding Airtm pages via iframes is not supported due to security policies.\n\n#### IP Addresses & Whitelisting\n\n\U0001F512 → [Current server IPs are listed here](#description/api-environments)\n\n- Whitelisting Airtm IPs for callbacks is recommended but not mandatory\n\n#### Currency & Payment Methods\n\n- **Currency**: All API operations are denominated in USD (USDC)\n- **Currency conversion**: If needed, it must be handled on the Enterprise side\n- **Supported transactions**: The Airtm API supports transactions only between Airtm accounts\n- **Not supported**: Card, e-wallet, and crypto payments\n- **Exact matching**: The amount and currency must match the API request exactly\n\n---\n\n### Sandbox & Production Environments\n\n#### Sandbox (Testing) Environment\n\n| **Parameter**        | **Value**                                                                 |\n| -------------------- | ------------------------------------------------------------------------- |\n| **Host**             | `https://payments.static-stg.tests.airtm.org`                             |\n| **Enterprise Login** | [Sandbox Portal](https://stg.enterprise.airtm.com)                        |\n| **Documentation**    | [Sandbox Documentation](https://api.stg.enterprise.airtm.com/docs?api=v1) |\n\n##### Available Endpoints:\n\n- **Deposits (Pay-ins)**: `/purchases`\n- **Withdrawals (Payouts)**: `/payouts`\n- **Bulk Payments**: `/bulk-payments`\n\n##### Test Accounts:\n\n- Test accounts can be created manually (at least two are needed — one for initiating and one for receiving transactions)\n- Temporary sandbox accounts can also be requested through the Airtm Onboarding or Account Manager\n- Test funds may be requested from the assigned Airtm manager for use in the sandbox environment\n\n#### Production Environment\n\n| **Parameter**        | **Value**                                                                |\n| -------------------- | ------------------------------------------------------------------------ |\n| **Host**             | `https://payments.air-pay.io`                                            |\n| **Enterprise Login** | [Live Portal](https://enterprise.airtm.com)                              |\n| **Documentation**    | [Production Documentation](https://api.enterprise.airtm.com/docs?api=v1) |\n\n> ⚠️ **Important**: Make sure to switch to `payments.air-pay.io` when going live.\n\n---\n\n### Callbacks & Notifications\n\nDuring integration, specify a callback URL to receive notifications when a transaction status changes.\n\n#### Supported Operations\n\nCallbacks are available for:\n\n- **Purchases (Pay-ins)**\n- **Payouts (Withdrawals)**\n- **Bulk Payments**\n\n> \U0001F4DD **Note**: The callback URL must be set during the integration process.\n\n#### Example: Payout Callback Payload\n\n```json\n{\n  \"id\": \"f8dd11dd-12fe-42f7-8e5c-9035714dd43d\",\n  \"code\": null,\n  \"amount\": \"200.00\",\n  \"status\": \"completed\",\n  \"cancel_uri\": null,\n  \"created_at\": \"2021-01-30T07:47:01.055Z\",\n  \"partner_id\": \"4c41f826-115f-40d6-b34c-2a5885e51d27\",\n  \"updated_at\": \"2021-01-30T07:47:02.061Z\",\n  \"description\": \"Some description provided by the partner\",\n  \"failure_uri\": \"https://example.com/123/failure\",\n  \"airtm_user_id\": \"119500e5-094f-4020-beb4-69f5b6f32ee7\",\n  \"failure_reason\": null,\n  \"operation_type\": \"payout\",\n  \"airtm_user_email\": \"useremail@hotmail.com\",\n  \"confirmation_uri\": \"https://example.com/123/confirmed\",\n  \"airtm_operation_id\": \"cfcd89bd-f3e7-4525-af61-83d906e5117c\"\n}\n```\n\n#### Example: Purchase Callback Payload\n\n```json\n{\n  \"id\": \"f85e1a28-0ee4-468f-896d-cbb2caf536de\",\n  \"code\": \"123456\",\n  \"amount\": \"1.00\",\n  \"status\": \"confirmed\",\n  \"cancel_uri\": \"http://myserver.mydomain/cancel\",\n  \"created_at\": \"2022-08-15T23:42:16.933Z\",\n  \"partner_id\": \"afe23416-1d7f-4c54-803f-7e87cdd193ba\",\n  \"updated_at\": \"2022-08-15T23:42:34.016Z\",\n  \"description\": \"Test purchase\",\n  \"failure_uri\": null,\n  \"callback_uri\": \"http://myserver.mydomain/callback\",\n  \"airtm_user_id\": \"6bd1e5b1-7d12-4112-aa1c-3e67454b56f6\",\n  \"failure_reason\": null,\n  \"operation_type\": \"purchase\",\n  \"airtm_user_email\": \"some@email.com\",\n  \"confirmation_uri\": \"http://myserver.mydomain/confirmed\",\n  \"airtm_operation_id\": \"cd529399-1df5-42e2-b2e8-64962eb72562\",\n  \"airtm_operation_hash\": \"1DF5PR42E2CPB2E8\"\n}\n```\n\n#### Simulate Callbacks with cURL\n\nUse the examples below to simulate how Airtm sends callback notifications to your server. This is useful during development and testing.\n\n##### Simulate Purchase Callback\n\n```bash\ncurl --request POST \\\n  --url https://yourserver.com/callback \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"id\": \"f85e1a28-0ee4-468f-896d-cbb2caf536de\",\n    \"code\": \"123456\",\n    \"amount\": \"1.00\",\n    \"status\": \"confirmed\",\n    \"cancel_uri\": \"http://myserver.mydomain/cancel\",\n    \"created_at\": \"2022-08-15T23:42:16.933Z\",\n    \"partner_id\": \"afe23416-1d7f-4c54-803f-7e87cdd193ba\",\n    \"updated_at\": \"2022-08-15T23:42:34.016Z\",\n    \"description\": \"Test purchase\",\n    \"failure_uri\": null,\n    \"callback_uri\": \"http://myserver.mydomain/callback\",\n    \"airtm_user_id\": \"6bd1e5b1-7d12-4112-aa1c-3e67454b56f6\",\n    \"failure_reason\": null,\n    \"operation_type\": \"purchase\",\n    \"airtm_user_email\": \"some@email.com\",\n    \"confirmation_uri\": \"http://myserver.mydomain/confirmed\",\n    \"airtm_operation_id\": \"cd529399-1df5-42e2-b2e8-64962eb72562\",\n    \"airtm_operation_hash\": \"1DF5PR42E2CPB2E8\"\n  }'\n```\n\n##### Simulate Payout Callback\n\n```bash\ncurl --request POST \\\n  --url https://yourserver.com/callback \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"id\": \"f8dd11dd-12fe-42f7-8e5c-9035714dd43d\",\n    \"code\": null,\n    \"amount\": \"200.00\",\n    \"status\": \"completed\",\n    \"cancel_uri\": null,\n    \"created_at\": \"2021-01-30T07:47:01.055Z\",\n    \"partner_id\": \"4c41f826-115f-40d6-b34c-2a5885e51d27\",\n    \"updated_at\": \"2021-01-30T07:47:02.061Z\",\n    \"description\": \"Some description provided by the partner\",\n    \"failure_uri\": \"https://example.com/123/failure\",\n    \"airtm_user_id\": \"119500e5-094f-4020-beb4-69f5b6f32ee7\",\n    \"failure_reason\": null,\n    \"operation_type\": \"payout\",\n    \"airtm_user_email\": \"useremail@hotmail.com\",\n    \"confirmation_uri\": \"https://example.com/123/confirmed\",\n    \"airtm_operation_id\": \"cfcd89bd-f3e7-4525-af61-83d906e5117c\"\n  }'\n```\n\n#### \U0001F510 Callback Tips\n\n- The server should return a **2xx HTTP status code** to acknowledge receipt of the callback\n- Non-2xx responses may trigger retries from Airtm\n- It's recommended to validate the callback data (e.g., `airtm_operation_id`) for security and consistency\n\n---\n\n### Transaction Statuses and Refunds\n\n#### Transaction Statuses\n\n##### Purchases\n\n| **Status**  | **Final?** | **Description**                                          |\n| ----------- | ---------- | -------------------------------------------------------- |\n| `created`   | No         | Purchase was created and is awaiting user action         |\n| `confirmed` | Yes        | Purchase completed and funds have been transferred       |\n| `canceled`  | Yes        | User canceled the purchase. No funds were transferred    |\n| `failed`    | Yes        | Purchase processing failed. Contact enterprise@airtm.com |\n\n##### Payouts\n\n| **Status**  | **Final?** | **Description**                                                                                                                                                                   |\n| ----------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| `created`   | No         | Payout instruction created. Awaiting call to the commit endpoint                                                                                                                  |\n| `committed` | No         | Payout was committed and is being processed                                                                                                                                       |\n| `pending`   | No         | Funds in escrow, awaiting recipient action:<br/>• New user: create Airtm account<br/>• Over $1,000: ID verification<br/>• US user: ID verification + payment method configuration |\n| `completed` | Yes        | Payout completed. Funds credited to the recipient's account                                                                                                                       |\n| `canceled`  | Yes        | Payout canceled. Funds returned. Applies to pending payouts or when recipient is ineligible to receive funds                                                                      |\n| `failed`    | Yes        | Processing failed. Contact enterprise@airtm.com                                                                                                                                   |\n\n> \U0001F4A1 **Tip**: Use case-insensitive comparisons when evaluating status strings.\n\n#### Endpoints\n\n- **Purchases & Payouts**: `GET /operations/{operationId}`\n- **Bulk Payments**: `GET /bulk-payments`\n\n#### Refunds via API\n\n❌ Automatic refunds are not supported.\n\n✅ **To issue a refund**:\n\n1. Initiate a payout from your account to the user\n2. More info available in the [Payouts section](https://docs.airtm.com/reference/payouts)\n\n---\n\n### Transaction Fees, Limits & Expirations\n\n#### Fees & Limits\n\n| **Parameter**                  | **Value**                              |\n| ------------------------------ | -------------------------------------- |\n| **Minimum (US & Puerto Rico)** | $1 USDC                                |\n| **Minimum (Other regions)**    | $0.01 USDC                             |\n| **Maximum per transaction**    | No upper limit                         |\n| **Fees**                       | Contact the sales team for exact rates |\n\n#### Processing Times\n\n- **Payouts to existing users**: Up to 2 minutes\n- **Purchases (pay-ins)**: Depends on client interaction. Usually immediate after confirmation\n\n#### Expiration Rules\n\n- **Pay-ins**: Expire after **15 days**\n- **Pay-outs (to unregistered users)**: Pending for up to **90 days**, unless otherwise configured in your Enterprise dashboard: **Settings → Cancel Timer**\n\n---\n\n### Attributes & Validation\n\n#### General Requirements\n\n- The `confirmation_uri` and `failure_uri` parameters are **required** in payout requests to ensure proper status notifications\n\n#### For Purchases:\n\n- The `items` array is **mandatory**\n- The `amount` must match the sum of all items. Any discrepancy will result in the request being rejected\n- Customers **cannot retry** deposit attempts. Only a single attempt is permitted per transaction\n- Purchase confirmation **must be done via a web browser**. Airtm apps does not support this flow\n\n---\n\n### Authentication & Security\n\n#### Authorization Header Format\n\nTo generate the Authorization header use the format:\n\n```\nAuthorization: Basic base64(API_KEY:SECRET_KEY)\n```\n\n#### Example\n\nFor API Key `123` and Secret `abc`:\n\n1. **Concatenate**: `123:abc`\n2. **Base64 encode**: `MTIzOmFiYw==`\n3. **Resulting header**: `Authorization: Basic MTIzOmFiYw==`\n\n#### Implementation Example\n\n```bash\n# Using curl\ncurl -H \"Authorization: Basic $(echo -n 'API_KEY:SECRET_KEY' | base64)\" \\\n     https://payments.air-pay.io/api/endpoint\n```\n\n---\n\n> \U0001F4DE **Need Help?** Contact [enterprise@airtm.com](mailto:enterprise@airtm.com) for support with API integration or technical issues.\n"
+servers:
+- url: https://payments.air-pay.io
+- url: https://payments.static-stg.tests.airtm.org
+tags:
+- name: Purchases / Payins
+  description: '## Overview
+
+
+    The Payins endpoint (also known as Purchases) enables your organization to accept payments from users for products, services, or any other transactions. This endpoint is essential for e-commerce platforms, service providers, and any business that needs to collect payments from customers through the Airtm platform.
+
+
+    ## What are Payins?
+
+
+    Payins represent incoming payments to your enterprise account. When a user makes a purchase or payment to your organization, it creates a payin operation that can be tracked and managed through this endpoint.
+
+
+    ### Key Features
+
+
+    - **Flexible Payment Processing** - Accept payments for various products and services
+
+    - **Multi-Currency Support** - Process payments in different currencies
+
+    - **Real-Time Status Updates** - Track payment progress in real-time
+
+    - **Secure Checkout Process** - Redirect users to secure Airtm payment pages
+
+    - **Webhook Integration** - Receive instant notifications on payment status changes
+
+    - **Reference Code Tracking** - Link payments to your internal order systems
+
+
+    ## Payment Flow
+
+
+    1. **Create Purchase** - Your system creates a purchase request with payment details
+
+    2. **User Checkout** - User is redirected to Airtm''s secure checkout page
+
+    3. **Authentication** - User logs into their Airtm account to complete payment
+
+    4. **Processing** - Payment is processed and status updates are provided
+
+    5. **Completion** - Payment is completed and funds are transferred to your account
+
+
+    ## Status Management
+
+
+    ### Purchase Status Values
+
+
+    | Status      | Final? | Description                                       |
+
+    | ----------- | ------ | ------------------------------------------------- |
+
+    | `created`   | No     | Purchase created, awaiting user payment           |
+
+    | `confirmed` | Yes    | Payment completed successfully, funds transferred |
+
+    | `canceled`  | Yes    | User canceled the purchase, no funds transferred  |
+
+    | `failed`    | Yes    | Payment processing failed                         |
+
+
+    > [!TIP]
+
+    > Implement case-insensitive status comparisons in your code to handle potential variations.
+
+    '
+paths:
+  purchases:
+    post:
+      security:
+      - basicAuth: []
+      tags:
+      - Purchases / Payins
+      summary: Create purchase
+      description: 'This endpoint will allow you to create a Purchase (Pay-in). In order to
+
+        complete a Purchase, it must first be created, then the user must be
+
+        directed to the Airtm website to confirm/checkout the Purchase, at which
+
+        time they will be redirected to a URL of your choosing. See “Usage”
+
+        below.
+
+
+        We will redirect the user to either `confirmation_uri` or `cancel_uri`
+
+        with code as query parameter so you can process the Purchase as being
+
+        either confirmed or cancelled.
+
+
+        ## Usage
+
+
+        1.  Create a Purchase via an HTTP POST.
+
+
+        2.  Extract the id from the response, and redirect user to:
+
+        https://`<API Host>/checkout/:id` User will be redirected for
+
+        authentication as necessary.
+
+
+        3.  User will confirm or cancel purchase from Airtm’s website.
+
+
+        4.  If confirmed, money will be transferred from user’s Airtm wallet, to
+
+        partner''s Airtm wallet, and redirected to the provided
+
+        `confirmation_uri`. If canceled, no money will be transferred, and the
+
+        user will be redirected to the provided cancel\_uri.
+
+
+        Upon confirmation, or cancellation the purchase will be considered
+
+        completed, and the URL residing at /checkout/:id will no longer
+
+        function. Therefore, if you wish to complete an identical Purchase, you
+
+        will need to create a new Purchase, and be provisioned a new id for that
+
+        Purchase.
+
+
+        The `confirmation_uri` attribute should not be used for transaction
+
+        completeness verification, if the URI was requested, it doesn''t mean the
+
+        transaction was completed successfully. If the `callback_uri` attribute
+
+        is provided, we will POST the purchase JSON to it after the purchase is
+
+        completed, either if it was confirmed, canceled or failed. In case
+
+        `callback_uri` attribute is NOT provided, we recommend checking the
+
+        transaction status using `GET /operations/:id` before any external
+
+        movement.
+
+
+        > [!tip]
+
+        > The way to emit a purchase refund is to create a payout from your Airtm
+
+        > Partner account and then commit it, this will move money from your Airtm
+
+        > account to your user''s Airtm account.
+
+        '
+      operationId: Purchases _ Payins_purchases-payins/create-purchase
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique id of the transaction
+                    example: 5201de5f-03e6-43e1-ba36-bebaf3f429f6
+                    format: uuid
+                  status:
+                    type: string
+                    description: 'Status of the request, can be ''created'', ''processing'',
+
+                      ''canceled'' or ''confirmed''.
+
+                      '
+                    example: created
+                  amount:
+                    type: Number
+                    description: 'The total amount in USD of the purchase. This value must
+
+                      correctly correspond to the sum of the amounts associated
+
+                      with each purchase item.
+
+                      '
+                    example: '15.00'
+                    format: float
+                  description:
+                    type: string
+                    description: 'A text string describing the purchase. This text is
+
+                      displayed to the user when they are confirming the
+
+                      transaction.
+
+                      '
+                    example: Purchase test
+                  confirmation_uri:
+                    type: string
+                    description: 'A URL to redirect the user to when they confirm the
+
+                      transaction.
+
+                      '
+                    example: https://your.site/confirm
+                    format: uri
+                  cancel_uri:
+                    type: string
+                    description: 'A URL to redirect the user to when they cancel the
+
+                      transaction.
+
+                      '
+                    example: https://your.site/cancel
+                    format: uri
+                  code:
+                    type: string
+                    description: 'An arbitrary string of the partner’s choosing. Used to
+
+                      identify and correlate Airtm purchases with partner
+
+                      records. Must be unique.
+
+                      '
+                    example: ExternalIdentifier01
+                  airtm_operation_id:
+                    type: string
+                    description: Airtm's internal unique id number for the operation.
+                  created_at:
+                    type: string
+                    description: Datetime when the transaction was created.
+                    example: '2022-05-25T00:34:30.641Z'
+                    format: date-time
+                  updated_at:
+                    type: string
+                    description: 'Datetime of the latest change in status of the
+
+                      transaction.
+
+                      '
+                    example: '2022-05-25T00:34:30.641Z'
+                    format: date-time
+                  airtm_user_id:
+                    type: string
+                    description: 'User id of the user that completed one purchase. '
+                    format: uuid
+                  airtm_user_email:
+                    type: string
+                    description: Email of the user that completed one purchase.
+                    format: email
+                  operation_type:
+                    type: string
+                    description: Operation type, always 'purchase'.
+                    example: purchase
+                  failure_uri:
+                    type: string
+                    description: 'An endpoint / webhook on your servers which we will POST
+
+                      the Puchase JSON to when we''re unable to process the
+
+                      Purchase.
+
+                      '
+                  failure_reason:
+                    type: string
+                    description: This populates with the reason the operation failed.
+                  callback_uri:
+                    type: string
+                    description: 'An endpoint / webhook on your server which we will POST
+
+                      the purchase JSON to when the purchase is completed.
+
+                      '
+                    example: https://your.site/callback
+                  airtm_operation_hash:
+                    type: string
+                    description: 'Unique hash for the Purchase operation within the Airtm
+
+                      system.
+
+                      '
+        '403':
+          description: Duplicated Code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: ''
+                    example: '352014'
+                  message:
+                    type: string
+                    description: ''
+                    example: A purchase with this code already exists
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    description: ''
+                    example: 500
+                  message:
+                    type: string
+                    description: ''
+                    example: Internal server error
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: 'An arbitrary string of the partner’s choosing. Used to
+
+                    identify and correlate Airtm purchases with partner records.
+
+                    Must be unique.
+
+                    '
+                  example: ExternalIdentifier01
+                description:
+                  type: string
+                  description: 'A text string describing the purchase. This text is
+
+                    displayed to the user when they are confirming the
+
+                    transaction.
+
+                    '
+                  example: Test purchase
+                cancel_uri:
+                  type: string
+                  description: 'A URL to redirect the user to when they cancel the
+
+                    transaction.
+
+                    '
+                  example: https://your.site/cancel
+                  format: uri
+                confirmation_uri:
+                  type: string
+                  description: 'A URL to redirect the user to when they confirm the
+
+                    transaction.
+
+                    '
+                  example: https://your.site/confirm
+                  format: uri
+                callback_uri:
+                  type: string
+                  description: 'An endpoint/webhook on your server which we will POST the
+
+                    purchase JSON to when the purchase is completed.
+
+                    '
+                  example: https://your.site/callback
+                  format: uri
+                failure_uri:
+                  type: string
+                  description: 'An endpoint / webhook on your servers which we will POST the
+
+                    Puchase JSON to when we''re unable to process the Purchase.
+
+                    '
+                  example: https://your.site/failure
+                  format: uri
+                amount:
+                  type: number
+                  description: 'The total amount in USD of the purchase. This value must
+
+                    correctly correspond to the sum of the amounts associated
+
+                    with each purchase item.
+
+                    '
+                  example: 15
+                items:
+                  type: array
+                  description: An array of the items being purchased/bought.
+                  items:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        description: ''
+                        example: test item 2
+                      amount:
+                        type: number
+                        description: ''
+                        example: 3
+                      quantity:
+                        type: number
+                        description: ''
+                        example: 1
+                    required:
+                    - quantity
+              required:
+              - code
+              - description
+              - amount
+              - items
+    get:
+      security:
+      - basicAuth: []
+      tags:
+      - Purchases / Payins
+      summary: Get purchase
+      description: 'You can either use this endpoint or the /operations with the ‘type’
+
+        parameter as ‘purchase’ in the endpoint to get the list of all
+
+        purchases.
+
+        '
+      operationId: Purchases _ Payins_purchases-payins/get-purchase
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPage:
+                    type: number
+                    description: Page currently displayed.
+                    example: 1
+                  lastPage:
+                    type: number
+                    description: Number of pages available.
+                    example: 1
+                  perPage:
+                    type: number
+                    description: Number of items per page displayed in the response.
+                    example: 10
+                  total:
+                    type: number
+                    description: Total operations retrieved.
+                    example: 1
+                  from:
+                    type: number
+                    description: Number of first operation retrieved.
+                    example: 1
+                  to:
+                    type: number
+                    description: Number of last operation retrieved.
+                    example: 1
+                  data:
+                    type: array
+                    description: 'An array of items retrieved, contains all operations
+
+                      available requested, limited by the ''perPage'' parameter.
+
+                      '
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Payment unique identifier.
+                          example: f782702e-e4fe-46b7-8ef1-de8b70a50587
+                        partner_id:
+                          type: string
+                          description: ID of the partner that created the purchase.
+                          example: 2c3e7d5e-0cfb-411f-9e34-78ba4d3b8ce7
+                        status:
+                          type: string
+                          description: 'The status of the operation. Please refer to the
+
+                            Purchases and Payments endpoints to see possible
+
+                            statuses.
+
+                            '
+                          example: created
+                        amount:
+                          type: string
+                          description: Amount in USD that was transacted in the operation.
+                          example: '15.00'
+                        description:
+                          type: string
+                          description: 'A text string describing the purchase. This text is
+
+                            displayed to the user when they are confirming the
+
+                            transaction.
+
+                            '
+                          example: Test purchase
+                        confirmation_uri:
+                          type: string
+                          description: 'An available URL on partner''s servers to redirect
+
+                            (purchase) or POST (payout) to, when the payment is
+
+                            completed.
+
+                            '
+                          example: https://your.site/confirm
+                        cancel_uri:
+                          type: string
+                          description: 'An available URL on partner''s servers to redirect
+
+                            the user to when they cancel a purchase.
+
+                            '
+                          example: https://your.site/cancel
+                        code:
+                          type: string
+                          description: 'An arbitrary string of the partner’s choosing. Used
+
+                            to identify and correlate Airtm purchases with
+
+                            partner records. Must be a unique.
+
+                            '
+                          example: ExternalIdentifier01
+                        airtm_operation_id:
+                          type: 'null'
+                          description: The ID of the operation on Airtm platform.
+                          example: ''
+                        created_at:
+                          type: string
+                          description: The datetime the operation was created.
+                          example: '2023-06-08T15:30:58.887Z'
+                        updated_at:
+                          type: string
+                          description: The datetime the operation was last modified.
+                          example: '2023-06-08T15:30:58.887Z'
+                        airtm_user_id:
+                          type: 'null'
+                          description: The ID of the user involved in the payout/purchase
+                          example: ''
+                        airtm_user_email:
+                          type: 'null'
+                          description: 'The email of the user involved in the
+
+                            payout/purchase in Airtm.
+
+                            '
+                          example: ''
+                        operation_type:
+                          type: string
+                          description: Type of operation, will always be 'purchase'.
+                          example: purchase
+                        failure_uri:
+                          type: 'null'
+                          description: 'An available URL on partner''s servers to POST when
+
+                            payout fails.
+
+                            '
+                          example: ''
+                        failure_reason:
+                          type: 'null'
+                          description: This populates with the reason the operation failed.
+                          example: ''
+                        callback_uri:
+                          type: string
+                          description: 'An endpoint / webhook on your server which we will
+
+                            POST the purchase JSON to when the purchase is
+
+                            completed.
+
+                            '
+                          example: https://your.site/callback
+                        airtm_operation_hash:
+                          type: 'null'
+                          description: 'Unique hash for the payout operation within the
+
+                            AirTM system.
+
+                            '
+                          example: ''
+                      required: []
+        '403':
+          description: Forbidden
+          content:
+            application/html:
+              schema:
+                type: object
+                properties:
+                  raw:
+                    type: String
+                    description: ''
+                    example: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+                      <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+                      <TITLE>ERROR: The request could not be satisfied</TITLE>
+
+                      </HEAD><BODY>
+
+                      <H1>403 ERROR</H1>
+
+                      <H2>The request could not be satisfied.</H2>
+
+                      <HR noshade size="1px">
+
+                      Request blocked.
+
+                      We can''t connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.
+
+                      <BR clear="all">
+
+                      If you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.
+
+                      <BR clear="all">
+
+                      <HR noshade size="1px">
+
+                      <PRE>
+
+                      Generated by cloudfront (CloudFront)
+
+                      Request ID: dXlTEB0QOsMHTVtAcDttXa8VxSYBx9HsPSfzJxHh3lwqgYKy6AQmiw==
+
+                      </PRE>
+
+                      <ADDRESS>
+
+                      </ADDRESS>
+
+                      </BODY></HTML>'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    description: ''
+                    example: 500
+                  message:
+                    type: string
+                    description: ''
+                    example: Internal server error
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

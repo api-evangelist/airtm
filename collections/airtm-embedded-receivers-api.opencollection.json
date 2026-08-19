@@ -1,0 +1,142 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Embedded Receivers API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Embedded Receivers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get receiver by external id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/receivers",
+            "params": [
+              {
+                "name": "externalReceiverId",
+                "value": "",
+                "type": "query",
+                "description": "The external receiver identifier provided by the partner."
+              }
+            ]
+          },
+          "docs": "Retrieve a receiver by its external identifier."
+        },
+        {
+          "info": {
+            "name": "Create receiver",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/receivers",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new embedded receiver for the authenticated partner."
+        },
+        {
+          "info": {
+            "name": "Get receiver by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/receivers/:receiverId",
+            "params": [
+              {
+                "name": "receiverId",
+                "value": "",
+                "type": "path",
+                "description": "The receiver id."
+              }
+            ]
+          },
+          "docs": "Retrieve a receiver by its id."
+        },
+        {
+          "info": {
+            "name": "Update receiver",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/receivers/:receiverId",
+            "params": [
+              {
+                "name": "receiverId",
+                "value": "",
+                "type": "path",
+                "description": "The receiver id."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an existing embedded receiver."
+        },
+        {
+          "info": {
+            "name": "Add payment rail instance",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/receivers/:receiverId/payment-rail-instance",
+            "params": [
+              {
+                "name": "receiverId",
+                "value": "",
+                "type": "path",
+                "description": "The receiver id."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a payment rail instance to an existing receiver."
+        },
+        {
+          "info": {
+            "name": "Remove payment rail instance",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/receivers/:receiverId/payment-rail-instance/:paymentRailInstanceId",
+            "params": [
+              {
+                "name": "receiverId",
+                "value": "",
+                "type": "path",
+                "description": "The receiver id."
+              },
+              {
+                "name": "paymentRailInstanceId",
+                "value": "",
+                "type": "path",
+                "description": "The payment rail instance id to remove."
+              }
+            ]
+          },
+          "docs": "Remove a payment rail instance from a receiver."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

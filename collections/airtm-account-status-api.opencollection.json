@@ -1,0 +1,42 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V1 Account Status API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Account Status",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get account status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.ioaccount-status",
+            "params": [
+              {
+                "name": "email",
+                "value": "",
+                "type": "query",
+                "description": "Email associated with the account to check."
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Retrieve the current status of any user's account by providing their\nemail in the request headers. The response will return the user's client\nID, account status, whether the email corresponds to the primary account\n(Airtm allows up to two secondary emails per account), the country where\nthe account is registered, the verification status, and the full name\nregistered on the account.\n\n**The email parameter should be URL Encoded. You can learn more about\nencoding urls here:**\n[**https://www.w3schoo"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

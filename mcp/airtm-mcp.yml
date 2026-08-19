@@ -11,12 +11,13 @@ search_evidence:
   note: DNS does not resolve
 - url: https://api.enterprise.airtm.com/.well-known/ai-plugin.json
   status: 404
-notes: Airtm publishes NO hosted or remote MCP server as of this pass — no /mcp endpoint, no mcp.airtm.com, no listing
-  in the public MCP registries, and no mention of MCP anywhere in the Enterprise API documentation. The tool list
-  below is a CANDIDATE derived one-to-one from the V2 OpenAPI operations so the surface is ready to forge; it is
-  not a claim that Airtm operates an MCP server. Each tool's real inputSchema is the referenced operation's parameters
-  + requestBody in openapi/airtm-enterprise-v2-openapi.json. Note that money-moving tools (CreatePayout, CommitPayout,
-  CreateWithdrawal, CreateBulkPayout, CreateTransaction) should carry human-in-the-loop gating — see agentic-access/airtm-agentic-access.yml.
+notes: Airtm publishes NO hosted or remote MCP server as of this pass — no /mcp endpoint, no mcp.airtm.com,
+  no listing in the public MCP registries, and no mention of MCP anywhere in the Enterprise API documentation.
+  The tool list below is a CANDIDATE derived one-to-one from the V2 OpenAPI operations so the surface
+  is ready to forge; it is not a claim that Airtm operates an MCP server. Each tool's real inputSchema
+  is the referenced operation's parameters + requestBody in openapi/airtm-enterprise-v2-openapi.json.
+  Note that money-moving tools (CreatePayout, CommitPayout, CreateWithdrawal, CreateBulkPayout, CreateTransaction)
+  should carry human-in-the-loop gating — see agentic-access/airtm-agentic-access.yml.
 server:
   name: airtm
   transport: http
@@ -284,3 +285,9 @@ tools:
   description: Toggle an allowed IP for an API key.
   source_operation: openapi/airtm-enterprise-v2-openapi.json#ToggleAllowedIp
   http: POST /api-keys/{id}/allowed-ips
+deployment:
+  mode: none
+  verified: derived
+  tools: 51
+  checked: '2026-08-12'
+  source: catalog MCP census

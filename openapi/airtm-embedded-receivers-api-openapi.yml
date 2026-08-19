@@ -1,0 +1,843 @@
+openapi: 3.2.0
+info:
+  title: Airtm Enterprise API V2 Embedded Receivers API
+  version: 1.155.0
+  description: "# Introduction\n\nThe Airtm Enterprise API enables organizations to send and receive payments globally through a simple REST API.\n\n## What You Can Do\n\n- **Send Payouts**: Pay employees, contractors, and partners in [190+ countries](https://help.airtm.com/en/support/solutions/articles/47001177565-where-are-airtm-s-products-and-services-available-)\n- **Collect Payments**: Accept payments from users worldwide\n- **Generate Reports**: Download transaction data and audit reports\n- **Process in Bulk**: Handle thousands of payments efficiently\n\n## Getting Started\n\n### 1. Get API Credentials\n\n[Sign up](https://airtm-product.typeform.com/to/ggXbsJpl?typeform-source=api-docs) for an Enterprise account\n\n### 2. Generate API Keys\n\nCreate keys in your [account settings](https://enterprise.airtm.com/settings)\n\n### 3. Test Your Setup\n\nMake your first API call to verify connectivity\n\n```bash\ncurl \"https://api.enterprise.airtm.com/v2/me\" \\\n  -u \"your_api_key:your_secret_key\"\n```\n\n## Environments\n\n### Sandbox\n\nTesting with fake money\n\nURL: `https://api.stg.enterprise.airtm.com`\n\n### Production\n\nLive transactions\n\nURL: `https://api.enterprise.airtm.com`\n\n## Rate Limits\n\n- **10 requests per second** per API key\n- HTTP 429 response when exceeded\n- Contact support for higher limits\n\n## Security\n\n- Use HTTPS for all requests\n- Store credentials securely (never in client code)\n- Separate sandbox and production keys\n\n## Need Help?\n\n- **Technical Support**: [enterprise@airtm.com](mailto:enterprise@airtm.com)\n- **API Updates**: Follow our [Changelog](#description/changelog)\n- **Error Reference**: Check [Reason Codes](#description/reason-codes)\n\n\n---\n\n# Authentication\n\nThe Airtm Enterprise API uses HTTP Basic Authentication for all requests.\n\n## How It Works\n\nEvery API call must include an `Authorization` header with your API credentials:\n\n```text\nAuthorization: Basic <base64-encoded-credentials>\n```\n\n## Getting Your API Keys\n\n1. Log into your [dashboard](https://enterprise.airtm.com)\n2. Go to **Settings** → **API Keys**\n3. Click **Generate New API Key**\n4. Save both the API Key and Secret Key securely\n\n> **⚠️ Important**: Your Secret Key is only shown once. Store it immediately.\n\n## Setting Up Authentication\n\n### Step 1: Combine Your Credentials\n\nFormat: `api_key:secret_key`\n\nExample: `your_api_key:your_secret_key`\n\n### Step 2: Base64 Encode\n\nUse any base64 encoder or command line:\n\n```bash\necho -n \"your_api_key:your_secret_key\" | base64\n```\n\n### Step 3: Add to Request Header\n\n```text\nAuthorization: Basic <base64_encoded_credentials>\n```\n\n## Code Examples\n\n### cURL\n\n```bash\ncurl -X GET \"https://api.enterprise.airtm.com/v2/me\" \\\n  -u \"your_api_key:your_secret_key\"\n```\n\n### JavaScript\n\n```javascript\nconst response = await fetch('https://api.enterprise.airtm.com/v2/me', {\n  headers: {\n    Authorization: 'Basic ' + btoa('your_api_key:your_secret_key'),\n  },\n});\n```\n\n### Python\n\n```python\nimport requests\nfrom requests.auth import HTTPBasicAuth\n\nresponse = requests.get(\n    'https://api.enterprise.airtm.com/v2/me',\n    auth=HTTPBasicAuth('your_api_key', 'your_secret_key')\n)\n```\n\n## Security Best Practices\n\n- **Store securely**: Use environment variables\n- **Server-side only**: Never expose keys in client code\n- **Rotate regularly**: Update keys every 90 days\n\n## Common Errors\n\n### 401 Unauthorized\n\n- Check your API key and secret\n- Verify base64 encoding is correct\n- Ensure you're using the right environment keys\n\n### 403 Forbidden\n\n- Contact support to verify account permissions\n- Check if your account is fully activated\n\n## Need Help?\n\nFor authentication issues:\n\n- **Email**: [enterprise@airtm.com](mailto:enterprise@airtm.com)\n- **Keys not working?** Check your [Enterprise Dashboard](https://enterprise.airtm.com/settings)\n\n\n---\n\n# OAuth 2.0 / OIDC Authorization\n\nThe Airtm Enterprise API provides an OAuth 2.0 authorization server that allows your application to act on behalf of Airtm users. This is the authentication layer for the Partner Public API.\n\nThree grant types are supported:\n\n- **Authorization Code** — for user-delegated access. The user explicitly approves which scopes your application can use.\n- **Refresh Token** — exchanges a refresh token for a new access token without re-involving the user. Issued only when the `offline_access` scope is granted.\n- **Client Credentials** — for machine-to-machine access where no user is involved.\n\n> [!IMPORTANT]\n> Authorization Code flows require PKCE (`code_challenge_method=S256`). Requests without it are rejected.\n\n---\n\n## Base URL\n\n| Environment | OIDC Issuer                                 |\n| ----------- | ------------------------------------------- |\n| Sandbox     | `https://api.stg.enterprise.airtm.com/oidc` |\n| Production  | `https://api.enterprise.airtm.com/oidc`     |\n\nAll endpoints below are relative to the issuer base URL.\n\n---\n\n## Scopes\n\n| Scope            | Description                                                                              |\n| ---------------- | ---------------------------------------------------------------------------------------- |\n| `openid`         | Required for all authorization code flows. Returns an ID token.                          |\n| `offline_access` | Requests a refresh token. Requires `prompt=consent` in the authorization request.        |\n| `wallet:receive` | Partner may send funds into this user's AirTM wallet.                                    |\n| `wallet:send`    | Partner may initiate outbound transfers from this user's AirTM wallet.                   |\n| `wallet:read`    | Partner may read the user's AirTM wallet or channel address (read-only).                 |\n| `kyc:status`     | Partner may verify the user's identity status and retrieve their legal name and country. |\n\n> [!IMPORTANT]\n> Scopes must be pre-approved per client during registration. Requesting an unapproved scope returns `error=invalid_scope` before the user sees any screen.\n\n---\n\n## Endpoint Reference\n\n### `GET /.well-known/openid-configuration`\n\nDiscovery document. Returns all endpoint URLs, supported scopes, grant types, and signing algorithms. The starting point for any client integrating with this server.\n\n```bash\ncurl -s https://api.enterprise.airtm.com/oidc/.well-known/openid-configuration\n```\n\n---\n\n### `GET /jwks`\n\nPublic key set (JWKS). Resource servers use this to verify token signatures offline without calling the authorization server at request time. Private key components are never included.\n\n```bash\ncurl -s https://api.enterprise.airtm.com/oidc/jwks\n```\n\n---\n\n### `GET /auth`\n\nAuthorization endpoint. Starts the authorization code flow. On a valid request, redirects the browser to the interaction login screen.\n\n| Parameter               | Required | Description                                                                                           |\n| ----------------------- | -------- | ----------------------------------------------------------------------------------------------------- |\n| `response_type`         | Yes      | Must be `code`                                                                                        |\n| `client_id`             | Yes      | Your registered client ID                                                                             |\n| `redirect_uri`          | Yes      | Must match your registered redirect URI                                                               |\n| `scope`                 | Yes      | Space-separated list. Must include `openid`                                                           |\n| `code_challenge`        | Yes      | `BASE64URL(SHA-256(code_verifier))`                                                                   |\n| `code_challenge_method` | Yes      | Must be `S256`                                                                                        |\n| `prompt`                | No       | Include `consent` when requesting `offline_access`. Without it, `offline_access` is silently dropped. |\n\n**Error cases:**\n\n| Condition                       | Result                                       |\n| ------------------------------- | -------------------------------------------- |\n| Missing PKCE                    | `303` → `redirect_uri?error=invalid_request` |\n| Unknown or disabled `client_id` | `400` with `error=invalid_client`            |\n| Unknown scope                   | `303` → `redirect_uri?error=invalid_scope`   |\n| Unapproved scope for client     | `303` → `redirect_uri?error=invalid_scope`   |\n\n> [!NOTE]\n> Disabled clients (deactivated by Airtm support) and unknown clients return the same error. Inactive status is never disclosed — request the same flow you would for a brand-new integration.\n\n---\n\n### `POST /token`\n\nToken endpoint. Exchanges a code for tokens (authorization code grant) or issues a token directly (client credentials grant).\n\n#### Authorization Code\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token \\\n  -d \"grant_type=authorization_code\" \\\n  -d \"code=AUTH_CODE\" \\\n  -d \"redirect_uri=https://yourapp.com/callback\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\" \\\n  -d \"code_verifier=CODE_VERIFIER\"\n```\n\n**Response:**\n\n```json\n{\n  \"access_token\": \"...\",\n  \"id_token\": \"...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600,\n  \"refresh_token\": \"...\",\n  \"scope\": \"wallet:receive\"\n}\n```\n\n> `refresh_token` is only present when `offline_access` was included in the requested scope and `prompt=consent` was sent in the authorization request.\n>\n> `scope` reflects the resource-server scopes the token actually carries. OIDC scopes (`openid`, `offline_access`, …) are honoured via the `id_token` and refresh-token rules respectively, not via the access-token `scope` string.\n\n**Access token format.** Access tokens are opaque (not JWTs). Resource servers MUST validate them by calling [`POST /token/introspection`](#post-tokenintrospection) for each request rather than verifying a JWT signature locally. The discovery document advertises `id_token_signing_alg_values_supported`; that algorithm applies to `id_token` only.\n\n**`id_token` claims.** The `id_token` is signed (RS256). Claims are scope-gated:\n\n| Scope     | Claims returned                                                         |\n| --------- | ----------------------------------------------------------------------- |\n| `openid`  | `sub`, `aud`, `iat`, `exp`, `iss`                                       |\n| `email`   | `email`                                                                 |\n| `profile` | `name`, `given_name`, `family_name`, `preferred_username`, `updated_at` |\n\nRequest `openid profile email` together to receive the full set on the `id_token`. Any individual claim may be `null` / absent if Dodrio doesn't have a value for it on that user.\n\n#### Refresh Token\n\nExchanges a refresh token for a new access token. No user interaction is required.\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token \\\n  -d \"grant_type=refresh_token\" \\\n  -d \"refresh_token=REFRESH_TOKEN\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\"\n```\n\n**Response:**\n\n```json\n{\n  \"access_token\": \"...\",\n  \"refresh_token\": \"...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600\n}\n```\n\n> **Refresh tokens rotate on every use.** The response always contains a new `refresh_token`; the one you sent is immediately consumed. Presenting a consumed token is treated as a replay attack — the entire grant is revoked and all issued tokens for that grant stop working.\n\n#### Client Credentials\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token \\\n  -d \"grant_type=client_credentials\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\" \\\n  -d \"scope=wallet:receive\"\n```\n\n**Response:**\n\n```json\n{\n  \"access_token\": \"...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600\n}\n```\n\n> No `id_token` is returned for client credentials — there is no user in this flow.\n\n---\n\n### `POST /token/introspection`\n\nToken introspection (RFC 7662). Lets a client check whether one of its own issued tokens is still active.\n\n> [!IMPORTANT]\n> A client can only introspect tokens it issued itself. Attempting to introspect another client's token returns `{ \"active\": false }` without revealing the token's existence.\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token/introspection \\\n  -d \"token=ACCESS_TOKEN\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\"\n```\n\n**Active token response:**\n\n```json\n{\n  \"active\": true,\n  \"client_id\": \"YOUR_CLIENT_ID\",\n  \"exp\": 1234567890\n}\n```\n\n**Inactive or unknown token:**\n\n```json\n{ \"active\": false }\n```\n\n---\n\n### `POST /token/revocation`\n\nToken revocation (RFC 7009). Immediately invalidates a token. Same ownership rule as introspection — a client can only revoke tokens it issued.\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token/revocation \\\n  -d \"token=ACCESS_TOKEN\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\"\n```\n\nReturns `200` with an empty body on success.\n\n> [!IMPORTANT]\n> Revoking **any** token under a grant kills every sibling token in that grant. If you revoke an access token, the paired refresh token (and any other access tokens issued under the same authorization) stops working immediately. To keep using the grant, start a fresh authorization-code flow. This matches the OAuth 2.1 expectation that a revocation request is a \"log this session out\" signal, not a \"retire one short-lived bearer\" signal.\n\n---\n\n### `GET /me`\n\nThe OIDC discovery doc advertises a `userinfo_endpoint` at `/oidc/me`, but **it is not usable with the tokens this server issues**.\n\n```bash\n# Will always return 401 invalid_token with our setup:\ncurl -s https://api.enterprise.airtm.com/oidc/me \\\n  -H \"Authorization: Bearer ACCESS_TOKEN\"\n```\n\n> [!IMPORTANT]\n> Why: this server uses Resource Indicators (RFC 8707), which means every access token carries an `aud` claim (e.g. `https://api.enterprise.airtm.com`). oidc-provider's userinfo endpoint explicitly rejects any access token that has an `aud` set — its design assumption is that a userinfo-eligible token is issued for the OP itself, not for a downstream resource server.\n>\n> **Read the `id_token` instead.** It already carries every user claim this server resolves — `sub`, `email`, `name`, `given_name`, `family_name`, `preferred_username`, `updated_at` — and the set is gated by the same `openid` / `profile` / `email` scopes you'd request for `/me`. Example payload (decoded from `id_token` at `/token`):\n>\n> ```json\n> {\n>   \"sub\": \"11111111-1111-1111-1111-111111111111\",\n>   \"email\": \"user@example.com\",\n>   \"name\": \"Alice Example\",\n>   \"given_name\": \"Alice\",\n>   \"family_name\": \"Example\",\n>   \"preferred_username\": \"alice\",\n>   \"updated_at\": 1747000000,\n>   \"aud\": \"YOUR_CLIENT_ID\",\n>   \"iat\": 1747000000,\n>   \"exp\": 1747003600,\n>   \"iss\": \"https://api.enterprise.airtm.com/oidc\"\n> }\n> ```\n>\n> Any individual claim may be `null` / absent if the upstream identity store doesn't have a value for it on that user.\n\n---\n\n### `GET /session/end` · `POST /session/end`\n\nRP-initiated logout. Ends the user's session on the authorization server. Accepts an optional `id_token_hint` to identify the session to close.\n\n```bash\ncurl -si \"https://api.enterprise.airtm.com/oidc/session/end?id_token_hint=ID_TOKEN\"\n```\n\n---\n\n## Authorization Code Flow — Step by Step\n\nThis is the canonical partner integration. Your application redirects the user to `/oidc/auth`; Airtm's hosted UI handles login and consent off-screen; the browser is sent back to your `redirect_uri` with a one-time authorization code; your backend exchanges that code for tokens.\n\nThree things to know going in:\n\n- **Your application never sees the user's credentials or the consent UI.** Airtm hosts both. The user authenticates against Dodrio and approves scopes inside Airtm's pages, not yours. You just kick off the flow and wait for the callback.\n- **PKCE is mandatory on every flow** (`code_challenge_method=S256`).\n- **The exchange step (`/oidc/token`) runs server-side.** Your `client_secret` is a credential and must not live in the SPA.\n\n### Step 1 — Generate PKCE and `state`\n\nPKCE binds the eventual code exchange to the browser session that initiated the flow. `state` protects against CSRF on the callback. Generate both freshly per request.\n\n```bash\nCODE_VERIFIER=$(openssl rand -base64 32 | tr -d '=\\n' | tr '+/' '-_')\nCODE_CHALLENGE=$(printf '%s' \"$CODE_VERIFIER\" | openssl dgst -sha256 -binary | base64 | tr -d '=\\n' | tr '+/' '-_')\nSTATE=$(openssl rand -hex 16)\n```\n\nStore `CODE_VERIFIER` and `STATE` somewhere you can read on the callback (server session, signed httpOnly cookie, similar). Never put them in `localStorage` or in the URL.\n\n### Step 2 — Send the user to `/oidc/auth`\n\nBuild the authorization URL and navigate the browser to it as a full-page redirect (not a `fetch`).\n\n```\nhttps://api.enterprise.airtm.com/oidc/auth\n  ?response_type=code\n  &client_id=YOUR_CLIENT_ID\n  &redirect_uri=https://yourapp.com/callback\n  &scope=openid+profile+email+wallet:receive\n  &code_challenge=<CODE_CHALLENGE>\n  &code_challenge_method=S256\n  &state=<STATE>\n```\n\nTo also receive a refresh token, request `offline_access` and add `prompt=consent`. Without `prompt=consent`, `offline_access` is silently dropped and no refresh token will be issued.\n\n```\n&scope=openid+profile+email+offline_access+wallet:receive\n&prompt=consent\n```\n\n**What happens next is invisible to your application.** Airtm's hosted UI takes over: the user signs in (password, MFA, social SSO, passkey — whatever Dodrio supports), sees a consent screen showing your application's name, logo, and the scopes you requested, and either approves or rejects. When they're done, the browser is redirected back to your `redirect_uri`.\n\n### Step 3 — Handle the callback at your `redirect_uri`\n\nThe browser returns to your `redirect_uri` with one of two query shapes.\n\n**On success:**\n\n```\nhttps://yourapp.com/callback?code=<auth-code>&state=<state>&iss=https://api.enterprise.airtm.com/oidc\n```\n\nBefore doing anything with the `code`, your callback handler must:\n\n1. Verify `state` matches what you stored in Step 1. If not, abort the flow — this is a CSRF signal.\n2. Verify `iss` matches the issuer you registered against.\n3. Treat the `code` as single-use and short-lived (10 minute TTL).\n\n**On failure:**\n\n```\nhttps://yourapp.com/callback?error=<code>&error_description=<text>&state=<state>&iss=https://api.enterprise.airtm.com/oidc\n```\n\n| Error code        | Meaning                                                           |\n| ----------------- | ----------------------------------------------------------------- |\n| `access_denied`   | User rejected consent or aborted the flow                         |\n| `invalid_request` | PKCE missing, malformed parameters, or a similar protocol error   |\n| `invalid_scope`   | Requested scope is unknown, or your client is not approved for it |\n| `server_error`    | Server-side failure — start the flow over                         |\n\n> [!NOTE] > `iss` is included on **both** success and error callbacks per RFC 9207 (Authorization Server Issuer Identification). Apply the same `iss` check to error responses as to success ones — it lets you distinguish a genuine `access_denied` from this server from a forged callback pointing at your `redirect_uri`.\n\n### Step 4 — Exchange the code for tokens (server-side)\n\nThis call must be made from your backend. The `client_secret` is a credential and must never travel through the browser.\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token \\\n  -d \"grant_type=authorization_code\" \\\n  -d \"code=$AUTH_CODE\" \\\n  -d \"redirect_uri=https://yourapp.com/callback\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\" \\\n  -d \"code_verifier=$CODE_VERIFIER\"\n```\n\n**Response:**\n\n```json\n{\n  \"access_token\": \"...\",\n  \"id_token\": \"...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600,\n  \"refresh_token\": \"...\",\n  \"scope\": \"wallet:receive\"\n}\n```\n\n- `id_token` is an RS256-signed JWT carrying the user's identity claims (`sub`, `email`, `name`, `given_name`, `family_name`, `preferred_username`, `updated_at`, gated by the scopes you requested). Verify the signature against the JWKS at `/oidc/jwks` and read claims from it directly — see the note under [`/me`](#get-me) for why the userinfo endpoint is not used.\n- `refresh_token` is present only when `offline_access` was requested with `prompt=consent`.\n- `scope` reflects the resource scopes the access token actually carries — `openid` / `profile` / `email` / `offline_access` are honoured via the id_token and refresh-token rules, not echoed back here.\n\n### Step 5 — Use the access token\n\nSend the access token to Airtm's [Wallet Resource API](#description/resource-api) as a Bearer credential:\n\n```bash\ncurl https://api.enterprise.airtm.com/api/connect/v1/balance \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\nThe Resource API is where you move funds in and out of the user's wallet, read their balance, and check KYC — see the [Wallet Resource API guide](#description/resource-api) for the full endpoint reference.\n\nIf the token is invalid, expired, or has been revoked, the resource API returns `401` with a `WWW-Authenticate: Bearer error=\"invalid_token\", error_description=\"…\"` header. If the token is valid but lacks a required scope, the response is `403` with `WWW-Authenticate: Bearer error=\"insufficient_scope\", scope=\"<required>\"`. Use the `error_description` to decide whether to refresh or restart the flow.\n\n### Step 6 — Refresh when the access token expires\n\nAccess tokens are valid for 1 hour. When a resource API returns `401 invalid_token`, exchange the refresh token for a fresh pair:\n\n```bash\ncurl -s -X POST https://api.enterprise.airtm.com/oidc/token \\\n  -d \"grant_type=refresh_token\" \\\n  -d \"refresh_token=$REFRESH_TOKEN\" \\\n  -d \"client_id=YOUR_CLIENT_ID\" \\\n  -d \"client_secret=YOUR_CLIENT_SECRET\"\n```\n\n> [!IMPORTANT] > **Refresh tokens rotate on every use.** The response always contains a new `refresh_token`; the one you sent is consumed the moment the new pair is issued. Discard the old token immediately. If you ever present a consumed refresh token, the entire grant is revoked (treated as a replay attack) and the user must re-authorize before any new tokens can be issued.\n\n---\n\n## Interaction Endpoints\n\n> [!NOTE] > **Partner integrators do not call these endpoints.** They are the contract between Airtm's hosted login / consent UI and this authorization server. The user is automatically redirected into Airtm's UI by `/oidc/auth`; partners only see the final callback at their `redirect_uri`. This section is reference material for the Airtm frontend team and for anyone debugging the in-browser interaction flow.\n\nThese endpoints are called by Airtm's hosted UI during the login and consent steps. The authorization server redirects the browser into Airtm's frontend when it needs a user decision; the frontend then calls these endpoints to read state and resume the flow.\n\n### Where the browser lands\n\nAfter a successful `GET /oidc/auth`, the authorization server 303s the browser to **your frontend** at one of two URLs, depending on which prompt is required next:\n\n| Prompt    | Browser is sent to                   | Page to render                              |\n| --------- | ------------------------------------ | ------------------------------------------- |\n| `login`   | `${OIDC_FRONTEND_URL}/login/<uid>`   | Your existing login form (drives Dodrio)    |\n| `consent` | `${OIDC_FRONTEND_URL}/consent/<uid>` | The consent screen for the requested scopes |\n\nBoth routes should fetch `GET /interaction/<uid>` and verify `prompt.name` matches the URL they're mounted under — the URL is a hint, not a contract. A user who lands on `/consent/<uid>` for an interaction that's actually at the login prompt should be navigated to `/login/<uid>` based on the GET response.\n\n### `GET /interaction/:uid`\n\nReturns the current interaction state so your UI knows which screen to show. Read-only — safe to call multiple times.\n\n```bash\ncurl -s -c \"$COOKIES\" -b \"$COOKIES\" \\\n  \"https://api.enterprise.airtm.com/interaction/$OIDC_UID\"\n```\n\n**Response — login prompt:**\n\n```json\n{\n  \"uid\": \"abc123\",\n  \"prompt\": {\n    \"name\": \"login\",\n    \"reasons\": [\"no_session\"],\n    \"details\": {}\n  },\n  \"params\": {\n    \"client_id\": \"acme-corp-web\",\n    \"scope\": \"openid wallet:receive\",\n    \"redirect_uri\": \"https://acme.example.com/callback\",\n    \"response_type\": \"code\"\n  },\n  \"client\": {\n    \"id\": \"acme-corp-web\",\n    \"name\": \"ACME Payments\",\n    \"logo\": \"https://cdn.acme.example.com/airtm/logo.svg\"\n  },\n  \"session\": null\n}\n```\n\n**Response — consent prompt** (after login completes, the next `GET /interaction/<uid>` returns this shape; the consent screen renders the scopes listed under `prompt.details`):\n\n```json\n{\n  \"uid\": \"def456\",\n  \"prompt\": {\n    \"name\": \"consent\",\n    \"reasons\": [\"consent_prompt\", \"op_scopes_missing\", \"rs_scopes_missing\"],\n    \"details\": {\n      \"missingOIDCScope\": [\"openid\", \"profile\", \"email\", \"offline_access\", \"wallet:receive\"],\n      \"missingResourceScopes\": {\n        \"https://api.enterprise.airtm.com\": [\"wallet:receive\"]\n      },\n      \"scopeDescriptions\": [\n        { \"scope\": \"openid\", \"description\": \"Authenticate the user and return an ID token.\" },\n        {\n          \"scope\": \"profile\",\n          \"description\": \"Request access to the user's profile claims such as name and username.\"\n        },\n        { \"scope\": \"email\", \"description\": \"Request access to the user's email address.\" },\n        {\n          \"scope\": \"offline_access\",\n          \"description\": \"Request a refresh token so your application can obtain a new access token later.\"\n        },\n        {\n          \"scope\": \"wallet:receive\",\n          \"description\": \"Partner may send funds into this user's AirTM wallet.\"\n        }\n      ]\n    }\n  },\n  \"params\": {\n    \"client_id\": \"acme-corp-web\",\n    \"scope\": \"openid profile email offline_access wallet:receive\",\n    \"redirect_uri\": \"https://acme.example.com/callback\",\n    \"response_type\": \"code\"\n  },\n  \"client\": {\n    \"id\": \"acme-corp-web\",\n    \"name\": \"ACME Payments\",\n    \"logo\": \"https://cdn.acme.example.com/airtm/logo.svg\"\n  },\n  \"session\": {\n    \"accountId\": \"8a16b9c2-6ae9-4324-b644-3936fe57c8ed\"\n  }\n}\n```\n\nNotes on the consent shape:\n\n- `prompt.details.missingOIDCScope` is the **union** of identity-style scopes (`openid`, `profile`, `email`, `offline_access`) _and_ resource scopes (`wallet:receive` etc.) the user hasn't yet approved on this grant.\n- `prompt.details.missingResourceScopes` is keyed by resource indicator (currently always `https://api.enterprise.airtm.com`) and lists only the resource-typed scopes from that set. The two lists overlap on resource scopes by design — the SPA should de-duplicate when rendering.\n- `prompt.details.scopeDescriptions` pairs each entry in `missingOIDCScope` with the human-readable copy stored in `oidc_allowed_scopes.description`. Render these strings on the consent screen rather than hard-coding labels per scope — the catalog is the source of truth and is the only place to edit user-facing wording. `description` is `null` for any scope that has no row in the catalog or whose `description` column is unset; the SPA should fall back to the raw scope name (or a generic line) in that case.\n- `session.accountId` is set on the consent prompt (login already completed) and is the same value that will appear as `sub` on the eventual `id_token`.\n- Wire keys on this response are returned verbatim — snake_case for OIDC fields (`client_id`, `redirect_uri`, …) and resource-indicator URLs are left as-is inside `missingResourceScopes`. The interaction router opts out of the auto-camelcase response transform so these values match the OIDC spec on the wire.\n\n`prompt.name` is either `\"login\"` or `\"consent\"`. `client` carries the display fields the consent screen needs (name, logo) so the SPA doesn't need a separate lookup.\n\n> [!NOTE]\n> The values you'll see in `client.name` and `client.logo` are whatever was registered for your client at onboarding. Both fields are surfaced from RFC 7591 standard client metadata (`client_name` and `logo_uri`).\n>\n> - `client.name` falls back to `client.id` (the wire-format `client_id`) when no human-readable display name has been registered. The frontend should still use `client.name` — it's the right field — but be prepared for it to equal the raw `client_id` for not-yet-fully-onboarded partners.\n> - `client.logo` is `null` when no logo URI has been registered. Render a generic placeholder in that case.\n\n### Registering your `client_name` and `logo_uri`\n\nThe values shown above (`ACME Payments`, `https://cdn.acme.example.com/airtm/logo.svg`) are what the consent screen renders to your users — they need to be set up at integration time. Send AirTM support the following when you register the client (or any time you want to update them):\n\n| Field         | Constraint                                                                                                                                        | Example                                       |\n| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |\n| `client_name` | Human-readable, up to ~80 characters. Shown on the AirTM-hosted consent screen as **\"\\<client_name\\> wants to access your AirTM account\"**.       | `ACME Payments`                               |\n| `logo_uri`    | HTTPS URL serving an image (SVG preferred, or a square PNG ≥128×128). Must be reachable from the public internet so AirTM-hosted UIs can load it. | `https://cdn.acme.example.com/airtm/logo.svg` |\n\nUntil both are registered the consent screen will fall back to your `client_id` for the name and a generic placeholder for the logo, which most end-users find confusing. Treat this as part of the launch checklist for any new app.\n\n---\n\n### `POST /interaction/:uid/login`\n\nEstablishes the authenticated session for the OIDC flow. Accepts a Dodrio-issued JWT — not raw credentials. Your SPA is responsible for driving Dodrio's `POST /login` (including any MFA / step-up prompts) and forwarding the resulting JWT to this endpoint.\n\nThe JWT can be transported two ways. Pick whichever fits your flow:\n\n| Transport                            | Use when                                                                                                                               |\n| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |\n| `{ \"jwt\": \"…\" }` body                | The SPA just exchanged credentials with Dodrio milliseconds ago. Standard explicit-handoff flow.                                       |\n| `Authorization: Bearer <jwt>` header | Silent SSO — the SPA already holds a fresh Dodrio JWT (e.g. the user is logged into another AirTM surface) and skips its own login UI. |\n\nWhen both are supplied the header wins.\n\n```bash\n# Body transport (default)\ncurl -si -c \"$COOKIES\" -b \"$COOKIES\" \\\n  -X POST \"https://api.enterprise.airtm.com/interaction/$OIDC_UID/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d \"{\\\"jwt\\\":\\\"$DODRIO_JWT\\\"}\"\n\n# Header transport (silent SSO)\ncurl -si -c \"$COOKIES\" -b \"$COOKIES\" \\\n  -X POST \"https://api.enterprise.airtm.com/interaction/$OIDC_UID/login\" \\\n  -H \"Authorization: Bearer $DODRIO_JWT\"\n```\n\nOn success this endpoint (and `/confirm`, `/abort`) returns **`200` JSON** rather than a `303`, so cross-origin SPAs can read the next URL without running into CORS opaque-redirect limitations:\n\n```json\n{ \"redirectTo\": \"https://api.enterprise.airtm.com/oidc/auth/<uid>\" }\n```\n\nThe SPA should set `window.location.href = response.redirectTo` to let the browser do the next navigation.\n\n| Status | Error code        | Cause                                                                          |\n| ------ | ----------------- | ------------------------------------------------------------------------------ |\n| `400`  | `invalid_request` | JWT not supplied in either the body or a Bearer Authorization header           |\n| `401`  | `invalid_token`   | Signature verification failed, JWT malformed, or `id` claim absent             |\n| `200`  | —                 | Success — body carries `{ redirectTo }`; SPA navigates the browser to that URL |\n\n> [!NOTE]\n> Account-state policy (BANNED, DELETED, GUEST, etc.) is enforced by Dodrio at the `/login` step. A JWT cannot be issued for a user in a blocked state, so the OIDC server never has to re-check.\n\n---\n\n### `POST /interaction/:uid/confirm`\n\nRecords the user's consent decision and resumes the authorization flow.\n\n| Field      | Required | Description                             |\n| ---------- | -------- | --------------------------------------- |\n| `accepted` | Yes      | `true` to grant access, `false` to deny |\n\n```bash\n# Accept\ncurl -si -c \"$COOKIES\" -b \"$COOKIES\" \\\n  -X POST \"https://api.enterprise.airtm.com/interaction/$CONSENT_UID/confirm\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"accepted\":true}'\n\n# Reject — ends the flow with error=access_denied at redirect_uri\ncurl -si -c \"$COOKIES\" -b \"$COOKIES\" \\\n  -X POST \"https://api.enterprise.airtm.com/interaction/$CONSENT_UID/confirm\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"accepted\":false}'\n```\n\nReturns `200` with `{ \"redirectTo\": \"<url>\" }` on both accept and reject — the SPA navigates the browser to that URL to resume the flow.\n\n---\n\n### `POST /interaction/:uid/abort`\n\nCancels the interaction at any stage (login or consent). Returns `200` with `{ \"redirectTo\": \"<url>\" }` — the SPA navigates the browser there, and the next hop ultimately lands at `redirect_uri?error=access_denied`.\n\n```bash\ncurl -si -c \"$COOKIES\" -b \"$COOKIES\" \\\n  -X POST \"https://api.enterprise.airtm.com/interaction/$OIDC_UID/abort\"\n```\n\n---\n\n## Token Lifetimes\n\n| Token              | TTL      |\n| ------------------ | -------- |\n| Access Token       | 1 hour   |\n| ID Token           | 1 hour   |\n| Authorization Code | 10 min   |\n| Refresh Token      | 30 days  |\n| Client Credentials | 1 hour   |\n| Session (cookie)   | 24 hours |\n\nTokens are persisted server-side, so the TTLs above hold across deploys and restarts — a 30-day refresh token issued today is still valid 30 days from now regardless of release cadence.\n\n---\n\n## Revocation\n\nA grant — the record of \"this user authorised this client for these scopes\" — can be terminated in three ways:\n\n| Trigger                                                    | Effect                                                                                                                                                                         |\n| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |\n| Partner calls [`/token/revocation`](#post-tokenrevocation) | Every access / refresh token issued under the same grant is invalidated. The grant record itself is preserved so a future re-consent extends it instead of creating a new one. |\n| Refresh-token replay (a consumed token reused)             | Treated as theft. Every token under the grant is invalidated and the user_connection is flipped to `revoked`. The user must re-consent before any new tokens can be issued.    |\n| User-driven revocation (future \"manage connections\" UI)    | Same outcome as the replay path — disconnects the user from the client. Already wired up server-side; the UI will land alongside profile claims.                               |\n\nAfter any of these, calls with the affected tokens return `invalid_grant` / `active: false`. The partner integration should treat that as \"start a fresh authorization flow.\"\n\n---\n\n## Common Errors\n\n| Error             | Cause                                                                                                                                 |\n| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |\n| `invalid_request` | Missing PKCE, missing required field, or malformed request                                                                            |\n| `invalid_scope`   | Requested a scope the server does not recognise, or one not approved for your client                                                  |\n| `invalid_client`  | Wrong `client_id` or `client_secret`, or the client has been disabled by Airtm support (the two are indistinguishable by design)      |\n| `access_denied`   | User rejected consent or aborted the interaction                                                                                      |\n| `invalid_grant`   | Authorization code already used/expired, `code_verifier` mismatch, or a consumed refresh token was replayed (entire grant is revoked) |\n\n\n---\n\n# Wallet Resource API\n\nThe Wallet Resource API lets your application move value in and out of an AirTM user's wallet on that user's behalf, read their balance, and check their KYC status. It is the counterpart to the [OAuth 2.0 / OIDC authorization server](#description/oidc): the authorization server issues the access token, and this API is the resource server that token is spent against.\n\nEvery endpoint here is authorized with a **Bearer access token** obtained through the authorization-code or client-credentials flow described in the [OIDC guide](#description/oidc). There are no API keys in this API — the token, and the scopes baked into it, _are_ the credential.\n\n---\n\n## Base URL\n\n| Environment | Base URL                                              |\n| ----------- | ----------------------------------------------------- |\n| Sandbox     | `https://api.stg.enterprise.airtm.com/api/connect/v1` |\n| Production  | `https://api.enterprise.airtm.com/api/connect/v1`     |\n\nAll paths below are relative to this base URL.\n\n---\n\n## Authentication\n\nSend the access token as a Bearer credential on every request:\n\n```bash\ncurl https://api.enterprise.airtm.com/api/connect/v1/balance \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\n- If the token is missing, malformed, expired, or revoked, the response is `401` with a `WWW-Authenticate: Bearer error=\"invalid_token\"` header.\n- If the token is valid but does not carry the scope the endpoint requires, the response is `403` with `WWW-Authenticate: Bearer error=\"insufficient_scope\", scope=\"<required>\"`.\n\nSee [Step 6 of the OIDC guide](#description/oidc) for the refresh flow when a token expires.\n\n### Scopes\n\nEach endpoint requires one specific scope. The token must have been granted that scope by the user (authorization-code flow) or configured for the client (client-credentials flow).\n\n| Scope            | Grants access to                                                                           |\n| ---------------- | ------------------------------------------------------------------------------------------ |\n| `wallet:read`    | `GET /balance`                                                                             |\n| `wallet:receive` | Create quotes and transactions **into** the user's wallet (deposits)                       |\n| `wallet:send`    | Create quotes and transactions **out of** the user's wallet (withdrawals), and confirm 2FA |\n| `kyc:status`     | `GET /kyc`                                                                                 |\n\n> [!NOTE]\n> The `/quotes` and `/transactions` endpoints accept **either** `wallet:receive` **or** `wallet:send` tokens. The `scope` field in the request body selects the action, and the server verifies your token actually carries that exact scope before doing anything else — an unauthorized action returns `403` regardless of whether the rest of the body is valid.\n\n---\n\n## The wallet money-movement model\n\nThis API moves **USDC on the Stellar network** in two directions, each gated by its own scope:\n\n- **`wallet:receive` (deposit / \"add funds\").** The partner funds the user's AirTM wallet by sending USDC on Stellar to a **dedicated AirTM pooled wallet**, tagging the transfer with a per-transaction `memo`. AirTM watches that wallet, matches the inbound payment to the transaction by its memo, and credits the user. The transaction response carries the `deposit` instructions (address + memo + amount).\n- **`wallet:send` (withdrawal).** The partner initiates an outbound transfer **from** the user's AirTM wallet to an external Stellar address. AirTM signs and submits the on-chain payment. The transaction response carries the `destination` and the on-chain `transactionMemo`.\n\nBoth directions are **priced by a quote first**, then **executed by a transaction** that references the locked quote. Quotes and transactions are the two core resources; balance and KYC are read-only lookups.\n\n---\n\n## Idempotency\n\n`POST /quotes` and `POST /transactions` **require** an `Idempotency-Key` header — a unique string you generate per logical request (a UUID is ideal). Omitting it returns `400`.\n\n```\nIdempotency-Key: 5f9b2c1e-3a4d-4e6f-8b1a-9c2d3e4f5a6b\n```\n\n- Replaying `POST /transactions` with the **same** key and the **same** request returns the original transaction with HTTP `200` (instead of `201`) and `isIdempotentReplay` semantics — no duplicate transfer is created.\n- Replaying the same key with a **different** request body is a conflict (`409`).\n\n> [!NOTE] > The 2FA endpoints `POST /transactions/:transactionId/2fa` and `.../2fa/resend` do **not** take an `Idempotency-Key`. They are made safe by the transaction's own state: an already-confirmed send returns its current state without re-verifying the (single-use) code, and resend is naturally repeatable (subject to rate limiting).\n\n---\n\n## Endpoints\n\n### `GET /balance`\n\nReturns the user's USDC wallet balance and the deposit/withdrawal amount limits. **Scope: `wallet:read`.**\n\n```bash\ncurl https://api.enterprise.airtm.com/api/connect/v1/balance \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\n**Response:**\n\n```json\n{\n  \"asset\": \"USDC\",\n  \"network\": \"stellar\",\n  \"balance\": \"125.40\",\n  \"limits\": {\n    \"deposit\": { \"min\": \"0.01\", \"max\": null },\n    \"withdrawal\": { \"min\": \"1.00\", \"max\": \"125.40\" }\n  }\n}\n```\n\n- `balance` is a fixed-2-decimal string.\n- `limits.deposit.min` is a fixed local floor (`0.01`); deposits have no maximum (`max: null`).\n- `limits.withdrawal.min` is sourced live from AirTM's Stellar Direct Withdraw pricing authority, so it matches what withdrawal quotes enforce. Withdrawals have no fixed maximum — the real ceiling is the user's balance, which is echoed as `withdrawal.max`.\n\n---\n\n### `GET /kyc`\n\nReturns the user's identity-verification status. **Scope: `kyc:status`.**\n\n```bash\ncurl https://api.enterprise.airtm.com/api/connect/v1/kyc \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\n**Response:**\n\n```json\n{\n  \"status\": \"verified\",\n  \"fullLegalName\": \"Alice Example\",\n  \"country\": \"AR\",\n  \"verifiedAt\": \"2026-01-15T10:22:00.000Z\"\n}\n```\n\n| Field           | Type                                                            | Description                                        |\n| --------------- | --------------------------------------------------------------- | -------------------------------------------------- |\n| `status`        | `verified` \\| `in_progress` \\| `pending_review` \\| `unverified` | The user's current verification state.             |\n| `fullLegalName` | string \\| null                                                  | Legal name on file, `null` if unknown.             |\n| `country`       | string \\| null                                                  | ISO country code, `null` if unknown.               |\n| `verifiedAt`    | string (ISO-8601) \\| null                                       | When verification last cleared, `null` if not yet. |\n\nReturns `404` if the user cannot be found.\n\n---\n\n### `POST /quotes`\n\nPrices a transfer and locks the amounts and fees for **1 hour**. **Scope: `wallet:receive` or `wallet:send`** (matched against the body's `scope`). Requires an `Idempotency-Key`.\n\nProvide **exactly one** of `amountToSend` or `amountToReceive`; the server computes the other by applying the fees:\n\n- **`amountToSend`** — you fix how much leaves the source; the server deducts fees to compute what lands on the other side.\n- **`amountToReceive`** — you fix how much should land on the other side; the server grosses up the amount so exactly that lands after fees.\n\n| Field             | Required | Description                                                                                                   |\n| ----------------- | -------- | ------------------------------------------------------------------------------------------------------------- |\n| `scope`           | Yes      | `wallet:receive` or `wallet:send`. Must match a scope your token carries.                                     |\n| `amountToSend`    | Cond.    | Decimal, up to 2 dp. Provide this **or** `amountToReceive`, not both.                                         |\n| `amountToReceive` | Cond.    | Decimal, up to 2 dp. Provide this **or** `amountToSend`, not both.                                            |\n| `partnerFee`      | No       | Per-transaction fee you charge, in wallet currency. `≥ 0` and strictly less than the amount. Defaults to `0`. |\n\n```bash\ncurl -X POST https://api.enterprise.airtm.com/api/connect/v1/quotes \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"Idempotency-Key: $(uuidgen)\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"scope\": \"wallet:send\",\n    \"amountToSend\": \"50.00\",\n    \"partnerFee\": \"0.50\"\n  }'\n```\n\n**Response:**\n\n```json\n{\n  \"quoteId\": \"b2c3d4e5-...\",\n  \"scope\": \"wallet:send\",\n  \"amountToSend\": 50.0,\n  \"amountToReceive\": 48.5,\n  \"fees\": {\n    \"platformFee\": 1.0,\n    \"partnerFee\": 0.5,\n    \"networkFee\": 0.0,\n    \"totalFee\": 1.5\n  },\n  \"expiresAt\": \"2026-07-06T15:30:00.000Z\"\n}\n```\n\n| Field              | Description                                                                                       |\n| ------------------ | ------------------------------------------------------------------------------------------------- |\n| `quoteId`          | Pass this to `POST /transactions` to execute the quote.                                           |\n| `amountToSend`     | Amount leaving the source, in USDC.                                                               |\n| `amountToReceive`  | Amount landing on the other side, in USDC. `amountToSend − totalFee === amountToReceive` exactly. |\n| `fees.platformFee` | AirTM platform fee (fixed + variable), per your client configuration.                             |\n| `fees.partnerFee`  | The `partnerFee` you supplied.                                                                    |\n| `fees.networkFee`  | Stellar network fee (currently `0`).                                                              |\n| `fees.totalFee`    | Sum of all fees.                                                                                  |\n| `expiresAt`        | ISO-8601, 1 hour after creation. A transaction against an expired quote is rejected (`422`).      |\n\n> [!NOTE]\n> Requesting the same quote parameters again within the hour returns the **existing** quote rather than minting a new one, so pricing is stable across retries.\n\n**Amount limits.** `wallet:send` quotes are validated against AirTM's Stellar Direct Withdraw minimum, and rejected with `422` (`minimum_amount_not_met`) below it. If the user already has an open withdrawal, the quote is rejected with `409` — clear it before quoting again. `wallet:receive` quotes enforce a `0.01` floor.\n\n---\n\n### `POST /transactions`\n\nExecutes a locked quote: registers the transfer and kicks off settlement. **Scope: `wallet:receive` or `wallet:send`** (matched against the body's `scope`). Requires an `Idempotency-Key`.\n\n| Field                  | Required           | Description                                                                                                                          |\n| ---------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |\n| `quoteId`              | Yes                | The quote to execute. Must belong to this user, match `scope`, and be unexpired.                                                     |\n| `scope`                | Yes                | `wallet:receive` or `wallet:send`. Must match the quote's scope and a scope on your token.                                           |\n| `partnerReference`     | Cond.              | Your own reference, max 16 chars. **Required for `wallet:receive`**, optional for `wallet:send`. Unique per client (see note below). |\n| `destination`          | `wallet:send` only | The outbound destination (see below).                                                                                                |\n| `relatedTransactionId` | No                 | UUID linking to a prior transaction. Stored for your reference; not otherwise acted on.                                              |\n\n**`destination` (required for `wallet:send`):**\n\n| Field            | Required | Description                                                                              |\n| ---------------- | -------- | ---------------------------------------------------------------------------------------- |\n| `stellarAddress` | Yes      | A valid Ed25519 Stellar public key (`G…`). Malformed addresses are rejected immediately. |\n| `memo`           | No       | Recipient-required memo. If set, it is submitted on-chain verbatim.                      |\n| `memoType`       | Cond.    | Must be `MEMO_TEXT`. **Required when `memo` is supplied.**                               |\n\n> [!NOTE] > **`partnerReference` uniqueness is scoped to your client.** A value you have already used on a transaction cannot be reused by you — a second create with the same `partnerReference` (and a new `Idempotency-Key`) is rejected with `409 partnerReference already in use`. This holds regardless of the earlier transaction's outcome, so a reference is **not** freed up if that transaction later fails or expires — pick a fresh reference to retry. The uniqueness is per client: a _different_ partner using the same string is unaffected. (This is distinct from the idempotency `409`, which is a replay of the **same** key with a **different** body.)\n\n```bash\n# wallet:send\ncurl -X POST https://api.enterprise.airtm.com/api/connect/v1/transactions \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"Idempotency-Key: $(uuidgen)\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"quoteId\": \"b2c3d4e5-...\",\n    \"scope\": \"wallet:send\",\n    \"partnerReference\": \"INV-1042\",\n    \"destination\": {\n      \"stellarAddress\": \"GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH\",\n      \"memo\": \"order-1042\",\n      \"memoType\": \"MEMO_TEXT\"\n    }\n  }'\n```\n\n**Response (`201 Created`) — `wallet:send`:**\n\n```json\n{\n  \"transactionId\": \"c3d4e5f6-...\",\n  \"partnerReference\": \"INV-1042\",\n  \"relatedTransactionId\": null,\n  \"scope\": \"wallet:send\",\n  \"status\": \"pending_user_confirmation\",\n  \"amountToSend\": 50.0,\n  \"amountToReceive\": 48.5,\n  \"fees\": { \"platformFee\": 1.0, \"partnerFee\": 0.5, \"networkFee\": 0.0, \"totalFee\": 1.5 },\n  \"stellarTxHash\": null,\n  \"createdAt\": \"2026-07-06T14:30:05.000Z\",\n  \"broadcastAt\": null,\n  \"completedAt\": null,\n  \"failureReason\": null,\n  \"destination\": { \"stellarAddress\": \"GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH\" },\n  \"transactionMemo\": \"order-1042\"\n}\n```\n\n**Response (`201 Created`) — `wallet:receive`** carries `deposit` instructions instead of `destination`:\n\n```json\n{\n  \"transactionId\": \"d4e5f6a7-...\",\n  \"partnerReference\": \"TOPUP-88\",\n  \"scope\": \"wallet:receive\",\n  \"status\": \"created\",\n  \"amountToSend\": 50.0,\n  \"amountToReceive\": 48.5,\n  \"fees\": { \"platformFee\": 1.0, \"partnerFee\": 0.5, \"networkFee\": 0.0, \"totalFee\": 1.5 },\n  \"stellarTxHash\": null,\n  \"createdAt\": \"2026-07-06T14:30:05.000Z\",\n  \"broadcastAt\": null,\n  \"completedAt\": null,\n  \"failureReason\": null,\n  \"deposit\": {\n    \"stellarAddress\": \"GDPOOLEDWALLETADDRESSEXAMPLE4AIRTMOIDCRECEIVEXXXXXXXXXXXX\",\n    \"memo\": \"MABQEXAMPLEBASE32MEMO123456\",\n    \"memoType\": \"MEMO_TEXT\",\n    \"amountExpected\": 50.0,\n    \"asset\": \"USDC\",\n    \"network\": \"stellar\",\n    \"expiresAt\": \"2026-07-06T15:30:00.000Z\"\n  }\n}\n```\n\n> [!IMPORTANT]\n> For a `wallet:receive` deposit, you **must** send the USDC to `deposit.stellarAddress` **with `deposit.memo` set as `MEMO_TEXT`**. Without the exact memo, AirTM cannot correlate the inbound payment to this transaction and the funds cannot be credited. Fund before `deposit.expiresAt`.\n\n**Transaction response fields (both scopes):**\n\n| Field                                       | Description                                                                                    |\n| ------------------------------------------- | ---------------------------------------------------------------------------------------------- |\n| `transactionId`                             | AirTM's transaction id.                                                                        |\n| `partnerReference`                          | Your reference, or `null`.                                                                     |\n| `relatedTransactionId`                      | Your linked transaction, or `null`.                                                            |\n| `status`                                    | Lifecycle state — see [Transaction lifecycle](#transaction-lifecycle).                         |\n| `amountToSend` / `amountToReceive` / `fees` | Echoed from the locked quote.                                                                  |\n| `stellarTxHash`                             | On-chain hash, populated once broadcast/confirmed; `null` until then.                          |\n| `createdAt`                                 | ISO-8601 creation time.                                                                        |\n| `broadcastAt`                               | ISO-8601, stamped when the Stellar tx is broadcast & observed (`status → pending_settlement`). |\n| `completedAt`                               | ISO-8601, stamped on successful completion; `null` otherwise (including `failed`).             |\n| `failureReason`                             | Populated only on a `failed` transaction; `null` otherwise.                                    |\n| `destination`                               | `wallet:send` only: `{ stellarAddress }`.                                                      |\n| `transactionMemo`                           | `wallet:send` only: the memo submitted on-chain (your `memo`, or an AirTM-generated one).      |\n| `deposit`                                   | `wallet:receive` only: the funding instructions shown above.                                   |\n\n> [!IMPORTANT] > **Every `wallet:send` is confirmed by the user.** A newly created send is returned with `status: \"pending_user_confirmation\"` (never `created`), and the transfer is **not** dispatched until the user's one-time code is confirmed via [`POST /transactions/:transactionId/2fa`](#post-transactionstransactionid2fa). AirTM issues the code on the user's configured 2FA channel (SMS, WhatsApp, or authenticator app); if the user has no 2FA configured, AirTM automatically emails the code. See [Per-transaction 2FA](#per-transaction-2fa).\n\n---\n\n### `POST /transactions/:transactionId/2fa`\n\nConfirms a `wallet:send` transaction that is parked in `pending_user_confirmation` by submitting the user's 2FA code. On a valid code, the gate clears and the outbound transfer is dispatched. **Scope: `wallet:send`.** No `Idempotency-Key`.\n\n| Field  | Required | Description                                             |\n| ------ | -------- | ------------------------------------------------------- |\n| `code` | Yes      | The 2FA code the user received / generated. 4–8 digits. |\n\n```bash\ncurl -X POST https://api.enterprise.airtm.com/api/connect/v1/transactions/c3d4e5f6-.../2fa \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{ \"code\": \"123456\" }'\n```\n\n**Response (`200`):** the same transaction shape as `POST /transactions`, now with `status: \"created\"` (dispatched).\n\n| Condition                                                     | Result                                             |\n| ------------------------------------------------------------- | -------------------------------------------------- |\n| Valid code                                                    | `200`, gate cleared, transfer dispatched.          |\n| Invalid / expired code                                        | `422` `415123` — transaction stays parked; retry.  |\n| Transaction already cleared (created/settling/done)           | `200`, current state returned (idempotent replay). |\n| Transaction not in `pending_user_confirmation`, or not a send | `409` `415122`.                                    |\n| 2FA settings can't be verified (upstream outage)              | `503` `415124` (retryable).                        |\n\n---\n\n### `POST /transactions/:transactionId/2fa/resend`\n\nRe-issues the one-time code for a `wallet:send` still parked in `pending_user_confirmation` — for when the user didn't receive it or lost it. AirTM issues a fresh code on the same channel used at creation; the new code supersedes the previous one. This does **not** advance the transaction. **Scope: `wallet:send`.** No request body and no `Idempotency-Key`.\n\n```bash\ncurl -X POST https://api.enterprise.airtm.com/api/connect/v1/transactions/c3d4e5f6-.../2fa/resend \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\n**Response (`200`):** the same transaction shape, still `status: \"pending_user_confirmation\"`.\n\n| Condition                                                     | Result                                             |\n| ------------------------------------------------------------- | -------------------------------------------------- |\n| Send is parked                                                | `200`, a fresh code is issued; state unchanged.    |\n| Transaction not in `pending_user_confirmation`, or not a send | `409` `415122`.                                    |\n| Requested too soon / too often                                | `429` — AirTM rate-limits code requests; back off. |\n\n---\n\n### `GET /transactions/:transactionId`\n\nFetches a single transaction by id. Scoped to the token's user. **Scope: `wallet:receive` or `wallet:send`.**\n\n```bash\ncurl https://api.enterprise.airtm.com/api/connect/v1/transactions/c3d4e5f6-... \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\nReturns the transaction shape. `404` if the id doesn't exist for this user.\n\n---\n\n### `GET /transactions/by-reference/:partnerReference`\n\nFetches a transaction by the `partnerReference` you supplied at creation. Scoped to your client. **Scope: `wallet:receive` or `wallet:send`.**\n\n```bash\ncurl https://api.enterprise.airtm.com/api/connect/v1/transactions/by-reference/INV-1042 \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\nReturns the transaction shape. `404` if no transaction with that reference exists for your client.\n\n---\n\n### `GET /transactions`\n\nLists the user's transactions newest-first within a time window, with cursor pagination. **Scope: `wallet:receive` or `wallet:send`.**\n\n| Query param        | Required | Description                                                                       |\n| ------------------ | -------- | --------------------------------------------------------------------------------- |\n| `from`             | Yes      | ISO-8601 start of the window (inclusive).                                         |\n| `to`               | Yes      | ISO-8601 end of the window (exclusive). Must be after `from`, within **31 days**. |\n| `scope`            | No       | Filter by `wallet:receive` or `wallet:send`.                                      |\n| `status`           | No       | Filter by lifecycle status.                                                       |\n| `partnerReference` | No       | Filter by your reference.                                                         |\n| `limit`            | No       | Page size, 1–500. Defaults to 100.                                                |\n| `cursor`           | No       | Opaque forward cursor from the previous page's `nextCursor`.                      |\n\n```bash\ncurl \"https://api.enterprise.airtm.com/api/connect/v1/transactions?from=2026-07-01T00:00:00Z&to=2026-07-06T00:00:00Z&scope=wallet:send&limit=50\" \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\"\n```\n\n**Response:**\n\n```json\n{\n  \"transactions\": [{ \"transactionId\": \"...\", \"status\": \"completed\", \"...\": \"...\" }],\n  \"nextCursor\": \"eyJpZCI6...\"\n}\n```\n\n- `transactions` is a page of transaction objects (same shape as above).\n- `nextCursor` is an opaque cursor to pass as `cursor` on the next request; it is `null` when there are no more results.\n\n---\n\n## Transaction lifecycle\n\nA transaction moves through these statuses. Each transition (except the initial `created`) also emits a [webhook](#webhooks).\n\n| Status                      | Meaning                                                                                                                                                                                                                                              |\n| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| `created`                   | Registered and handed off for settlement. For `wallet:send`, this is reached **after** the user confirms 2FA, and the outbound transfer is dispatched. For `wallet:receive`, it is the initial state and AirTM is waiting for your on-chain deposit. |\n| `pending_user_confirmation` | `wallet:send` only, and the **initial** state for every send. The user must confirm a one-time code before the transfer dispatches. See below.                                                                                                       |\n| `pending_settlement`        | The Stellar transaction has been broadcast and observed on-chain (`broadcastAt` is stamped).                                                                                                                                                         |\n| `completed`                 | Settled successfully (`completedAt` is stamped; `stellarTxHash` populated).                                                                                                                                                                          |\n| `failed`                    | Terminal failure. `failureReason` explains why.                                                                                                                                                                                                      |\n\n```\n                     ┌───────────────────────────┐\n create (send) ────► │ pending_user_confirmation │──confirm 2FA──┐\n                     └───────────────────────────┘               │\n                                                                  ▼\n create (receive) ──────────────────────────────────────────► created\n                                                                  │\n                                                         broadcast & observed\n                                                                  ▼\n                                                         pending_settlement\n                                                            │          │\n                                                        success      failure\n                                                            ▼          ▼\n                                                       completed     failed\n```\n\n---\n\n## Per-transaction 2FA\n\n**Every `wallet:send` requires the user to confirm a one-time code** before the transfer leaves their wallet. This is a second, _user-level_ authorization layered on top of the partner's `wallet:send` scope — it applies to every send, regardless of the user's 2FA settings.\n\n**Flow:**\n\n1. **Create the send.** `POST /transactions` with `scope: wallet:send`. The response `status` is always `pending_user_confirmation` (never `created`), and no transfer is dispatched yet. AirTM issues the code to the user on the appropriate channel (see below).\n2. **Collect the code from the user.** Your app prompts the user for the code they received / generated. If they didn't get it, call [`POST /transactions/:transactionId/2fa/resend`](#post-transactionstransactionid2faresend).\n3. **Confirm.** `POST /transactions/:transactionId/2fa` with `{ \"code\": \"…\" }`. On a valid code the transaction flips to `created` and the outbound transfer dispatches; on an invalid code you get `422` and the transaction stays parked for another attempt.\n\n**How the code is delivered:**\n\n- If the user has 2FA configured, the code goes to their own method — **SMS**, **WhatsApp**, or an **authenticator app** (TOTP, which the user reads from the app; no message is sent).\n- If the user has **no** 2FA configured, AirTM automatically **emails** the code to the address on their AirTM account. This email fallback is fully managed by AirTM.\n- Your app never chooses the channel, and the code is never returned to you — it only reaches the user.\n\n**Notes:**\n\n- The confirm endpoint is safe to retry: a transaction that already cleared the gate returns its current state instead of re-verifying the single-use code.\n- Codes expire and are rate-limited. Use the resend endpoint rather than re-creating the transaction if a user needs a new code.\n\n---\n\n## Webhooks\n\nTransaction lifecycle transitions are delivered as [webhooks](#tag/Webhooks) (via Svix). Configure an endpoint in the [enterprise dashboard](https://enterprise.airtm.com/settings/webhooks) and verify signatures as described in the [Webhooks guide](#tag/Webhooks).\n\n| Event type                           | Fired when                                                                      |\n| ------------------------------------ | ------------------------------------------------------------------------------- |\n| `oidc.transaction.created`           | A transaction is registered (`status: created` or `pending_user_confirmation`). |\n| `oidc.transaction.pendingSettlement` | The Stellar transaction is broadcast & observed (`status: pending_settlement`). |\n| `oidc.transaction.completed`         | The transaction settles successfully (`status: completed`).                     |\n| `oidc.transaction.failed`            | The transaction fails terminally (`status: failed`).                            |\n\n**Payload shape.** Every event wraps the same transaction object returned by the REST endpoints:\n\n```json\n{\n  \"type\": \"oidc.transaction.completed\",\n  \"data\": {\n    \"transactionId\": \"c3d4e5f6-...\",\n    \"scope\": \"wallet:send\",\n    \"status\": \"completed\",\n    \"amountToSend\": 50.0,\n    \"amountToReceive\": 48.5,\n    \"fees\": { \"platformFee\": 1.0, \"partnerFee\": 0.5, \"networkFee\": 0.0, \"totalFee\": 1.5 },\n    \"stellarTxHash\": \"a1b2c3...\",\n    \"completedAt\": \"2026-07-06T14:31:10.000Z\",\n    \"...\": \"...\"\n  }\n}\n```\n\n> [!NOTE]\n> On the rare terminal event where the underlying quote can no longer be loaded, the quote-derived fields (`amountToSend`, `amountToReceive`, `fees`) are delivered as `null` so the status change is never dropped. The REST read endpoints never return these as `null`.\n\n---\n\n## Error codes\n\nErrors follow the platform's standard [reason-code](#description/reason-codes) format. The codes specific to this API:\n\n| Code     | HTTP | Meaning                                                                  |\n| -------- | ---- | ------------------------------------------------------------------------ |\n| `415115` | 422  | The quote has expired — request a new one.                               |\n| `415116` | 422  | The quote's scope doesn't match the requested transaction scope.         |\n| `415117` | 422  | The requested scope is not supported for transactions.                   |\n| `415119` | 400  | `wallet:send` is missing the required `destination.stellarAddress`.      |\n| `415120` | 422  | The Stellar memo exceeds the 28-byte `MEMO_TEXT` limit.                  |\n| `415122` | 409  | The transaction is not awaiting 2FA confirmation (wrong state or scope). |\n| `415123` | 422  | The submitted 2FA code is invalid or expired.                            |\n| `415124` | 503  | The user's 2FA settings couldn't be verified — retryable.                |\n\nAmount-window and open-operation rejections surface as the shared platform codes: `minimum_amount_not_met` / `maximum_amount_exceeded` (`422`), and a `409` when the user already has an open withdrawal.\n\nTwo conflict conditions on `POST /transactions` are returned as a `409` with a plain `message` (no reason-code): `partnerReference already in use` (the reference is already taken by one of your transactions) and `Idempotency key already associated to another transaction` (the same `Idempotency-Key` was replayed with a different body).\n\nStandard bearer-auth failures apply on every endpoint: `401 invalid_token` (missing/expired/revoked token) and `403 insufficient_scope` (token lacks the required scope).\n\n\n---\n\n# Connecting\n\nThis guide covers environments, rate limits, and webhook configuration for the Airtm Enterprise API.\n\n## API Environments\n\n| Environment | Base URL                               |\n| ----------- | -------------------------------------- |\n| Sandbox     | `https://api.stg.enterprise.airtm.com` |\n| Production  | `https://api.enterprise.airtm.com`     |\n\n### Environment Setup\n\nUse different API keys for each environment:\n\n- **Sandbox**: Use your sandbox API keys for testing\n- **Production**: Use your production API keys for live transactions\n\n> [!IMPORTANT]\n> Never mix environments. Use sandbox keys only in sandbox, production keys only in production.\n\n## Rate Limits\n\n- **Limit**: 10 requests per second per API key\n- **Response**: HTTP 429 when exceeded\n- **Applies to**: All endpoints in both environments\n\n### Handling Rate Limits\n\nImplement exponential backoff when you receive 429 responses:\n\n```javascript\nasync function makeApiCall(url, options, retries = 3) {\n  try {\n    const response = await fetch(url, options);\n\n    if (response.status === 429 && retries > 0) {\n      const delay = Math.pow(2, 4 - retries) * 1000;\n      await new Promise((resolve) => setTimeout(resolve, delay));\n      return makeApiCall(url, options, retries - 1);\n    }\n\n    return response;\n  } catch (error) {\n    throw error;\n  }\n}\n```\n\n## IP Addresses\n\n**Sandbox:**\n\n```text\n54.192.137.90\n54.192.137.12\n54.192.137.42\n54.192.137.126\n2600:9000:2062:1400:1f:5ce8:1ac0:93a1\n2600:9000:2062:8e00:1f:5ce8:1ac0:93a1\n2600:9000:2062:b800:1f:5ce8:1ac0:93a1\n2600:9000:2062:7e00:1f:5ce8:1ac0:93a1\n2600:9000:2062:7c00:1f:5ce8:1ac0:93a1\n2600:9000:2062:6800:1f:5ce8:1ac0:93a1\n2600:9000:2062:f600:1f:5ce8:1ac0:93a1\n2600:9000:2062:3400:1f:5ce8:1ac0:93a1\n```\n\n**Production:**\n\n```text\n13.224.222.5\n13.224.222.93\n13.224.222.70\n13.224.222.79\n2600:9000:21a8:1000:15:e711:f040:93a1\n2600:9000:21a8:d000:15:e711:f040:93a1\n2600:9000:21a8:3200:15:e711:f040:93a1\n2600:9000:21a8:e000:15:e711:f040:93a1\n2600:9000:21a8:de00:15:e711:f040:93a1\n2600:9000:21a8:fc00:15:e711:f040:93a1\n2600:9000:21a8:3c00:15:e711:f040:93a1\n2600:9000:21a8:7200:15:e711:f040:93a1\n```\n\n\n---\n\n# Reason Codes\n\nWhen API requests fail, you'll receive specific reason codes to help identify and resolve issues quickly.\n\n## Error Categories\n\n### Authentication & Authorization\n\n- **415006**: No API keys configured - Set up API keys in settings\n- **415024**: Maximum API keys reached - Delete unused keys\n- **415025**: API key not found - Verify key exists\n- **415028**: Enterprise account required - Contact support\n- **415904**: Unauthorized request - Check your API key and Authorization header\n- **415905**: Insufficient permissions - Contact account manager to verify account permissions\n\n### Validation\n\n- **415054**: Invalid sort field - Check sort parameter\n- **415901**: Invalid request format - Check JSON syntax and request body\n- **415902**: Item not found - Verify resource ID\n- **415903**: Request cannot be processed - Check request parameters\n- **415906**: Invalid request - Validate request format\n\n### User Issues\n\n- **415008**: Recipient address not active - Retry later\n- **415009**: Recipient address inactive - Contact recipient\n- **415010**: User deleted or banned - User must contact support\n- **415034**: User insufficient balance - User must add funds\n- **415059**: Recipient not found - Verify recipient information\n- **415060**: Recipient cannot receive payouts - Contact recipient\n- **415061**: Recipient from restricted territory - Use different recipient\n- **415062**: Invalid recipient payment method - Recipient must reconfigure\n- **415064**: Invalid recipient payment method - Recipient must reconfigure\n- **415065**: User has violated the AML policy\n- **415103**: User is missing required information - User must have first name and last name to process payouts\n- **415912**: Waiting for recipient to create an Airtm account\n\n### Payout Issues\n\n- **415005**: Payout not found - Verify payout ID\n- **415005**: Payout not found - Verify payout ID\n- **415016**: Insufficient balance for payout - Add funds to wallet\n- **415027**: Payout already processed - Check payout status\n- **415035**: Payout amount too small - Increase payout amount\n- **415055**: Cannot cancel non-pending payout - Check payout status\n- **415056**: Payout code already exists - Use unique code\n- **415057**: Payout exceeds maximum limit - Reduce payout amount\n- **415058**: Payout below minimum limit - Increase payout amount\n- **415073**: The payment provider could not deliver the funds to the user's payment method\n\n### Payin Issues\n\n- **415029**: Payin code already exists - Use unique code\n- **415030**: Cannot confirm or cancel payin - Check payin status\n- **415031**: Payin not found - Verify payin ID\n- **415032**: Payin already completed - Check payin status\n- **415053**: US users cannot make payins - Use alternative payment method\n\n### Bulk Operations\n\n- **415011**: Invalid file upload - Check file format and resubmit\n- **415012**: Duplicate payouts detected - Remove duplicates\n- **415013**: Bulk payout not in pending status - Check payout status\n- **415014**: Insufficient balance - Add funds to wallet\n- **415015**: Daily limit exceeded ($250,000) - Wait for next day or contact support\n- **415017**: Cannot reject bulk payout - Check if already in progress\n- **415019**: Bulk payout not finished - Wait for completion\n- **415041**: Bulk payout not found - Verify bulk payout ID\n\n### Account Management\n\n- **415022**: Must empty balance before account deletion - Withdraw all funds\n- **415045**: Deposit account type exists - Use different account type\n- **415047**: Insufficient balance for withdrawal - Check currency balance\n\n### Payment Infrastructure\n\n- **415003**: Error reaching external service - Contact account manager\n- **415036**: No active payment provider - Contact account manager\n- **415046**: Country not supported - Contact account manager\n- **415048**: Invalid payment rail - Verify account configuration\n- **415049**: Bridge account not found - Contact account manager\n- **415050**: Invalid crypto payment rail - Use Ethereum or Stellar\n- **415051**: Crypto wallet not found - Contact account manager\n\n### Reports & Operations\n\n- **415039**: Operation not found - Verify operation ID\n- **415042**: Statement not found - Verify statement ID\n- **415043**: Statement not pending - Check statement status\n- **415044**: Statement not completed - Wait for completion\n\n### System Errors\n\n- **415998**: Unexpected error - Contact account manager\n- **415999**: Unknown error - Contact account manager\n\n## Quick Troubleshooting\n\n**Before contacting support:**\n\n1. Check your API credentials and permissions\n2. Verify request format and required fields\n3. Confirm sufficient account balance\n4. Review user/recipient account status\n5. Check for duplicate codes or IDs\n\n**When contacting support:**\n\n- Include the specific error code\n- Provide request details and timestamps\n- Include relevant IDs (payout, payin, user)\n- Describe what you were trying to accomplish\n\n\n---\n\n# Frequently Asked Questions\n\n## API Credentials\n\n### Generating API Credentials (API Key & Secret)\n\n1. Log in to your Airtm Enterprise account\n2. Go to: **Settings → API Keys**\n3. Click **Generate New API Key**\n4. Save both the **API Key** and **Secret Key** securely\n\n> ⚠️ **Important**: Credentials are displayed only once—store them securely.\n\n### Key Considerations\n\n- **One credential per account**: Only one API credential can be generated per Enterprise account\n- **Role requirements**: Only users with Owner or Admin roles can access this feature\n- **Environment separation**: Use different keys for sandbox and production\n- **Security**: Never expose keys in client-side code or public repositories\n\n---\n\n## Getting Started with the API\n\n### Scope of the Airtm API\n\n✅ **The Airtm API enables:**\n\n- **Payouts**: Send money to recipients worldwide through their Airtm accounts\n- **Payins**: Collect payments from users globally\n- **Bulk Payouts**: Process multiple payouts efficiently in batches\n- **User Verification**: Check recipient account status before sending payments\n- **Account Management**: Monitor balances and account information\n- **Reports**: Generate transaction data and audit reports\n- **Withdrawals**: Transfer funds to external bank or crypto accounts\n- **Deposits**: Track incoming funds to your enterprise account\n\n❌ **Not supported:**\n\n- P2P functionality between regular users\n- Card operations or card-based payments\n- Direct bank account creation for users\n- Real-time currency trading\n\n### Supported Regions\n\n\U0001F30D Airtm operates globally in 190+ countries, but certain jurisdictions are restricted due to regulatory requirements.\n→ [Check the list of unsupported regions](https://help.airtm.com/en/support/solutions/articles/47001177565-where-are-airtm-s-products-and-services-available-)\n\n### iFrames & Embedded Pages\n\n\U0001F6AB Embedding Airtm pages via iframes is not supported due to security policies and authentication requirements.\n\n### Rate Limits\n\n- **Standard Rate Limit**: 10 requests per second per API key\n- **Response**: HTTP 429 when exceeded\n- **Best Practice**: Implement exponential backoff for retries\n- **Higher Limits**: Contact support for increased limits if needed\n\n### Currency & Payment Methods\n\n- **Primary Currency**: All API operations are denominated in USD (USDC)\n- **Currency conversion**: Handled automatically by the platform when needed\n- **Supported transactions**: Between Airtm accounts and to external destinations\n- **Fee structure**: Transparent fee calculation for all operations\n\n---\n\n## API Environments\n\n### Sandbox (Testing) Environment\n\n| **Parameter**        | **Value**                                                          |\n| -------------------- | ------------------------------------------------------------------ |\n| **Base URL**         | `https://api.stg.enterprise.airtm.com`                             |\n| **Enterprise Login** | [Sandbox Portal](https://stg.enterprise.airtm.com)                 |\n| **Documentation**    | [Sandbox Documentation](https://api.stg.enterprise.airtm.com/docs) |\n\n#### Available Operations:\n\n- **Payouts**: `/payouts` - Send money to recipients\n- **Payins**: `/payins` - Collect payments from users\n- **Bulk Payouts**: `/bulk-payouts` - Process multiple payouts\n- **Users**: `/users` - Verify recipient accounts\n- **Reports**: `/reports` - Generate transaction and activity reports\n- **Withdrawals**: `/withdrawals` - Transfer to external accounts\n\n#### Test Accounts:\n\n- Create test accounts manually for comprehensive testing\n- Request test funds from your assigned Airtm manager\n- At least two accounts needed for complete transaction testing\n\n### Production Environment\n\n| **Parameter**        | **Value**                                                         |\n| -------------------- | ----------------------------------------------------------------- |\n| **Base URL**         | `https://api.enterprise.airtm.com`                                |\n| **Enterprise Login** | [Live Portal](https://enterprise.airtm.com)                       |\n| **Documentation**    | [Production Documentation](https://api.enterprise.airtm.com/docs) |\n\n> ⚠️ **Important**: Always test thoroughly in sandbox before using production.\n\n---\n\n## Webhooks & Notifications\n\nConfigure webhook URLs to receive real-time notifications when transaction statuses change.\n\n### Supported Operations\n\nWebhooks are available for:\n\n- **Payouts**: Status updates from creation to completion\n- **Payins**: Payment processing notifications\n- **Bulk Payouts**: Batch processing status updates\n\n### Webhook Security\n\n**IP Whitelisting** - Whitelist these IPs to receive webhooks:\n\n\U0001F512 → [Current server IPs are listed here](#description/ip-addresses)\n\n### Webhook Management\n\n- **Svix Integration**: Enhanced webhook delivery and management\n- **Portal Access**: Configure webhooks through application portal\n- **Signature Verification**: Validate webhook authenticity\n- **Retry Logic**: Automatic retries for failed deliveries\n\n### Example: Payout Webhook Payload\n\n```json\n{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"bulkPayoutId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"hash\": \"string\",\n  \"code\": \"string\",\n  \"airtmUserId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"airtmUserEmail\": \"string\",\n  \"requireIdVerified\": false,\n  \"notes\": \"string\",\n  \"internalNote\": \"string\",\n  \"status\": \"COMPLETED\",\n  \"grossAmount\": 10,\n  \"amount\": 9.5,\n  \"netAmount\": 9,\n  \"airtmFee\": 0.5,\n  \"enterpriseFee\": 0.5,\n  \"reasonCode\": 522443,\n  \"reasonDescription\": \"string\",\n  \"createdAt\": \"2025-08-20T17:01:44.634Z\",\n  \"updatedAt\": \"2025-08-20T17:01:44.634Z\"\n}\n```\n\n### Example Payin Webhook Payload\n\n```json\n{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"code\": \"string\",\n  \"hash\": \"string\",\n  \"status\": \"CREATED\",\n  \"amount\": 10,\n  \"netAmount\": 9.5,\n  \"airtmFee\": 0.5,\n  \"description\": \"string\",\n  \"items\": [\n    {\n      \"description\": \"string\",\n      \"amount\": 10,\n      \"quantity\": 1,\n      \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n      \"payinId\": \"123e4567-e89b-12d3-a456-426614174000\"\n    }\n  ],\n  \"airtmUserId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"airtmUserEmail\": \"hello@example.com\",\n  \"failureReason\": \"string\",\n  \"createdAt\": \"2025-08-20T17:01:44.634Z\",\n  \"updatedAt\": \"2025-08-20T17:01:44.634Z\",\n  \"confirmationUri\": \"string\",\n  \"cancelUri\": \"string\",\n  \"callbackUri\": \"string\",\n  \"failureUri\": \"string\"\n}\n```\n\n### \U0001F510 Webhook Best Practices\n\n- Return **2xx HTTP status code** to acknowledge receipt\n- Implement **signature verification** for security\n- Use **HTTPS** for all webhook URLs\n- Handle **idempotency** to prevent duplicate processing\n- Implement **retry logic** for temporary failures\n\n---\n\n## Transaction Statuses\n\n### Payout Statuses\n\n| **Status**  | **Final?** | **Description**                                                     |\n| ----------- | ---------- | ------------------------------------------------------------------- |\n| `CREATED`   | No         | Payout created, awaiting commit                                     |\n| `COMMITTED` | No         | Payout committed and being processed                                |\n| `PENDING`   | No         | Awaiting recipient action (account creation, ID verification, etc.) |\n| `COMPLETED` | Yes        | Successfully delivered to recipient                                 |\n| `CANCELED`  | Yes        | Cancelled by enterprise or system                                   |\n| `FAILED`    | Yes        | Processing failed - contact support                                 |\n\n### Payin Statuses\n\n| **Status**   | **Final?** | **Description**                                |\n| ------------ | ---------- | ---------------------------------------------- |\n| `CREATED`    | No         | Payment request created, awaiting user action  |\n| `CONFIRMED`  | Yes        | Payment successfully processed                 |\n| `CANCELED`   | Yes        | User cancelled the payment                     |\n| `PROCESSING` | No         | User initiated payment, processing in progress |\n| `FAILED`     | Yes        | Payment processing failed                      |\n\n### Bulk Payout Statuses\n\n| **Status**    | **Description**                               |\n| ------------- | --------------------------------------------- |\n| `PENDING`     | Bulk payout received, validation in progress  |\n| `IN_PROGRESS` | Individual payouts being processed            |\n| `COMPLETED`   | All payouts processed (some may have failed)  |\n| `REJECTED`    | Bulk payout rejected due to validation errors |\n\n> \U0001F4A1 **Tip**: Use case-insensitive comparisons when evaluating status strings.\n\n---\n\n## API Operations\n\n### Core Endpoints\n\n- **Account**: `GET /me` - Get account information and balance\n- **Payouts**: Comprehensive payout management with two-step process\n- **Payins**: Payment collection with hosted checkout\n- **Users**: `GET /users?email={email}` - Verify recipients before payouts\n- **Reports**: Generate and download transaction data\n- **Bulk Payouts**: Process multiple payouts efficiently\n\n**User statuses :**\n\n- `ACTIVE` - ✅ Can receive payments\n- `INACTIVE` - ❌ Account deactivated\n\n---\n\n## Transaction Fees, Limits & Processing Times\n\n### Fees & Limits\n\n| **Parameter**                  | **Value**                              |\n| ------------------------------ | -------------------------------------- |\n| **Minimum (US & Puerto Rico)** | $1 USDC                                |\n| **Minimum (Other regions)**    | $0.01 USDC                             |\n| **Maximum per transaction**    | No upper limit                         |\n| **Fees**                       | Contact the sales team for exact rates |\n\n### Processing Times\n\n- **Payouts to existing verified users**: Up to 2 minutes\n- **Payouts to new users**: Up to 90 days (pending account creation)\n- **Payins**: Immediate after user confirmation\n- **Bulk payouts**: Depends on batch size, typically 15-30 minutes\n- **Reports**: 5-15 minutes depending on data volume\n- **Withdrawals**: 1-3 business days depending on destination\n\n### Expiration Rules\n\n- **Payins**: Expire after **15 days**\n- **Payouts to unregistered users**: **90 days** (configurable in dashboard)\n- **Report download URLs**: **1 hour**\n\n---\n\n## Security & Authentication\n\n### Authentication Methods\n\n**HTTP Basic Authentication** is required for all requests:\n\n```text\nAuthorization: Basic <base64-encoded-credentials>\n```\n\n### Setting Up Authentication\n\n1. **Combine credentials**: `api_key:secret_key`\n2. **Base64 encode**: Use any base64 encoder\n3. **Add header**: `Authorization: Basic <encoded_credentials>`\n\n### Code Examples\n\n**cURL:**\n\n```bash\ncurl -X GET \"https://api.enterprise.airtm.com/me\" \\\n  -u \"your_api_key:your_secret_key\"\n```\n\n**JavaScript:**\n\n```javascript\nconst auth = btoa('your_api_key:your_secret_key');\nconst response = await fetch('https://api.enterprise.airtm.com/me', {\n  headers: { Authorization: `Basic ${auth}` },\n});\n```\n\n**Python:**\n\n```python\nimport requests\nfrom requests.auth import HTTPBasicAuth\n\nresponse = requests.get(\n    'https://api.enterprise.airtm.com/me',\n    auth=HTTPBasicAuth('your_api_key', 'your_secret_key')\n)\n```\n\n### Security Best Practices\n\n- **Store credentials securely** using environment variables\n- **Use HTTPS** for all requests\n- **Separate environments** with different API keys\n- **Rotate credentials** regularly (every 90 days recommended)\n- **Monitor API usage** for unusual patterns\n- **Never expose keys** in client-side code\n\n---\n\n> \U0001F4DE **Need Help?** Contact [enterprise@airtm.com](mailto:enterprise@airtm.com) for support with API integration, technical issues, or account questions.\n\n\n---\n\n# Changelog\n\nStay up-to-date with the latest improvements, new features, and important changes to the Enterprise API. We continuously enhance our platform to provide you with better functionality and reliability.\n\n## \U0001F680 What's New\n\n### V2 API Beta (June 2025)\n\n**Major Release**: We've launched our next-generation API with enhanced capabilities and improved developer experience.\n\n#### Supported Features:\n\n- **Bulk Operations**: Process multiple payouts simultaneously\n- **Enhanced Payouts**: Improved error handling and status tracking\n- **User Management**: Retrieve user details and manage balances\n- **Advanced Reporting**: Generate detailed reports with timezone support\n- **Better Authentication**: Streamlined API authentication and error responses\n\n---\n\n## \U0001F4CB Recent Updates\n\n### July 2026\n\n#### \U0001F512 Security\n\n- **Every wallet:send is now user-confirmed.** A newly created `wallet:send` transaction is returned as `pending_user_confirmation` and is only dispatched after the user confirms a one-time code via `POST /transactions/:transactionId/2fa`. Users with 2FA configured receive the code on their own channel (SMS, WhatsApp, or authenticator app); users with no 2FA configured are automatically emailed the code. See [Per-transaction 2FA](#per-transaction-2fa).\n\n#### ✨ New Features\n\n- **Resend 2FA code**: Added `POST /transactions/:transactionId/2fa/resend` to re-issue a fresh confirmation code for a parked `wallet:send` when the user didn't receive it.\n\n### August 2025\n\n#### \U0001F527 Major Improvements\n\n- **Webhook Management**: Introduced webhook application portal\n- **Advanced User Search**: Added support for searching users by hash for improved user discovery\n\n#### ✨ New Features\n\n- **API Withdrawals**: New enterprise withdrawal endpoints for better fund management\n- **External Account Management**: Complete CRUD operations for both bank and crypto external accounts\n- **ID Verification Controls**: Added enterprise-level settings to require ID verification for payouts\n- **Bulk Operations**: Improved bulk payout processing with better status tracking\n\n### July 2025\n\n#### \U0001F527 Improvements\n\n- **Webhook Infrastructure**: Migrated to Svix for more reliable webhook delivery and management\n- **Search Capabilities**: Enhanced payout search functionality using notes field\n\n#### ✨ New Features\n\n- **Payin Events**: Added Svix events for payin creation and cancellation\n- **Enhanced Validation**: Added state validation for US users in requests\n\n#### \U0001F527 Bug Fixes\n\n- **Metadata Handling**: Improved metadata merging to prevent data overwriting\n- **Report Security**: Better audit trail tracking for statement downloads with correct user identification\n- **Email Processing**: Added automatic email trimming for improved data quality\n- **Payout Status**: Fixed bulk payouts stuck in progress status\n- **Bridge Transactions**: Resolved missing transactions in activity reports\n- **Webhook Delivery**: Improved webhook callback event publishing\n\n### June 2025\n\n#### \U0001F527 Improvements\n\n- Enhanced withdrawal processing with better status tracking\n- Improved validation for external accounts and currency handling\n- Better handling of cancellation URLs\n- Enhanced report validation and CSV formatting\n\n#### ✨ New Features\n\n- Added support for payout codes and unique identifiers\n- Automatic cancellation of payouts when users are disabled\n- Custom cancellation URLs for better user experience\n\n### May 2025\n\n#### \U0001F527 Critical Fixes\n\n- Fixed timezone handling in reports\n- Improved webhook monitoring and reliability\n- Enhanced error reporting with detailed reason codes\n- Better handling of pending payouts\n\n#### ✨ New Features\n\n- Timezone support added to all reporting features\n- Automatic refund system for failed completed payouts\n- Enhanced recipient validation with comprehensive checks\n\n#### ⚠️ Breaking Changes\n\n- **V0.3.0**: Enhanced recipient validation now performs comprehensive checks when creating and committing payouts. This may affect existing integrations that don't provide complete recipient information.\n\n### April 2025\n\n#### \U0001F527 Improvements\n\n- Expanded payout eligibility for additional US users\n- Improved pending status handling across different payout types\n- Enhanced user verification checks during processing\n- Better retry mechanisms for failed payouts\n\n#### ✨ New Features\n\n- Automatic retry of pending payouts when users complete required actions\n- Configurable timeout settings for pending payout cancellation\n- Support for payouts to third-party users\n\n#### ⚠️ Breaking Changes\n\n- **V0.2.0**: Payout status flow has been standardized. All payouts now use a consistent two-step process with `CREATED` and `COMMITTED` statuses having updated meanings. This affects how you should handle payout state transitions.\n\n### March 2025\n\n#### \U0001F527 Improvements\n\n- Enhanced direct withdrawal functionality\n- Fixed audit report generation issues\n- Improved pending balance calculations\n- Better payment descriptions using available memos\n\n#### ✨ New Features\n\n- PDF generation for audit reports\n- Automatic retry system for volume-limited payouts\n- Custom aliases support for crypto withdrawals\n\n---\n\n## \U0001F5C3️ Archive\n\n<details>\n<summary>Show Codes</summary>\n\n**February 2025**\n\n- Enhanced security measures\n- Improved error handling across all endpoints\n- Performance optimizations for large-scale operations\n\n**January 2025**\n\n- Infrastructure improvements\n- Enhanced monitoring capabilities\n- Bug fixes and stability improvements\n\n**2024 Highlights**\n\n- Integration with third-party liquidity providers\n- Core payout functionality\n- Basic reporting features\n\n_For detailed information about changes prior to 2025, please contact our support team._\n\n</details>\n\n---\n\n## \U0001F514 Stay Informed\n\n- **Breaking Changes**: Always marked with ⚠️ and include migration guidance\n- **Security Updates**: Critical security fixes are released immediately\n- **API Versioning**: We maintain backward compatibility whenever possible\n\nFor technical support or questions about any changes, please reach out to our [support team](mailto:enterprise@airtm.com).\n"
+  contact:
+    name: Airtm Enterprise
+    email: enterprise@airtm.com
+    url: https://www.airtm.com
+servers:
+- url: https://api.enterprise.airtm.com/v2
+- url: https://api.stg.enterprise.airtm.com/v2
+tags:
+- name: Embedded Receivers
+paths:
+  /embedded/receivers:
+    post:
+      operationId: CreateReceiver
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiverApiResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: Create a new embedded receiver for the authenticated partner.
+      summary: Create receiver
+      tags:
+      - Embedded Receivers
+      security:
+      - embeddedAuth: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReceiverRequest'
+            example:
+              externalReceiverId: your-own-controlled-id
+              partyType: individual
+              country: VEN
+              individual:
+                firstName: $first_name
+                lastName: $last_name
+                dob: '1990-01-01'
+                nationalIdNumber: $national_id_number
+              contact:
+                email: $email
+                phone: $phone_number
+              address:
+                line1: $address_line1
+                city: $address_city
+                region: $address_region
+                postalCode: $address_postal_code
+                country: $address_country
+              compliance:
+                kycReliance:
+                  performedBy: $kyc_reliance_performed_by
+                  kycReferenceId: kyc-cl-mokcvfdi-2c5ee14f
+                  status: VERIFIED
+                  performedAt: '2026-03-24T12:00:00.000Z'
+                  level: FULL
+                  documentType: PASSPORT
+                  provider:
+                    name: $kyc_reliance_provider_name
+                    applicantId: $kyc_reliance_provider_applicant_id
+                    result: GREEN
+              payoutDestinations:
+              - paymentRailId: airtm:bank:venezuela:banco-activo
+                senderId: 11111111-1111-1111-1111-111111111111
+                destination:
+                  accountHolder: Testing Embedded
+                  accountNumber: 01719987567890123499
+                  interbankTransfer: 'Yes'
+                  nationalIdentification: V26334563
+    get:
+      operationId: GetReceiverByExternalId
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiverApiResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: Retrieve a receiver by its external identifier.
+      summary: Get receiver by external id
+      tags:
+      - Embedded Receivers
+      security:
+      - embeddedAuth: []
+      parameters:
+      - description: The external receiver identifier provided by the partner.
+        in: query
+        name: externalReceiverId
+        required: true
+        schema:
+          type: string
+  /embedded/receivers/{receiverId}:
+    get:
+      operationId: GetReceiverById
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiverApiResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: Retrieve a receiver by its id.
+      summary: Get receiver by id
+      tags:
+      - Embedded Receivers
+      security:
+      - embeddedAuth: []
+      parameters:
+      - description: The receiver id.
+        in: path
+        name: receiverId
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: UpdateReceiver
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiverApiResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: Update an existing embedded receiver.
+      summary: Update receiver
+      tags:
+      - Embedded Receivers
+      security:
+      - embeddedAuth: []
+      parameters:
+      - description: The receiver id.
+        in: path
+        name: receiverId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReceiverRequest'
+  /embedded/receivers/{receiverId}/payment-rail-instance:
+    post:
+      operationId: AddPaymentRailInstance
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRailInstanceApiResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: Add a payment rail instance to an existing receiver.
+      summary: Add payment rail instance
+      tags:
+      - Embedded Receivers
+      security:
+      - embeddedAuth: []
+      parameters:
+      - description: The receiver id.
+        in: path
+        name: receiverId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPaymentRailInstanceRequest'
+            example:
+              paymentRailId: airtm:bank:venezuela:mercantil
+              destination:
+                accountNumber: '1234567890'
+                bankCode: '0105'
+                accountHolderName: Jane Doe
+              senderId: 123e4567-e89b-12d3-a456-426614174000
+  /embedded/receivers/{receiverId}/payment-rail-instance/{paymentRailInstanceId}:
+    delete:
+      operationId: RemovePaymentRailInstance
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: Remove a payment rail instance from a receiver.
+      summary: Remove payment rail instance
+      tags:
+      - Embedded Receivers
+      security:
+      - embeddedAuth: []
+      parameters:
+      - description: The receiver id.
+        in: path
+        name: receiverId
+        required: true
+        schema:
+          type: string
+      - description: The payment rail instance id to remove.
+        in: path
+        name: paymentRailInstanceId
+        required: true
+        schema:
+          type: string
+components:
+  schemas:
+    KycStatus:
+      enum:
+      - VERIFIED
+      - PARTIALLY_VERIFIED
+      - NOT_VERIFIED
+      type: string
+      x-enum-varnames:
+      - VERIFIED
+      - PARTIALLY_VERIFIED
+      - NOT_VERIFIED
+    Partial_CreateReceiverContact_:
+      properties:
+        email:
+          type: string
+          pattern: ^(.+)@(.+)$
+        phone:
+          type: string
+          pattern: ^\+[0-9]{1,3}[0-9]{6,}$
+      type: object
+      description: Make all properties in T optional
+    UpdateReceiverRequest:
+      properties:
+        partyType:
+          type: string
+          enum:
+          - individual
+          - business
+          description: 'The type of party: individual or business.'
+          pattern: ^(individual|business)$
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+        individual:
+          $ref: '#/components/schemas/Partial_CreateReceiverIndividual_'
+          description: Individual party details (partial update).
+        contact:
+          $ref: '#/components/schemas/Partial_CreateReceiverContact_'
+          description: Contact information (partial update).
+        address:
+          $ref: '#/components/schemas/Partial_CreateReceiverAddress_'
+          description: Address information (partial update).
+        compliance:
+          $ref: '#/components/schemas/Partial_CreateReceiverCompliance_'
+          description: Compliance and KYC reliance information (partial update).
+      type: object
+      additionalProperties: false
+    AddPaymentRailInstanceRequest:
+      description: Request body for adding a payment rail instance to a receiver.
+      properties:
+        paymentRailId:
+          type: string
+          description: 'Payment rail identifier (e.g. airtm:bank:venezuela:mercantil).
+
+            This refers to the ID of the payment rail in the catalog.
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        destination:
+          $ref: '#/components/schemas/Record_string.unknown_'
+          description: 'Rail-specific destination data (e.g. accountNumber, bankCode, accountHolderName).
+
+            The object to send must match the requirements of the payment rail in the catalog item''s `destinationFields`.
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        senderId:
+          $ref: '#/components/schemas/Uuid'
+          description: The sender id that will use this payment rail instance.
+      required:
+      - paymentRailId
+      - destination
+      - senderId
+      type: object
+      additionalProperties: false
+    CreateReceiverRequest:
+      properties:
+        externalReceiverId:
+          type: string
+          description: The unique identifier for this receiver in the partner's system.
+        partyType:
+          type: string
+          enum:
+          - individual
+          - business
+          description: 'The type of party: individual or business.'
+          pattern: ^(individual|business)$
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+        payoutDestinations:
+          items:
+            $ref: '#/components/schemas/CreateReceiverPayoutDestination'
+          type: array
+          description: "Payment rail instance information (bank destination details). And the sender id that will use this payment rail instance. Object example:\n`{\n \"paymentRailId\": \"airtm:bank:venezuela:mercantil\",\n \"destination\": {\n   \"accountNumber\": \"01719987567890123499\",\n   \"accountHolderName\": \"Jane Doe\"\n },\n \"senderId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}`"
+          default: []
+        individual:
+          $ref: '#/components/schemas/CreateReceiverIndividual'
+          description: Individual party details. Required when partyType is 'individual'.
+        contact:
+          $ref: '#/components/schemas/CreateReceiverContact'
+          description: Contact information.
+        address:
+          $ref: '#/components/schemas/CreateReceiverAddress'
+          description: Address information.
+        compliance:
+          $ref: '#/components/schemas/CreateReceiverCompliance'
+          description: Compliance and KYC reliance information. Optional for receivers.
+      required:
+      - externalReceiverId
+      - partyType
+      - country
+      - individual
+      type: object
+      additionalProperties: false
+    CreateReceiverAddress:
+      description: Address information for the receiver.
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+      type: object
+      additionalProperties: false
+    ReceiverApiResponse:
+      properties:
+        id:
+          type: string
+        externalReceiverId:
+          type: string
+        partyType:
+          type: string
+          enum:
+          - individual
+          - business
+        country:
+          type: string
+        individual:
+          properties:
+            nationalIdNumber:
+              type: string
+            dob:
+              type: string
+            lastName:
+              type: string
+            firstName:
+              type: string
+          required:
+          - nationalIdNumber
+          - dob
+          - lastName
+          - firstName
+          type: object
+        contact:
+          properties:
+            phone:
+              type: string
+            email:
+              type: string
+          type: object
+        address:
+          properties:
+            country:
+              type: string
+            postalCode:
+              type: string
+            region:
+              type: string
+            city:
+              type: string
+            line1:
+              type: string
+          type: object
+        compliance:
+          properties:
+            kycReliance:
+              properties:
+                provider:
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/ProviderResult'
+                    applicantId:
+                      type: string
+                    name:
+                      type: string
+                  required:
+                  - result
+                  - applicantId
+                  - name
+                  type: object
+                documentType:
+                  $ref: '#/components/schemas/DocumentType'
+                level:
+                  $ref: '#/components/schemas/KycLevel'
+                performedAt:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/KycStatus'
+                kycReferenceId:
+                  type: string
+                performedBy:
+                  type: string
+              required:
+              - provider
+              - documentType
+              - level
+              - performedAt
+              - status
+              - kycReferenceId
+              - performedBy
+              type: object
+          required:
+          - kycReliance
+          type: object
+        payoutDestinations:
+          items:
+            properties:
+              destination:
+                $ref: '#/components/schemas/Record_string.unknown_'
+              paymentRailId:
+                type: string
+            required:
+            - destination
+            - paymentRailId
+            type: object
+          type: array
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+      - id
+      - externalReceiverId
+      - partyType
+      - country
+      - individual
+      - contact
+      - address
+      - payoutDestinations
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
+    CreateReceiverCompliance:
+      properties:
+        kycReliance:
+          $ref: '#/components/schemas/CreateReceiverKycReliance'
+      required:
+      - kycReliance
+      type: object
+      additionalProperties: false
+    ProviderResult:
+      enum:
+      - GREEN
+      - AMBER
+      - RED
+      type: string
+      x-enum-varnames:
+      - GREEN
+      - AMBER
+      - RED
+    KycLevel:
+      enum:
+      - BASIC
+      - FULL
+      type: string
+      x-enum-varnames:
+      - BASIC
+      - FULL
+    CreateReceiverKycReliance:
+      description: KYC reliance information from the partner's KYC provider.
+      properties:
+        performedBy:
+          type: string
+        kycReferenceId:
+          type: string
+        status:
+          $ref: '#/components/schemas/KycStatus'
+        performedAt:
+          type: string
+        level:
+          $ref: '#/components/schemas/KycLevel'
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        provider:
+          properties:
+            result:
+              $ref: '#/components/schemas/ProviderResult'
+            applicantId:
+              type: string
+            name:
+              type: string
+          required:
+          - result
+          - applicantId
+          - name
+          type: object
+      required:
+      - performedBy
+      - kycReferenceId
+      - status
+      - performedAt
+      - level
+      - documentType
+      - provider
+      type: object
+      additionalProperties: false
+    Partial_CreateReceiverAddress_:
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+      type: object
+      description: Make all properties in T optional
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    CreateReceiverContact:
+      description: Contact information for the receiver.
+      properties:
+        email:
+          type: string
+          pattern: ^(.+)@(.+)$
+        phone:
+          type: string
+          pattern: ^\+[0-9]{1,3}[0-9]{6,}$
+      type: object
+      additionalProperties: false
+    PaymentRailInstanceApiResponse:
+      properties:
+        id:
+          type: string
+        paymentRailId:
+          type: string
+        destination:
+          $ref: '#/components/schemas/Record_string.unknown_'
+        senderId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+      - id
+      - paymentRailId
+      - destination
+      - senderId
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
+    CreateReceiverIndividual:
+      description: Individual party details. Required when partyType is 'individual'.
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+        nationalIdNumber:
+          type: string
+      required:
+      - firstName
+      - lastName
+      - dob
+      - nationalIdNumber
+      type: object
+      additionalProperties: false
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    CreateReceiverPayoutDestination:
+      description: 'Payout destination: a payment rail plus rail-specific destination data.'
+      properties:
+        paymentRailId:
+          type: string
+          description: 'Payment rail identifier (e.g. airtm:bank:venezuela:mercantil).
+
+            This refers to the ID of the payment rail in the catalog.
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        destination:
+          $ref: '#/components/schemas/Record_string.unknown_'
+          description: 'Rail-specific destination data (e.g. accountNumber, bankCode, accountHolderName).
+
+            The object to send must match the requirements of the payment rail in the catalog item''s `destinationFields`.
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        senderId:
+          $ref: '#/components/schemas/Uuid'
+          description: The sender id that will use this receiver payment instance.
+      required:
+      - paymentRailId
+      - destination
+      - senderId
+      type: object
+      additionalProperties: false
+    Partial_CreateReceiverIndividual_:
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+        nationalIdNumber:
+          type: string
+      type: object
+      description: Make all properties in T optional
+    Partial_CreateReceiverCompliance_:
+      properties:
+        kycReliance:
+          $ref: '#/components/schemas/CreateReceiverKycReliance'
+      type: object
+      description: Make all properties in T optional
+    DocumentType:
+      enum:
+      - PASSPORT
+      - NATIONAL_ID
+      - DRIVER_LICENSE
+      type: string
+      x-enum-varnames:
+      - PASSPORT
+      - NATIONAL_ID
+      - DRIVER_LICENSE
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+x-tagGroups:
+- name: Payout Operations
+  tags:
+  - Payouts
+  - Bulk Payouts
+  - Users
+- name: Payin Operations
+  tags:
+  - Payins
+- name: Account
+  tags:
+  - Me
+  - Deposits
+  - Reports
+- name: Direct Withdrawal
+  tags:
+  - External Bank Account
+  - External Crypto Account
+  - Withdrawals
+- name: Webhooks
+  tags:
+  - Webhooks

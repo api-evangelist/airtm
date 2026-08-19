@@ -1,0 +1,103 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Bulk Payouts API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Bulk Payouts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List bulk payouts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/bulk-payouts",
+            "params": [
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Gets results before the specified cursor."
+              },
+              {
+                "name": "after",
+                "value": "",
+                "type": "query",
+                "description": "Gets results after the specified cursor."
+              },
+              {
+                "name": "perPage",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of items to fetch."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Endpoint to receive all bulk payouts associated with your account."
+        },
+        {
+          "info": {
+            "name": "Create a bulk payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/bulk-payouts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Create a new bulk payout. You will receive a response with the id of your bulk payout, and the\nprocessing will start asynchronously after you receive your response.\n\nYou can check in with the progress of your ongoing bulk payout by using the `GET /bulk-payouts/{id}` endpoint.\n\nIf you want to cancel payouts, use the [Cancel Payout](#tag/payouts/DELETE/payouts/{id}) endpoint."
+        },
+        {
+          "info": {
+            "name": "Get bulk payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/bulk-payouts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The bulk payout id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Endpoint to retrieve the details of an existing bulk payout. The status `RUNNING` is the default\nafter you have posted your bulk payout. It means that the individual payouts are being\nprocessed and not all of them have been processed yet. Once that has happened, the status will\nswitch to `DONE`.\n\nTo list all payouts associated with a specific bulk payout, use the [List Payouts](#tag/payouts/GET/payouts)\nendpoint and pass the bulk payout id as the `bulkPayoutId` query parameter."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

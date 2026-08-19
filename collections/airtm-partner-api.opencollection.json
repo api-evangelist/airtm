@@ -1,0 +1,34 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V1 Partner API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Partner",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "My balance",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iopartners/me",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "## Get partner information\n\nThis endpoint returns information related to your Partner account,\nincluding current balance.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

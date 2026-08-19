@@ -1,0 +1,203 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Payouts API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Payouts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List payouts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/payouts",
+            "params": [
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Gets results before the specified cursor."
+              },
+              {
+                "name": "after",
+                "value": "",
+                "type": "query",
+                "description": "Gets results after the specified cursor."
+              },
+              {
+                "name": "perPage",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of items to fetch."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "bulkPayoutId",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "List payouts"
+        },
+        {
+          "info": {
+            "name": "Create a payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/payouts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint allows you to create a payout instruction. In the request body, information about\nthe payout such as the recipient's email, description, amount, and any URLs needed for confirmation\nor failure redirects should be provided.\n\nUpon successful creation, the API returns a response containing the details of the newly created\npayout, including a unique ID.\n\n> [!tip]\n> After making a call to this endpoint, no money is moved yet. To finish moving the money to a\n> user, you must call the `PO"
+        },
+        {
+          "info": {
+            "name": "Get a single payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/payouts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The payout id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Get a single payout"
+        },
+        {
+          "info": {
+            "name": "Cancel a pending payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.enterprise.airtm.com/v2/payouts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The payout id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint allows users to cancel specific `CREATED` or `PENDING` individual payouts—those that:\n\n- have been created and committed but where the recipient is not ready to receive the payout.\n- have been created but have not yet been committed.\n\nPending payouts will automatically cancel after 90 days (by default, other time periods are\navailable in dashboard settings) from the creation date.\n\nOnce canceled:\n\n- Funds are automatically returned to the enterprise's balance.\n- The individual payo"
+        },
+        {
+          "info": {
+            "name": "Get a single payout by code",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/payouts/by-code/:code",
+            "params": [
+              {
+                "name": "code",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Get a single payout by code"
+        },
+        {
+          "info": {
+            "name": "Get the events for a single payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/payouts/:id/events",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The payout id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Every time a payout transitions to a new status, an event is created.\nThis endpoint allows you to retrieve the events for a single payout."
+        },
+        {
+          "info": {
+            "name": "Commit a payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/payouts/:id/commit",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The payout id"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Once a payout is created, it needs to be committed. This is done with a POST request which\ntakes a unique ID of the payout and commits it, meaning the payout is now ready to be\nprocessed.\n\nThis endpoint would only respond with an empty 201."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

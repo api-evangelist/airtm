@@ -1,0 +1,54 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V1 Purchases / Payins API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Purchases / Payins",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get purchase",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iopurchases",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "You can either use this endpoint or the /operations with the ‘type’\nparameter as ‘purchase’ in the endpoint to get the list of all\npurchases.\n"
+        },
+        {
+          "info": {
+            "name": "Create purchase",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iopurchases",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint will allow you to create a Purchase (Pay-in). In order to\ncomplete a Purchase, it must first be created, then the user must be\ndirected to the Airtm website to confirm/checkout the Purchase, at which\ntime they will be redirected to a URL of your choosing. See “Usage”\nbelow.\n\nWe will redirect the user to either `confirmation_uri` or `cancel_uri`\nwith code as query parameter so you can process the Purchase as being\neither confirmed or cancelled.\n\n## Usage\n\n1.  Create a Purchase via a"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,128 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V1 Payments / Payouts API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Payments / Payouts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iopayouts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint allows you to create a payout instruction. In the request\nbody, information about the payout such as the recipient's email,\ndescription, amount, and any URLs needed for confirmation or failure\nredirects should be provided. Upon successful creation, the API returns\na response containing the details of the newly created payout, including\na unique ID.\n\nAfter making a call to this endpoint, no money is moved yet. To finish\nmoving the money to a user you must call the payouts/:id/commit"
+        },
+        {
+          "info": {
+            "name": "Commit payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iopayouts/:payoutId/commit",
+            "params": [
+              {
+                "name": "payoutId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "After calling this endpoint, Airtm will execute/process the previously\nreceived payout instruction. The RESPONSE confirms the reception and\nincorporation of the payout instruction for processing. Funds will be\ndeducted from your balance while the payout execution process is being\ncarried out.\n\nPlease note that a 200 response doesn't necessarily mean the money\nmoved, it simply means the system is now trying to send the amount. Wait\nfor callbacks on `failure_uri`, `confirmation_uri` OR call\n`/oper"
+        },
+        {
+          "info": {
+            "name": "One step payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iopayouts/one-step",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint is a combination of the Create Payout and the Commit\nPayout endpoints. If you want to do a payout in just one API call\ninstead of a two-step process outlined in Create / Commit Payout, you\ncan now use this one-step endpoint.\n\nThe usage is exactly the same as the **Create payout** endpoint at POST\n/payouts with the only difference being that the second step (commit\npayout) will immediately be executed and there is no need to make a call\nto the commit endpoint. The RESPONSE of this e"
+        },
+        {
+          "info": {
+            "name": "Get payout event",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iopayouts/events/:payoutId",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint populates whenever either a Success URI or Failure URI are\ncalled; this information helps track the status and whatever is\nhappening with the committed Payout.\n"
+        },
+        {
+          "info": {
+            "name": "Cancel pending payouts",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iopayouts/:payoutId/cancel",
+            "params": [
+              {
+                "name": "payoutId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint allows users to cancel specific `PENDING` individual\npayouts—those that have been created and committed but where the\nrecipient has not yet signed up on Airtm.com.\n\nTo manually cancel a pending payout, users must provide the transaction\n`id`, which can be retrieved when creating the payout through either the\n**Create & Commit** or **One-Step** payout flows. Pending payouts will\nautomatically cancel after 90 days (by default, other time periods are\navilable in dashboard settings) fr"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

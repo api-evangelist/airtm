@@ -1,0 +1,94 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Embedded Senders API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Embedded Senders",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get sender by external id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/senders",
+            "params": [
+              {
+                "name": "externalSenderId",
+                "value": "",
+                "type": "query",
+                "description": "The external sender identifier provided by the partner."
+              }
+            ]
+          },
+          "docs": "Retrieve a sender by its external identifier."
+        },
+        {
+          "info": {
+            "name": "Create sender",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/senders",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new embedded sender for the authenticated partner."
+        },
+        {
+          "info": {
+            "name": "Get sender by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/senders/:senderId",
+            "params": [
+              {
+                "name": "senderId",
+                "value": "",
+                "type": "path",
+                "description": "The sender id."
+              }
+            ]
+          },
+          "docs": "Retrieve a sender by its id."
+        },
+        {
+          "info": {
+            "name": "Update sender",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/senders/:senderId",
+            "params": [
+              {
+                "name": "senderId",
+                "value": "",
+                "type": "path",
+                "description": "The sender id."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an existing sender."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

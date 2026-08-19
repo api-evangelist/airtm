@@ -1,0 +1,882 @@
+openapi: 3.2.0
+info:
+  title: Airtm Enterprise API V1 Bulk Payments API
+  version: 1.0.0
+  description: "## Introduction\n\nWelcome to Airtm's Enterprise Payments API - a comprehensive solution for programmatic payment processing that enables organizations worldwide to send and receive payments efficiently and securely.\n\n### What is Airtm Enterprise API?\n\nAirtm's Payments API empowers organizations of all sizes to:\n\n- **Receive payments** from users globally\n- **Distribute payments** in bulk or individually\n- **Pay employees, contractors, and freelancers** worldwide\n- **Process donations** and other payment types\n- **Manage cross-border transactions** with ease\n\n### Getting Started\n\nIf you have a business or non-profit and would like to partner with Airtm, please contact our Airtm Partnerships team to set up your Airtm Enterprise Partner account.\n\n**[Contact Airtm Partnerships Team →](https://airtm-product.typeform.com/to/ggXbsJpl?typeform-source=api-docs)**\n\n> [!TIP]\n> Once you have an Airtm Enterprise Account, you can create your API keys in your Account Settings.\n\n**[Airtm Account Settings →](https://app.airtm.com/settings/apps)**\n\n\n---\n\n## Authentication\n\n### Basic Authentication\n\nEvery request to the Airtm Payments API requires proper authentication to identify the partner making the request.\n\n**Authentication Method:** HTTP Basic Authorization\n\n- **Username:** Your Partner ID (API Key)\n- **Password:** Your Partner Secret (Secret Key)\n\n#### Manual Header Composition\n\nTo compose the authorization header manually:\n\n1. Combine your credentials: `<API_Key>:<Secret_Key>`\n2. Base64 encode the string\n3. Add the header: `Authorization: Basic <encoded_string>`\n\n**Example:**\n\n```\nPartner ID: 123\nSecret: abc\nCombined: 123:abc\nBase64 Encoded: MTIzOmFiYw==\nHeader: Authorization: Basic MTIzOmFiYw==\n```\n\n> [!NOTE]\n> Most API clients handle Basic Auth encoding automatically when you select \"Basic Auth\" authentication.\n\n#### Environment-Specific Keys\n\n- **Production API keys** cannot be used in the Sandbox environment\n- **Sandbox API keys** are required for testing and development\n- Contact your Airtm representative or [enterprise@airtm.com](mailto:enterprise@airtm.com) for Sandbox API keys\n\n### Security Best Practices\n\n- ✅ Store credentials securely on private servers only\n- ✅ Use HTTPS for all API communications\n- ✅ Never share access credentials\n- ✅ Implement proper credential rotation policies\n- ❌ Never connect to Airtm directly from client-side applications\n- ❌ Never expose credentials in public repositories or logs\n\n\n---\n\n## API Environments\n\nAirtm provides two environments for development and production use:\n\n| Environment    | Base URL                                      | Purpose                 |\n| -------------- | --------------------------------------------- | ----------------------- |\n| **Sandbox**    | `https://payments.static-stg.tests.airtm.org` | Testing and development |\n| **Production** | `https://api.enterprise.airtm.com`            | Live transactions       |\n\n### Callback IP Addresses\n\nWhen implementing webhooks, whitelist these IP addresses to receive callbacks:\n\n#### Sandbox Environment\n\n- `3.229.5.186`\n- `3.229.158.255`\n- `52.72.100.238`\n- `18.207.25.189`\n- `100.25.93.6`\n- `44.206.130.250`\n\n#### Production Environment\n\n- `34.223.198.111`\n- `34.223.166.175`\n- `34.223.169.181`\n- `35.155.119.51`\n\n\n---\n\n## Request Format\n\n### Required Headers\n\nAll API requests must include these headers:\n\n```http\nContent-Type: application/json\nAuthorization: Basic <your_base64_encoded_credentials>\n```\n\n### Request Example\n\n```http\nPOST /api/v1/payouts\nContent-Type: application/json\nAuthorization: Basic MTIzOmFiYw==\n\n{\n  \"amount\": 100.00,\n  \"currency\": \"USD\",\n  \"recipient\": \"user@example.com\",\n  \"description\": \"Payment for services\"\n}\n```\n\n\n---\n\n## Rate Limits\n\n### Current Limits\n\n- **Rate Limit:** 10 requests per second per partner\n- **Response Code:** `429 Too Many Requests` when limit exceeded\n- **Retry Strategy:** Implement exponential backoff\n\n### Requesting Higher Limits\n\nIf your use case requires higher rate limits, please contact [enterprise@airtm.com](mailto:enterprise@airtm.com) with:\n\n- Current usage patterns\n- Expected request volume\n- Business justification\n\n\n---\n\n## Error Handling\n\n### Standard HTTP Status Codes\n\n| Code  | Status                | Description                   |\n| ----- | --------------------- | ----------------------------- |\n| `200` | OK                    | Request successful            |\n| `201` | Created               | Resource created successfully |\n| `400` | Bad Request           | Invalid request format        |\n| `401` | Unauthorized          | Authentication required       |\n| `403` | Forbidden             | Access denied                 |\n| `404` | Not Found             | Resource not found            |\n| `429` | Too Many Requests     | Rate limit exceeded           |\n| `500` | Internal Server Error | Server error                  |\n\n### Error Response Format\n\n```json\n{\n  \"error\": {\n    \"code\": \"415001\",\n    \"message\": \"Detailed error description\",\n    \"details\": {\n      \"field\": \"specific_field_error\"\n    }\n  }\n}\n```\n\n\n---\n\n## Reason Codes Reference\n\n| Code     | Description                                                                   |\n| -------- | ----------------------------------------------------------------------------- |\n| `415003` | Error reaching external service                                               |\n| `415005` | Payout not found                                                              |\n| `415006` | No API keys configured                                                        |\n| `415008` | Recipient address not active                                                  |\n| `415009` | Recipient address inactive                                                    |\n| `415010` | User deleted or banned                                                        |\n| `415011` | Invalid file upload                                                           |\n| `415012` | Duplicate payouts detected                                                    |\n| `415013` | Bulk payout not in pending status                                             |\n| `415014` | Insufficient balance                                                          |\n| `415015` | Daily limit exceeded ($250,000)                                               |\n| `415016` | Insufficient balance for payout                                               |\n| `415017` | Cannot reject bulk payout                                                     |\n| `415019` | Bulk payout not finished                                                      |\n| `415022` | Must empty balance before account deletion                                    |\n| `415024` | Maximum API keys reached                                                      |\n| `415025` | API key not found                                                             |\n| `415027` | Payout already processed                                                      |\n| `415028` | Enterprise account required                                                   |\n| `415029` | Payin code already exists                                                     |\n| `415030` | Cannot confirm or cancel payin                                                |\n| `415031` | Payin not found                                                               |\n| `415032` | Payin already completed                                                       |\n| `415034` | User insufficient balance                                                     |\n| `415035` | Payout amount too small                                                       |\n| `415036` | No active payment provider                                                    |\n| `415039` | Operation not found                                                           |\n| `415041` | Bulk payout not found                                                         |\n| `415042` | Statement not found                                                           |\n| `415043` | Statement not pending                                                         |\n| `415044` | Statement not completed                                                       |\n| `415045` | Deposit account type exists                                                   |\n| `415046` | Country not supported                                                         |\n| `415047` | Insufficient balance for withdrawal                                           |\n| `415048` | Invalid payment rail                                                          |\n| `415049` | Bridge account not found                                                      |\n| `415050` | Invalid crypto payment rail                                                   |\n| `415051` | Crypto wallet not found                                                       |\n| `415053` | US users cannot make payins                                                   |\n| `415054` | Invalid sort field                                                            |\n| `415055` | Cannot cancel non-pending payout                                              |\n| `415056` | Payout code already exists                                                    |\n| `415057` | Payout exceeds maximum limit                                                  |\n| `415058` | Payout below minimum limit                                                    |\n| `415059` | Recipient not found                                                           |\n| `415060` | Recipient cannot receive payouts                                              |\n| `415061` | Recipient from restricted territory                                           |\n| `415062` | Invalid recipient payment method                                              |\n| `415064` | Invalid recipient payment method                                              |\n| `415065` | User has violated the AML policy                                              |\n| `415073` | The payment provider could not deliver the funds to the user's payment method |\n| `415103` | User is missing required information                                          |\n| `415912` | Waiting for recipient to create an Airtm account                              |\n| `415901` | Invalid request format                                                        |\n| `415902` | Item not found                                                                |\n| `415903` | Request cannot be processed                                                   |\n| `415904` | Unauthorized request                                                          |\n| `415905` | Insufficient permissions                                                      |\n| `415906` | Invalid request                                                               |\n| `415998` | Unexpected error                                                              |\n| `415999` | Unknown error                                                                 |\n\n\n---\n\n## Next Steps\n\n1. **Set up your account** - Contact partnerships team\n2. **Get API credentials** - Generate keys in your settings\n3. **Test in Sandbox** - Use sandbox environment for development\n4. **Implement authentication** - Set up Basic Auth\n5. **Start with simple operations** - Begin with basic payouts or payins\n6. **Add error handling** - Implement proper error handling\n7. **Go live** - Switch to production environment\n\n## Support\n\nFor technical support, integration questions, or account issues:\n\n- **Email:** [enterprise@airtm.com](mailto:enterprise@airtm.com)\n- **Documentation:** This API documentation\n- **Status Page:** [Monitor API status and uptime](https://status.airtm.com/)\n\n\n---\n\n## Frequently Asked Questions\n\n### API Credentials\n\n#### Generating API Credentials (API Key & Secret)\n\n1. Log in to your Airtm Enterprise account\n2. Go to: **Settings → Payments API**\n3. Generate your credentials\n\n> ⚠️ **Important**: Credentials are displayed only once—store them securely.\n\n#### Key Considerations\n\n- **One credential per account**: Only one API credential can be generated per Enterprise account\n- **Role requirements**: Only users with Owner or Admin roles can access this feature\n\n---\n\n### Getting Started with the API\n\n#### Scope of the Airtm API\n\n✅ **The Airtm API enables:**\n\n- Initiating payments from an Enterprise account to Airtm users\n- Retrieving account balances and transaction history\n- Verifying the status of user accounts\n- Accessing detailed transaction information\n\n❌ **Not supported:**\n\n- P2P functionality\n- Card operations\n- Third-party bulk account creation\n\n#### Supported Regions\n\n\U0001F30D Airtm operates globally, but certain jurisdictions are restricted.\n→ [Check the list of unsupported regions](https://help.airtm.com/en/support/solutions/articles/47001177565-where-are-airtm-s-products-and-services-available-)\n\n#### iFrames & Embedded Pages\n\n\U0001F6AB Embedding Airtm pages via iframes is not supported due to security policies.\n\n#### IP Addresses & Whitelisting\n\n\U0001F512 → [Current server IPs are listed here](#description/api-environments)\n\n- Whitelisting Airtm IPs for callbacks is recommended but not mandatory\n\n#### Currency & Payment Methods\n\n- **Currency**: All API operations are denominated in USD (USDC)\n- **Currency conversion**: If needed, it must be handled on the Enterprise side\n- **Supported transactions**: The Airtm API supports transactions only between Airtm accounts\n- **Not supported**: Card, e-wallet, and crypto payments\n- **Exact matching**: The amount and currency must match the API request exactly\n\n---\n\n### Sandbox & Production Environments\n\n#### Sandbox (Testing) Environment\n\n| **Parameter**        | **Value**                                                                 |\n| -------------------- | ------------------------------------------------------------------------- |\n| **Host**             | `https://payments.static-stg.tests.airtm.org`                             |\n| **Enterprise Login** | [Sandbox Portal](https://stg.enterprise.airtm.com)                        |\n| **Documentation**    | [Sandbox Documentation](https://api.stg.enterprise.airtm.com/docs?api=v1) |\n\n##### Available Endpoints:\n\n- **Deposits (Pay-ins)**: `/purchases`\n- **Withdrawals (Payouts)**: `/payouts`\n- **Bulk Payments**: `/bulk-payments`\n\n##### Test Accounts:\n\n- Test accounts can be created manually (at least two are needed — one for initiating and one for receiving transactions)\n- Temporary sandbox accounts can also be requested through the Airtm Onboarding or Account Manager\n- Test funds may be requested from the assigned Airtm manager for use in the sandbox environment\n\n#### Production Environment\n\n| **Parameter**        | **Value**                                                                |\n| -------------------- | ------------------------------------------------------------------------ |\n| **Host**             | `https://payments.air-pay.io`                                            |\n| **Enterprise Login** | [Live Portal](https://enterprise.airtm.com)                              |\n| **Documentation**    | [Production Documentation](https://api.enterprise.airtm.com/docs?api=v1) |\n\n> ⚠️ **Important**: Make sure to switch to `payments.air-pay.io` when going live.\n\n---\n\n### Callbacks & Notifications\n\nDuring integration, specify a callback URL to receive notifications when a transaction status changes.\n\n#### Supported Operations\n\nCallbacks are available for:\n\n- **Purchases (Pay-ins)**\n- **Payouts (Withdrawals)**\n- **Bulk Payments**\n\n> \U0001F4DD **Note**: The callback URL must be set during the integration process.\n\n#### Example: Payout Callback Payload\n\n```json\n{\n  \"id\": \"f8dd11dd-12fe-42f7-8e5c-9035714dd43d\",\n  \"code\": null,\n  \"amount\": \"200.00\",\n  \"status\": \"completed\",\n  \"cancel_uri\": null,\n  \"created_at\": \"2021-01-30T07:47:01.055Z\",\n  \"partner_id\": \"4c41f826-115f-40d6-b34c-2a5885e51d27\",\n  \"updated_at\": \"2021-01-30T07:47:02.061Z\",\n  \"description\": \"Some description provided by the partner\",\n  \"failure_uri\": \"https://example.com/123/failure\",\n  \"airtm_user_id\": \"119500e5-094f-4020-beb4-69f5b6f32ee7\",\n  \"failure_reason\": null,\n  \"operation_type\": \"payout\",\n  \"airtm_user_email\": \"useremail@hotmail.com\",\n  \"confirmation_uri\": \"https://example.com/123/confirmed\",\n  \"airtm_operation_id\": \"cfcd89bd-f3e7-4525-af61-83d906e5117c\"\n}\n```\n\n#### Example: Purchase Callback Payload\n\n```json\n{\n  \"id\": \"f85e1a28-0ee4-468f-896d-cbb2caf536de\",\n  \"code\": \"123456\",\n  \"amount\": \"1.00\",\n  \"status\": \"confirmed\",\n  \"cancel_uri\": \"http://myserver.mydomain/cancel\",\n  \"created_at\": \"2022-08-15T23:42:16.933Z\",\n  \"partner_id\": \"afe23416-1d7f-4c54-803f-7e87cdd193ba\",\n  \"updated_at\": \"2022-08-15T23:42:34.016Z\",\n  \"description\": \"Test purchase\",\n  \"failure_uri\": null,\n  \"callback_uri\": \"http://myserver.mydomain/callback\",\n  \"airtm_user_id\": \"6bd1e5b1-7d12-4112-aa1c-3e67454b56f6\",\n  \"failure_reason\": null,\n  \"operation_type\": \"purchase\",\n  \"airtm_user_email\": \"some@email.com\",\n  \"confirmation_uri\": \"http://myserver.mydomain/confirmed\",\n  \"airtm_operation_id\": \"cd529399-1df5-42e2-b2e8-64962eb72562\",\n  \"airtm_operation_hash\": \"1DF5PR42E2CPB2E8\"\n}\n```\n\n#### Simulate Callbacks with cURL\n\nUse the examples below to simulate how Airtm sends callback notifications to your server. This is useful during development and testing.\n\n##### Simulate Purchase Callback\n\n```bash\ncurl --request POST \\\n  --url https://yourserver.com/callback \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"id\": \"f85e1a28-0ee4-468f-896d-cbb2caf536de\",\n    \"code\": \"123456\",\n    \"amount\": \"1.00\",\n    \"status\": \"confirmed\",\n    \"cancel_uri\": \"http://myserver.mydomain/cancel\",\n    \"created_at\": \"2022-08-15T23:42:16.933Z\",\n    \"partner_id\": \"afe23416-1d7f-4c54-803f-7e87cdd193ba\",\n    \"updated_at\": \"2022-08-15T23:42:34.016Z\",\n    \"description\": \"Test purchase\",\n    \"failure_uri\": null,\n    \"callback_uri\": \"http://myserver.mydomain/callback\",\n    \"airtm_user_id\": \"6bd1e5b1-7d12-4112-aa1c-3e67454b56f6\",\n    \"failure_reason\": null,\n    \"operation_type\": \"purchase\",\n    \"airtm_user_email\": \"some@email.com\",\n    \"confirmation_uri\": \"http://myserver.mydomain/confirmed\",\n    \"airtm_operation_id\": \"cd529399-1df5-42e2-b2e8-64962eb72562\",\n    \"airtm_operation_hash\": \"1DF5PR42E2CPB2E8\"\n  }'\n```\n\n##### Simulate Payout Callback\n\n```bash\ncurl --request POST \\\n  --url https://yourserver.com/callback \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"id\": \"f8dd11dd-12fe-42f7-8e5c-9035714dd43d\",\n    \"code\": null,\n    \"amount\": \"200.00\",\n    \"status\": \"completed\",\n    \"cancel_uri\": null,\n    \"created_at\": \"2021-01-30T07:47:01.055Z\",\n    \"partner_id\": \"4c41f826-115f-40d6-b34c-2a5885e51d27\",\n    \"updated_at\": \"2021-01-30T07:47:02.061Z\",\n    \"description\": \"Some description provided by the partner\",\n    \"failure_uri\": \"https://example.com/123/failure\",\n    \"airtm_user_id\": \"119500e5-094f-4020-beb4-69f5b6f32ee7\",\n    \"failure_reason\": null,\n    \"operation_type\": \"payout\",\n    \"airtm_user_email\": \"useremail@hotmail.com\",\n    \"confirmation_uri\": \"https://example.com/123/confirmed\",\n    \"airtm_operation_id\": \"cfcd89bd-f3e7-4525-af61-83d906e5117c\"\n  }'\n```\n\n#### \U0001F510 Callback Tips\n\n- The server should return a **2xx HTTP status code** to acknowledge receipt of the callback\n- Non-2xx responses may trigger retries from Airtm\n- It's recommended to validate the callback data (e.g., `airtm_operation_id`) for security and consistency\n\n---\n\n### Transaction Statuses and Refunds\n\n#### Transaction Statuses\n\n##### Purchases\n\n| **Status**  | **Final?** | **Description**                                          |\n| ----------- | ---------- | -------------------------------------------------------- |\n| `created`   | No         | Purchase was created and is awaiting user action         |\n| `confirmed` | Yes        | Purchase completed and funds have been transferred       |\n| `canceled`  | Yes        | User canceled the purchase. No funds were transferred    |\n| `failed`    | Yes        | Purchase processing failed. Contact enterprise@airtm.com |\n\n##### Payouts\n\n| **Status**  | **Final?** | **Description**                                                                                                                                                                   |\n| ----------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| `created`   | No         | Payout instruction created. Awaiting call to the commit endpoint                                                                                                                  |\n| `committed` | No         | Payout was committed and is being processed                                                                                                                                       |\n| `pending`   | No         | Funds in escrow, awaiting recipient action:<br/>• New user: create Airtm account<br/>• Over $1,000: ID verification<br/>• US user: ID verification + payment method configuration |\n| `completed` | Yes        | Payout completed. Funds credited to the recipient's account                                                                                                                       |\n| `canceled`  | Yes        | Payout canceled. Funds returned. Applies to pending payouts or when recipient is ineligible to receive funds                                                                      |\n| `failed`    | Yes        | Processing failed. Contact enterprise@airtm.com                                                                                                                                   |\n\n> \U0001F4A1 **Tip**: Use case-insensitive comparisons when evaluating status strings.\n\n#### Endpoints\n\n- **Purchases & Payouts**: `GET /operations/{operationId}`\n- **Bulk Payments**: `GET /bulk-payments`\n\n#### Refunds via API\n\n❌ Automatic refunds are not supported.\n\n✅ **To issue a refund**:\n\n1. Initiate a payout from your account to the user\n2. More info available in the [Payouts section](https://docs.airtm.com/reference/payouts)\n\n---\n\n### Transaction Fees, Limits & Expirations\n\n#### Fees & Limits\n\n| **Parameter**                  | **Value**                              |\n| ------------------------------ | -------------------------------------- |\n| **Minimum (US & Puerto Rico)** | $1 USDC                                |\n| **Minimum (Other regions)**    | $0.01 USDC                             |\n| **Maximum per transaction**    | No upper limit                         |\n| **Fees**                       | Contact the sales team for exact rates |\n\n#### Processing Times\n\n- **Payouts to existing users**: Up to 2 minutes\n- **Purchases (pay-ins)**: Depends on client interaction. Usually immediate after confirmation\n\n#### Expiration Rules\n\n- **Pay-ins**: Expire after **15 days**\n- **Pay-outs (to unregistered users)**: Pending for up to **90 days**, unless otherwise configured in your Enterprise dashboard: **Settings → Cancel Timer**\n\n---\n\n### Attributes & Validation\n\n#### General Requirements\n\n- The `confirmation_uri` and `failure_uri` parameters are **required** in payout requests to ensure proper status notifications\n\n#### For Purchases:\n\n- The `items` array is **mandatory**\n- The `amount` must match the sum of all items. Any discrepancy will result in the request being rejected\n- Customers **cannot retry** deposit attempts. Only a single attempt is permitted per transaction\n- Purchase confirmation **must be done via a web browser**. Airtm apps does not support this flow\n\n---\n\n### Authentication & Security\n\n#### Authorization Header Format\n\nTo generate the Authorization header use the format:\n\n```\nAuthorization: Basic base64(API_KEY:SECRET_KEY)\n```\n\n#### Example\n\nFor API Key `123` and Secret `abc`:\n\n1. **Concatenate**: `123:abc`\n2. **Base64 encode**: `MTIzOmFiYw==`\n3. **Resulting header**: `Authorization: Basic MTIzOmFiYw==`\n\n#### Implementation Example\n\n```bash\n# Using curl\ncurl -H \"Authorization: Basic $(echo -n 'API_KEY:SECRET_KEY' | base64)\" \\\n     https://payments.air-pay.io/api/endpoint\n```\n\n---\n\n> \U0001F4DE **Need Help?** Contact [enterprise@airtm.com](mailto:enterprise@airtm.com) for support with API integration or technical issues.\n"
+servers:
+- url: https://payments.air-pay.io
+- url: https://payments.static-stg.tests.airtm.org
+tags:
+- name: Bulk Payments
+  description: '## Overview
+
+
+    Bulk Payments enable your organization to process multiple payouts simultaneously through a single API operation. This powerful feature is designed for businesses that need to send payments to large numbers of recipients efficiently, such as payroll processing, affiliate commissions, contractor payments, or distribution of rewards and bonuses.
+
+
+    ## What are Bulk Payments?
+
+
+    Bulk Payments allow you to upload a batch of payout instructions and process them all at once, rather than making individual API calls for each payment. This approach offers significant advantages in terms of efficiency, cost-effectiveness, and operational simplicity.
+
+
+    ### Key Features
+
+
+    - **High-Volume Processing** - Handle thousands of payments in a single operation
+
+    - **Asynchronous Processing** - Non-blocking operations that scale with your needs
+
+    - **Real-Time Progress Tracking** - Monitor batch processing status in real-time
+
+    - **Detailed Reporting** - Comprehensive success and failure reporting
+
+    - **Cost Efficiency** - Reduced API calls and processing overhead
+
+
+    ### Use Cases
+
+
+    - **Payroll Processing** - Monthly/weekly employee salary payments
+
+    - **Contractor Payments** - Freelancer and contractor compensation
+
+    - **Affiliate Commissions** - Partner and affiliate reward distribution
+
+    - **Prize Distribution** - Contest and promotion prize payments
+
+    - **Supplier Payments** - Vendor and supplier payment processing
+
+    - **Refund Processing** - Bulk customer refund operations
+
+
+    ## Bulk Payment Workflow
+
+
+    ### 1. Preparation Phase
+
+
+    - Validate recipient information
+
+    - Calculate total amounts and fees
+
+    - Ensure sufficient account balance
+
+
+    ### 2. Upload Phase
+
+
+    - Submit bulk payment request
+
+    - Receive batch ID for tracking
+
+    - System validates all entries
+
+    - Initial status: `pending`
+
+
+    ### 3. Processing Phase
+
+
+    - Individual payments are processed asynchronously
+
+    - Real-time status updates available
+
+    - Status changes to `running`
+
+    - Progress tracking via API
+
+
+    ### 4. Completion Phase
+
+
+    - All payments processed (success or failure)
+
+    - Final status: `done`
+
+    - Detailed reports available
+
+    - Success and failure breakdowns provided
+
+
+    ## Status Management
+
+
+    ### Bulk Payment Status Values
+
+
+    | Status    | Description                                                | Actions Available                         |
+
+    | --------- | ---------------------------------------------------------- | ----------------------------------------- |
+
+    | `pending` | The bulk payment was received but it has yet to be started | Cancel entire batch                       |
+
+    | `running` | Individual payments being processed                        | Monitor progress, cancel pending payments |
+
+    | `done`    | All payments processed (success or failure)                | View reports, download results            |
+
+    | `failed`  | An error occurred during processing                        | check the errors endpoint                 |
+
+    '
+paths:
+  bulk-payments:
+    post:
+      security:
+      - basicAuth: []
+      tags:
+      - Bulk Payments
+      summary: New bulk payment
+      description: 'Create a new bulk payment. You will receive a response with the id of
+
+        your bulk payment and the processing will start asynchronously after you
+
+        receive your response. You can check in with the progress of your
+
+        ongoing bulk payment with any of the endpoints described further down
+
+        this section.
+
+        '
+      operationId: Bulk Payments_bulk-payments/new-bulk-payment
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        schema:
+          type: String
+          example: application/json
+          description: ''
+          default: ''
+        description: ''
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: String
+          example: Basic {your_token}
+          description: ''
+          default: ''
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: 'Unique identifier automatically generated on bulk payment
+
+                      creation.
+
+                      '
+                    example: 938ab3e6-a8f7-4995-bb23-a09703fc3289
+                    format: uuid
+                  status:
+                    type: string
+                    description: 'Status of the bulk payment, please check the Possible
+
+                      Statuses section in this endpoint''s summary.
+
+                      '
+                    example: RUNNING
+                  payments:
+                    type: object
+                    description: ''
+                    properties:
+                      count:
+                        type: number
+                        description: Number of individual payments within the bulk payment.
+                        example: 2
+                    required: []
+        '500':
+          description: Invalid account status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ''
+                    example: 'sender does not have a valid account status (currently
+
+                      BANNED)
+
+                      '
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                '0':
+                  type: array
+                  description: Single user information to receive the bulk payment.
+                  items:
+                    type: string
+                    description: 'User''s Airtm email. If user does not have an Airtm account
+
+                      with that email, if succeeded, the funds will move to a
+
+                      GUEST account with that email and will be released once
+
+                      the user creates an Airtm account with that email.
+
+                      '
+                    example: patrick@airtm.io
+                    format: email
+                '1':
+                  type: object
+                  description: ''
+                  properties:
+                    receiver_email:
+                      type: string
+                      description: ''
+                      example: master@airtm.io
+                    amount:
+                      type: number
+                      description: ''
+                      example: 10
+                    currency:
+                      type: string
+                      description: ''
+                      example: USD
+                    note:
+                      type: string
+                      description: ''
+                      example: salary
+                    internal_note:
+                      type: string
+                      description: ''
+                      example: system number 45113-231
+                  required: []
+    get:
+      security:
+      - basicAuth: []
+      tags:
+      - Bulk Payments
+      summary: Get bulk payments history
+      description: 'Endpoint to get all bulk payments associated with your account. This
+
+        will give you an overview of all the bulk payments you ever posted. This
+
+        endpoint is paginated, so make sure to "flip through the pages" via the
+
+        query parameter "page" if you need to get all the information.
+
+        '
+      operationId: Bulk Payments_bulk-payments/get-bulk-payments-history
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: String
+          example: '1'
+          description: Page number to get bulk payments information from.
+          default: ''
+        description: Page number to get bulk payments information from.
+      - name: Accept
+        in: header
+        required: false
+        schema:
+          type: String
+          example: application/json
+          description: ''
+          default: ''
+        description: ''
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: String
+          example: Basic {your_token}
+          description: ''
+          default: ''
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bulk_payments:
+                    type: array
+                    description: Array of bulk payments that were created by the partner.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: ''
+                          example: 47b08782-20c1-4c8e-b7a5-1ca0b046af08
+                        status:
+                          type: string
+                          description: ''
+                          example: DONE
+                        created_at:
+                          type: string
+                          description: ''
+                          example: '2021-06-25T14:31:24.549Z'
+                        payments:
+                          type: object
+                          description: ''
+                          properties:
+                            count:
+                              type: number
+                              description: ''
+                              example: 4
+                            completed:
+                              type: number
+                              description: ''
+                              example: 4
+                            failed:
+                              type: string
+                              description: ''
+                              example: ''
+                          required: []
+                      required: []
+                  count:
+                    type: number
+                    description: Number of bulk payments found.
+                    example: 5
+                  pages:
+                    type: number
+                    description: Number of pages with bulk payment information.
+                    example: 1
+                  currentPage:
+                    type: number
+                    description: Current page that the partner is exploring.
+                    example: 1
+  bulk-payments/{bulkPaymentId}:
+    get:
+      security:
+      - basicAuth: []
+      tags:
+      - Bulk Payments
+      summary: Get bulk payments details
+      description: 'Endpoint to retrieve the details of an existing bulk payment. The status
+
+        `RUNNING` is the default after you have posted your bulk payment. It
+
+        means that the individual payments are being processed and not all of
+
+        them have processed yet. Once that has happened, the status will switch
+
+        to `DONE`.
+
+        '
+      operationId: Bulk Payments_bulk-payments/get-bulk-payments-details
+      parameters:
+      - name: bulkPaymentId
+        in: path
+        required: false
+        schema:
+          type: String
+          example: ''
+          description: ''
+          default: ''
+        description: ''
+      - name: Content-Type
+        in: header
+        required: false
+        schema:
+          type: String
+          example: application/json
+          description: ''
+          default: ''
+        description: ''
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: String
+          example: Basic {your_token}
+          description: ''
+          default: ''
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID
+                    example: 2fa2b192-e140-4b69-b842-db4a4ef63063
+                  status:
+                    type: string
+                    description: 'Status of the bulk payment, please check the Possible
+
+                      Statuses section in this endpoint''s summary.
+
+                      '
+                    example: DONE
+                  payments:
+                    type: object
+                    description: ''
+                    example:
+                      count: 2
+                      pending: 1
+                    properties:
+                      count:
+                        type: number
+                        description: Number of individual payments within the bulk payment.
+                        example: 2
+                      pending:
+                        type: number
+                        description: Number of individual payments in the PENDING status.
+                        example: 1
+                    required: []
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: ''
+                    properties: {}
+                    required: []
+                  code:
+                    type: string
+                    description: ''
+                    example: '352017'
+                  message:
+                    type: string
+                    description: ''
+                    example: Bulk payment not found
+                  displayToUser:
+                    type: boolean
+                    description: ''
+                    example: false
+  bulk-payments/{bulkPaymentId}/errors:
+    get:
+      security:
+      - basicAuth: []
+      tags:
+      - Bulk Payments
+      summary: Get failed bulk payments
+      description: 'This endpoint allows you to see the parts of your bulk payment that
+
+        could not be processed. There is no way to restart them other than to
+
+        create a new bulk payment. There may be unlikely occurrences where some
+
+        errors might not be clear or will only contain an error code. Please
+
+        reach out to enterprise@airtm.com, we are eager to improve the API or
+
+        explain why a payment cannot be processed.
+
+
+        There is no way of restarting a failed payment. You must post a new bulk
+
+        payment or contact support.
+
+
+        This endpoint is paginated, so make sure to "flip through the pages" via
+
+        the query parameter "page" if you need to get all the information.
+
+        '
+      operationId: Bulk Payments_bulk-payments/get-failed-bulk-payments
+      parameters:
+      - name: bulkPaymentId
+        in: path
+        required: false
+        schema:
+          type: String
+          example: ''
+          description: ''
+          default: ''
+        description: ''
+      - name: Accept
+        in: header
+        required: false
+        schema:
+          type: String
+          example: application/json
+          description: ''
+          default: ''
+        description: ''
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: String
+          example: Basic {your_token}
+          description: ''
+          default: ''
+        description: ''
+      responses:
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: ''
+                    properties: {}
+                    required: []
+                  code:
+                    type: string
+                    description: ''
+                    example: '352017'
+                  message:
+                    type: string
+                    description: ''
+                    example: Bulk payment not found
+                  displayToUser:
+                    type: boolean
+                    description: ''
+                    example: false
+        200 - Failed payments:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payments:
+                    type: array
+                    description: 'Response if some payments failed, divided in individual
+
+                      payments to users.
+
+                      '
+                    items:
+                      type: object
+                      properties:
+                        receiver_email:
+                          type: string
+                          description: ''
+                          example: master@airtm.io
+                        amount:
+                          type: number
+                          description: ''
+                          example: 10
+                        currency:
+                          type: string
+                          description: ''
+                          example: USD
+                        note:
+                          type: string
+                          description: ''
+                          example: salary
+                        internal_note:
+                          type: string
+                          description: ''
+                          example: best
+                        status:
+                          type: string
+                          description: ''
+                          example: FAILED
+                        error:
+                          type: string
+                          description: ''
+                          example: 'The second party is not allowed to receive more
+
+                            money
+
+                            '
+                      required: []
+                  count:
+                    type: number
+                    description: Number of failed payments found.
+                    example: 2
+                  pages:
+                    type: number
+                    description: Number of pages with all the individual payments.
+                    example: 1
+                  currentPage:
+                    type: number
+                    description: Current page that the information is in.
+                    example: 1
+        200 - No failed payments:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payments:
+                    type: array
+                    description: This is the response when no errors were found.
+                    items: {}
+                  count:
+                    type: number
+                    description: Number of failed payments found.
+                  pages:
+                    type: number
+                    description: Number of pages.
+                  currentPage:
+                    type: number
+                    description: Current page that the information is in.
+                    example: 1
+                  status:
+                    type: string
+                    description: Status of the payments displayed. Always FAILED.
+                    example: FAILED
+  bulk-payments/{bulkPaymentId}/payments:
+    get:
+      security:
+      - basicAuth: []
+      tags:
+      - Bulk Payments
+      summary: Get bulk payments by id
+      description: 'Get the status of all payments in an existing bulk payment of yours.
+
+        This will allow you to find out which payments succeeded, are still
+
+        pending or may have failed. This endpoint is paginated, so make sure to
+
+        "flip through the pages" via the query parameter "page" if you need to
+
+        get all the information.
+
+        '
+      operationId: Bulk Payments_bulk-payments/get-bulk-payments-by-id
+      parameters:
+      - name: bulkPaymentId
+        in: path
+        required: false
+        schema:
+          type: String
+          example: ''
+          description: ID of the bulk payment to look into.
+          default: ''
+        description: ID of the bulk payment to look into.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: String
+          example: '1'
+          description: ''
+          default: ''
+        description: ''
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: String
+          example: desc:amount,asc:internal_note
+          description: ''
+          default: ''
+        description: ''
+      - name: Accept
+        in: header
+        required: false
+        schema:
+          type: String
+          example: application/json
+          description: ''
+          default: ''
+        description: ''
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: String
+          example: Basic {your_token}
+          description: ''
+          default: ''
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payments:
+                    type: array
+                    description: ''
+                    items:
+                      type: object
+                      properties:
+                        receiver_email:
+                          type: string
+                          description: ''
+                          example: master@airtm.io
+                        airtm_user_id:
+                          type: string
+                          description: ''
+                          example: e5b6d935-916d-49c6-8347-d9a98331e2c0
+                        amount:
+                          type: number
+                          description: ''
+                          example: 10
+                        currency:
+                          type: string
+                          description: ''
+                          example: USD
+                        note:
+                          type: string
+                          description: ''
+                          example: salary
+                        internal_note:
+                          type: string
+                          description: ''
+                          example: system number 45113-231
+                        status:
+                          type: string
+                          description: ''
+                          example: PENDING
+                        hash:
+                          type: string
+                          description: ''
+                          example: 6BD5RK4DC3VH835F
+                      required: []
+                  count:
+                    type: number
+                    description: Number of individual payments found.
+                    example: 2
+                  pages:
+                    type: number
+                    description: Number of pages with all the individual payments.
+                    example: 1
+                  currentPage:
+                    type: number
+                    description: Current page that the partner is exploring.
+                    example: 1
+  bulk-payments/{bulkPaymentId}/payments/cancel:
+    post:
+      security:
+      - basicAuth: []
+      tags:
+      - Bulk Payments
+      summary: Cancel pending bulk payments
+      description: 'This endpoint enables users to manually cancel specific or all `pending`
+
+        individual payouts within a bulk payment. Users can input transaction
+
+        `hash` IDs for specific pending payouts they wish to cancel, retrievable
+
+        from the GET bulk payments by id. If no hash is included in the request
+
+        body, the endpoint will cancel all pending payouts associated with the
+
+        bulk payment. Pending payouts will automatically cancel after 90 days
+
+        (by default, other time periods are avilable in dashboard settings) from
+
+        the creation date. Once canceled, funds are automatically restituted to
+
+        user''s Airtm balance, and individual payout status are updated to
+
+        `canceled`.
+
+        '
+      operationId: Bulk Payments_bulk-payments/cancel-pending-payments-1
+      parameters:
+      - name: bulkPaymentId
+        in: path
+        required: false
+        schema:
+          type: String
+          example: ''
+          description: ''
+          default: ''
+        description: ''
+      - name: Content-Type
+        in: header
+        required: false
+        schema:
+          type: String
+          example: application/json
+          description: ''
+          default: ''
+        description: ''
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: String
+          example: Basic {your_token}
+          description: ''
+          default: ''
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  successful:
+                    type: array
+                    description: ''
+                    items:
+                      type: string
+                      description: ''
+                      example: CADBEW460EXAMPLE
+        '422':
+          description: Bulk Payment ID not valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Description on standard bulk payment ID format.
+                    example: Unprocessable entity
+                  messages:
+                    type: object
+                    description: ''
+                    properties:
+                      id:
+                        type: array
+                        description: ''
+                        items:
+                          type: string
+                          description: ''
+                          example: 'id must match the following:
+
+                            "/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/"
+
+                            '
+                    required: []
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentItems:
+                  type: array
+                  description: ''
+                  items:
+                    type: object
+                    properties:
+                      airtm_operation_hash:
+                        type: string
+                        description: ''
+                        example: CADBEW460EXAMPLE
+                    required: []
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

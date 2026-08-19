@@ -1,0 +1,29 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V2 Webhooks API",
+    "version": "1.155.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get portal URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.enterprise.airtm.com/v2/embedded/webhooks/portal-url"
+          },
+          "docs": "Get a single-use URL for your account that you can open in your browser to configure your webhook endpoints."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

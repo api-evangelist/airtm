@@ -1,0 +1,229 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Airtm Enterprise API V1 Bulk Payments API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Bulk Payments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get bulk payments history",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iobulk-payments",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Authorization",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number to get bulk payments information from."
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Endpoint to get all bulk payments associated with your account. This\nwill give you an overview of all the bulk payments you ever posted. This\nendpoint is paginated, so make sure to \"flip through the pages\" via the\nquery parameter \"page\" if you need to get all the information.\n"
+        },
+        {
+          "info": {
+            "name": "New bulk payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iobulk-payments",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": ""
+              },
+              {
+                "name": "Authorization",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Create a new bulk payment. You will receive a response with the id of\nyour bulk payment and the processing will start asynchronously after you\nreceive your response. You can check in with the progress of your\nongoing bulk payment with any of the endpoints described further down\nthis section.\n"
+        },
+        {
+          "info": {
+            "name": "Get bulk payments details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iobulk-payments/:bulkPaymentId",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": ""
+              },
+              {
+                "name": "Authorization",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "bulkPaymentId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Endpoint to retrieve the details of an existing bulk payment. The status\n`RUNNING` is the default after you have posted your bulk payment. It\nmeans that the individual payments are being processed and not all of\nthem have processed yet. Once that has happened, the status will switch\nto `DONE`.\n"
+        },
+        {
+          "info": {
+            "name": "Get failed bulk payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iobulk-payments/:bulkPaymentId/errors",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Authorization",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "bulkPaymentId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint allows you to see the parts of your bulk payment that\ncould not be processed. There is no way to restart them other than to\ncreate a new bulk payment. There may be unlikely occurrences where some\nerrors might not be clear or will only contain an error code. Please\nreach out to enterprise@airtm.com, we are eager to improve the API or\nexplain why a payment cannot be processed.\n\nThere is no way of restarting a failed payment. You must post a new bulk\npayment or contact support.\n\nThis "
+        },
+        {
+          "info": {
+            "name": "Get bulk payments by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://payments.air-pay.iobulk-payments/:bulkPaymentId/payments",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Authorization",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "bulkPaymentId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the bulk payment to look into."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Get the status of all payments in an existing bulk payment of yours.\nThis will allow you to find out which payments succeeded, are still\npending or may have failed. This endpoint is paginated, so make sure to\n\"flip through the pages\" via the query parameter \"page\" if you need to\nget all the information.\n"
+        },
+        {
+          "info": {
+            "name": "Cancel pending bulk payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://payments.air-pay.iobulk-payments/:bulkPaymentId/payments/cancel",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": ""
+              },
+              {
+                "name": "Authorization",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "bulkPaymentId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "This endpoint enables users to manually cancel specific or all `pending`\nindividual payouts within a bulk payment. Users can input transaction\n`hash` IDs for specific pending payouts they wish to cancel, retrievable\nfrom the GET bulk payments by id. If no hash is included in the request\nbody, the endpoint will cancel all pending payouts associated with the\nbulk payment. Pending payouts will automatically cancel after 90 days\n(by default, other time periods are avilable in dashboard settings) fro"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
