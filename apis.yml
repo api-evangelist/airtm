@@ -11,6 +11,18 @@ description: >-
   OIDC authorization server and a Wallet Resource (Connect) API that lets a partner application move
   value in and out of an individual user's Airtm wallet on that user's behalf.
 url: https://raw.githubusercontent.com/api-evangelist/airtm/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://app.airtm.com/favicon.ico
 x-type: company
 x-source: harvest:secondary-market
