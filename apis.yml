@@ -32,19 +32,19 @@ modified: '2026-08-06'
 tags:
 - Payments
 - Payouts
-- cross-border-payments
+- Cross-Border Payments
 - Fintech
-- digital-wallet
-- stablecoin
+- Digital Wallet
+- Stablecoins
 - USDC
-- stellar
-- mass-payouts
-- remittances
-- latin-america
-- emerging-markets
+- Stellar
+- Mass Payouts
+- Remittances
+- Latin America
+- Emerging Markets
 - money-services-business
 - Authentication
-- openid-connect
+- OpenID Connect
 tags_raw:
 - payments
 - payouts
@@ -81,10 +81,10 @@ apis:
   tags:
   - Wallets
   - Authentication
-  - openid-connect
-  - stablecoin
+  - OpenID Connect
+  - Stablecoins
   - USDC
-  - stellar
+  - Stellar
   tags_raw:
   - wallet
   - oauth2
@@ -136,7 +136,7 @@ apis:
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/v2
   tags:
-  - ApiKeys
+  - APIKeys
   tags_raw:
   - ApiKeys
   properties:
