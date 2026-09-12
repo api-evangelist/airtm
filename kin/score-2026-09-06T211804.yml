@@ -1,38 +1,45 @@
-# Kin Score artifact — airtm — 2026-08-10T093022
+# Kin Score artifact — airtm — 2026-09-06T211804
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: airtm
-  schema_version: 0.9.1
-  scored_at: '2026-08-10'
-  run_ts: 2026-08-10T093022
-  composite: 59.6
+  schema_version: 0.19.0
+  scored_at: '2026-09-06'
+  run_ts: 2026-09-06T211804
+  composite: 61.2
   band: strong
   facets:
-    discoverability: 74.1
-    contract_quality: 66.1
-    governance: 20.8
-    operational_transparency: 71.1
-    developer_ergonomics: 66.8
+    discoverability: 57.4
+    contract_quality: 67.2
+    governance: 18.2
+    operational_transparency: 57.9
+    developer_ergonomics: 73.2
     commercial_clarity: 42.1
+    contract_governance: 18.2
+    access_clarity: 42.1
   agent_readiness:
-    score: 61.5
+    score: 49.4
     band: agent-native
     dimensions:
       spec_presence: true
       agentic_access: derived
+      reversibility_documented: documented
       mcp_server: false
-      auth_clarity: true
+      auth_clarity: served
       idempotency: verified
       error_semantics: documented
       openapi_examples: verified
       rate_limit_signal: documented
       event_surface_described: true
       agent_skills: derived
-      well_known_catalog: true
-      consent_identity: true
+      well_known_catalog: false
+      consent_identity: false
       agent_card: false
       dry_run_mode: false
+      delegated_identity: served
+      protected_resource_metadata: false
+      dynamic_client_registration: false
+      agentic_commerce: false
   regulatory:
     applies: true
     regime: Payments
@@ -44,3 +51,8 @@ kin_score:
     skills: derived
     agentic_access: derived
     conformance: first-party
+    contracts:
+      total: 23
+      derived: 0
+      coverage: 0.0
+      callable: 100.0
