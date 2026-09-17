@@ -146,24 +146,6 @@ apis:
     url: https://docs.airtm.com/
   - type: Webhooks
     url: asyncapi/airtm-webhooks.yml
-- aid: airtm:airtm-apikeys-api
-  name: Airtm API Keys API
-  description: The ApiKeys API from Airtm — 3 operation(s) for apikeys.
-  humanURL: https://docs.airtm.com/
-  baseURL: https://api.enterprise.airtm.com/v2
-  tags:
-  - APIKeys
-  tags_raw:
-  - ApiKeys
-  properties:
-  - type: OpenAPI
-    url: openapi/airtm-apikeys-api-openapi.yml
-  - type: Documentation
-    url: https://docs.airtm.com/
-  - type: APIReference
-    url: https://docs.airtm.com/
-  - type: Webhooks
-    url: asyncapi/airtm-webhooks.yml
 - aid: airtm:airtm-bulk-payments-api
   name: Airtm Bulk Payments API
   description: >-
@@ -1786,6 +1768,22 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/airtm-withdrawals-api-openapi.yml
+  - type: Documentation
+    url: https://docs.airtm.com/
+  - type: APIReference
+    url: https://docs.airtm.com/
+  - type: Webhooks
+    url: asyncapi/airtm-webhooks.yml
+- aid: airtm:airtm-api-keys-api
+  name: Airtm API Keys API
+  description: The API Keys API from Airtm — 3 operation(s) for api keys.
+  humanURL: https://docs.airtm.com/
+  baseURL: https://api.enterprise.airtm.com/api/connect/v1
+  tags:
+  - API Keys
+  properties:
+  - type: OpenAPI
+    url: openapi/airtm-api-keys-api-openapi.yml
   - type: Documentation
     url: https://docs.airtm.com/
   - type: APIReference
