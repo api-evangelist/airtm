@@ -45,6 +45,9 @@ x-source: harvest:secondary-market
 specificationVersion: '0.23'
 created: '2026-08-06'
 modified: '2026-08-06'
+x-docs-platform: scalar
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-09-17
 tags:
 - Payments
 - Payouts
@@ -666,6 +669,8 @@ apis:
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/v2
   tags:
+  - Partners
+  tags_raw:
   - Partner
   properties:
   - type: OpenAPI
@@ -800,6 +805,8 @@ apis:
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/v2
   tags:
+  - Pay-In
+  tags_raw:
   - Payins
   properties:
   - type: OpenAPI
@@ -1780,6 +1787,8 @@ apis:
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/api/connect/v1
   tags:
+  - APIKeys
+  tags_raw:
   - API Keys
   properties:
   - type: OpenAPI
