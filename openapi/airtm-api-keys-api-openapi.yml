@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Airtm Enterprise API V2 Withdrawals API
+  title: Airtm Enterprise API V2 API Keys API
   version: 1.155.0
   description: '# Introduction
 
@@ -14,22 +14,18 @@ servers:
 - url: https://api.enterprise.airtm.com/v2
 - url: https://api.stg.enterprise.airtm.com/v2
 tags:
-- name: Withdrawals
-  description: '# Withdrawals
-
-
-    The withdrawals API provides the capability to withdraw your funds to a previously registered external account (Bank or Crypto)'
+- name: API Keys
 paths:
-  /withdrawals:
+  /api-keys:
     post:
-      operationId: CreateWithdrawal
+      operationId: CreateApiKey
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WithdrawalResponse'
+                $ref: '#/components/schemas/ApiKey'
         default:
           description: Error
           content:
@@ -56,28 +52,22 @@ paths:
                 - code
                 - message
                 type: object
-      description: Creates a withdrawal for the enterprise.
-      summary: Create a withdrawal
+      description: Endpoint to create new api keys for your account.
+      summary: Create api keys
       tags:
-      - Withdrawals
+      - API Keys
       security:
       - basicAuth: []
       parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateWithdrawalRequest'
     get:
-      operationId: ListWithdrawals
+      operationId: ListApiKeys
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Paginated_WithdrawalResponse_'
+                $ref: '#/components/schemas/Paginated_ApiKey_'
         default:
           description: Error
           content:
@@ -104,9 +94,10 @@ paths:
                 - code
                 - message
                 type: object
-      summary: List withdrawals
+      description: Endpoint to list all api keys associated with your account.
+      summary: List api keys
       tags:
-      - Withdrawals
+      - API Keys
       security:
       - basicAuth: []
       parameters:
@@ -132,21 +123,12 @@ paths:
           type: integer
           minimum: 10
           maximum: 1000
-      - in: query
-        name: status
-        required: false
-        schema:
-          $ref: '#/components/schemas/EnterpriseDirectWithdrawStatus'
-  /withdrawals/{id}:
-    get:
-      operationId: GetWithdrawalById
+  /api-keys/{id}:
+    delete:
+      operationId: RevokeApiKey
       responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WithdrawalResponse'
+        '204':
+          description: No content
         default:
           description: Error
           content:
@@ -173,88 +155,88 @@ paths:
                 - code
                 - message
                 type: object
-      summary: Get a single withdrawal
+      description: Revoke an existing API key.
+      summary: Revoke an API key
       tags:
-      - Withdrawals
+      - API Keys
       security:
       - basicAuth: []
       parameters:
-      - description: The withdrawal id
+      - description: The API key id.
         in: path
         name: id
         required: true
         schema:
           type: string
+  /api-keys/{id}/allowed-ips:
+    post:
+      operationId: ToggleAllowedIp
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/IpItem'
+                type: array
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                    description: 'Machine-friendly error code
+
+
+                      See the API error code catalog in the documentation for the endpoint surface you are using.'
+                    example: '415096'
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    example: Invalid email address
+                  data:
+                    $ref: '#/components/schemas/Record_string.unknown_'
+                    description: Additional data related to the error
+                    example:
+                      email: invalid@address
+                required:
+                - code
+                - message
+                type: object
+      description: 'Toggle an IPv4 address on this API key''s allowlist. If the IP is already
+
+        allowed, it is removed; otherwise it is added. Returns the resulting
+
+        allowlist.'
+      summary: Toggle an allowed IP for an API key
+      tags:
+      - API Keys
+      security:
+      - basicAuth: []
+      parameters:
+      - description: The API key id.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IpItem'
 components:
   schemas:
-    WithdrawalResponse:
-      properties:
-        id:
-          type: string
-          description: The id of the withdrawal.
-        status:
-          $ref: '#/components/schemas/EnterpriseDirectWithdrawStatus'
-          description: The status of the withdrawal.
-        amount:
-          type: number
-          format: double
-          description: The amount of the withdrawal.
-        paymentRail:
-          $ref: '#/components/schemas/PaymentRail'
-          description: The payment rail of the withdrawal.
-        accountDetail:
-          $ref: '#/components/schemas/Record_string.unknown_'
-          description: The crypto or bank account detail of the withdrawal.
-        failureReason:
-          type: string
-          description: The failure reason of the withdrawal in case of failure.
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-      required:
-      - id
-      - status
-      - amount
-      - paymentRail
-      - accountDetail
-      - createdAt
-      - updatedAt
-      type: object
-      additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    CryptoPaymentRail:
-      enum:
-      - stellar
-      - ethereum
-      type: string
-      x-enum-varnames:
-      - STELLAR
-      - ETHEREUM
-    PaymentRail:
-      anyOf:
-      - $ref: '#/components/schemas/BankPaymentRail'
-      - $ref: '#/components/schemas/CryptoPaymentRail'
-    EnterpriseDirectWithdrawStatus:
-      enum:
-      - COMPLETED
-      - CREATED
-      - FAILED
-      type: string
-      x-enum-varnames:
-      - COMPLETED
-      - CREATED
-      - FAILED
-    Paginated_WithdrawalResponse_:
+    Paginated_ApiKey_:
       description: Represents a paginated collection of items.
       properties:
         items:
           items:
-            $ref: '#/components/schemas/WithdrawalResponse'
+            $ref: '#/components/schemas/ApiKey'
           type: array
           description: The items in the current page.
         startCursor:
@@ -267,47 +249,50 @@ components:
       - items
       type: object
       additionalProperties: false
-    BankPaymentRail:
-      enum:
-      - wire
-      - ach
-      - sepa
-      - swift
-      type: string
-      x-enum-varnames:
-      - WIRE
-      - ACH
-      - SEPA
-      - SWIFT
-    CreateWithdrawalRequest:
+    IpItem:
       properties:
-        amount:
-          type: number
-          format: double
-          description: The amount to withdraw.
-        externalAccountId:
+        ip:
           type: string
-          description: The id of the external (bank or crypto) account to withdraw to.
-        paymentRail:
-          $ref: '#/components/schemas/BankPaymentRail'
-          description: 'Optional for bank withdrawals: The payment rail to use for the withdrawal.
-
-            If not provided, the payment rail will be inferred from the external account.
-
-            e.g. if the external account is of type `us_ach`, the payment rail will be `ach`.
-
-            if the external account is of type `us_wire`, the payment rail will be `wire`.
-
-            if the external account is of type `iban`, the payment rail will be `sepa`.
-
-            But you can also use wire for an us_ach account or ach for a us_wire account.
-
-            And also you specify swift for an iban account if you wish.'
+        label:
+          type: string
       required:
-      - amount
-      - externalAccountId
+      - ip
       type: object
       additionalProperties: false
+    ApiKey:
+      properties:
+        deletedAt:
+          type: string
+        createdAt:
+          type: string
+        allowedIps:
+          items:
+            properties:
+              label:
+                type: string
+              ip:
+                type: string
+            required:
+            - ip
+            type: object
+          type: array
+        secret:
+          type: string
+        enterpriseId:
+          type: string
+        id:
+          type: string
+      required:
+      - createdAt
+      - secret
+      - enterpriseId
+      - id
+      type: object
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http
