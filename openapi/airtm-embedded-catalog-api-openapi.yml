@@ -98,29 +98,6 @@ paths:
           type: string
 components:
   schemas:
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    DestinationFieldDescriptor:
-      properties:
-        required:
-          type: boolean
-        pattern:
-          type: string
-        title:
-          type: string
-        options:
-          items:
-            type: string
-          type: array
-        type:
-          type: string
-      required:
-      - required
-      type: object
-      description: One field in a payout destination form, derived from Vivillon version schema.properties.
     Paginated_EmbeddedCatalogRailItem_:
       description: Represents a paginated collection of items.
       properties:
@@ -178,6 +155,29 @@ components:
       - maximumAmount
       type: object
       additionalProperties: false
+    DestinationFieldDescriptor:
+      properties:
+        required:
+          type: boolean
+        pattern:
+          type: string
+        title:
+          type: string
+        options:
+          items:
+            type: string
+          type: array
+        type:
+          type: string
+      required:
+      - required
+      type: object
+      description: One field in a payout destination form, derived from Vivillon version schema.properties.
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

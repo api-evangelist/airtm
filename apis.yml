@@ -1787,8 +1787,6 @@ apis:
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/api/connect/v1
   tags:
-  - APIKeys
-  tags_raw:
   - API Keys
   properties:
   - type: OpenAPI

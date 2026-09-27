@@ -264,6 +264,93 @@ webhooks:
                   example: payin.canceled
 components:
   schemas:
+    PayoutResponse:
+      description: Represents a Payout Object
+      properties:
+        id:
+          $ref: '#/components/schemas/Uuid'
+          description: This is the unique identifier for the payout.
+        bulkPayoutId:
+          $ref: '#/components/schemas/Uuid'
+          description: The identifier of the bulk payout that created this payout.
+        hash:
+          type: string
+          description: Unique hash for the payout operation within the Airtm system.
+        code:
+          type: string
+          description: A unique code used to identify the payout.
+        airtmUserId:
+          $ref: '#/components/schemas/Uuid'
+          description: This is the unique identifier for the AirTM user associated with this payout.
+        airtmUserEmail:
+          $ref: '#/components/schemas/Email'
+          description: This is the email of the Airtm user associated with this payout.
+        requireIdVerified:
+          type: boolean
+          description: Whether the recipient must be ID-verified to receive the funds
+          default: false
+        notes:
+          type: string
+          description: An arbitrary string describing the payment. This information is displayed to the recipient.
+        internalNote:
+          type: string
+          description: The description of the payout; visible to internal users
+        status:
+          $ref: '#/components/schemas/PayoutStatus'
+        grossAmount:
+          type: number
+          format: double
+          description: amount originally intended for the payout
+          example: 10
+        amount:
+          type: number
+          format: double
+          description: amount to be deducted from the enterprise account (grossAmount - enterpriseFee)
+          example: 9.5
+        netAmount:
+          type: number
+          format: double
+          description: amount received by the user (grossAmount - enterpriseFee - airtmFee)
+          example: 9
+        airtmFee:
+          type: number
+          format: double
+          description: The airtm fee applied to the payout
+          example: 0.5
+        enterpriseFee:
+          type: number
+          format: double
+          description: The enterprise fee applied to the payout
+          example: 0.5
+        reasonCode:
+          type: string
+          description: Machine-friendly code relating to the reason why the payout has the current status
+          example: 522443
+        reasonDescription:
+          type: string
+          description: Human-readable message describing the reason why the payout has the current status
+        kycInformation:
+          $ref: '#/components/schemas/KycInformation'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the payout was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update made to the payout.
+      required:
+      - id
+      - airtmUserId
+      - airtmUserEmail
+      - status
+      - grossAmount
+      - amount
+      - netAmount
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
     PayinResponse:
       description: 'A payin is a transaction that transfers funds from a user''s Airtm account to an enterprise''s account.
 
@@ -353,86 +440,10 @@ components:
       - cancelUri
       type: object
       additionalProperties: false
-    PayoutStatus:
-      description: "The current status of the payout.\n\n- `CREATED`: The payout instruction has been registered and is awaiting you to call the commit endpoint.\n- `COMMITTED`: The payout was committed and is in the process of being executed.\n- `PENDING`: Funds have been placed in escrow and waiting for the recipient to take the following action to complete the payout\n  1. If a new user, create an Airtm account.\n  2. If a user receiving an amount taking them over the $1,000 inflow threshold requiring KYC.\n  3. If a US user, complete KYC and configure payment method.\n- `COMPLETED`: The payout has been completed successfully, funds have been credited to the customer's account.\n- `CANCELED`: Payout has been canceled and funds have been returned to your account.\n- `FAILED`: The payout has failed and funds have been returned to your account.\n- `ERROR`: A temporary error state. Payouts in this state should be fixed and retried until they reach a final state (COMPLETED or CANCELED)."
-      enum:
-      - BRIDGE_COMPLETED
-      - BRIDGE_CREATED
-      - BRIDGE_FAILED
-      - BRIDGE_MAX_RETRIES_REACHED
-      - BRIDGE_USER_SIGNUP_PENDING
-      - CANCELED
-      - CANCEL_REQUESTED
-      - COMMITTED
-      - COMPLETED
-      - COSMOEM_COMPLETED
-      - CREATED
-      - ERROR
-      - FAILED
-      - PENDING
-      - PENDING_SIGNATURE
-      - SIGNED
-      - PENDING_USER_ACTION
-      - PROCESSING
+    Uuid:
       type: string
-      x-enum-varnames:
-      - BRIDGE_COMPLETED
-      - BRIDGE_CREATED
-      - BRIDGE_FAILED
-      - BRIDGE_MAX_RETRIES_REACHED
-      - BRIDGE_USER_SIGNUP_PENDING
-      - CANCELED
-      - CANCEL_REQUESTED
-      - COMMITTED
-      - COMPLETED
-      - COSMOEM_COMPLETED
-      - CREATED
-      - ERROR
-      - FAILED
-      - PENDING
-      - PENDING_SIGNATURE
-      - SIGNED
-      - PENDING_USER_ACTION
-      - PROCESSING
-    PayinStatus:
-      description: 'The current status of the payin
-
-
-        - `CREATED`: The payin has been created but not yet confirmed.
-
-        - `CONFIRMED`: The payin has been confirmed and is ready for processing.
-
-        - `CANCELED`: The payin has been canceled by the user or system.
-
-        - `PROCESSING`: The payin is currently being processed.
-
-        - `FAILED`: The payin has failed due to an error.
-
-        - `BRIDGE_FAILED`: The payin has failed due to an error in Bridge.
-
-        - `BRIDGE_CANCELED`: The payin has been canceled due to an error in Bridge.'
-      enum:
-      - CREATED
-      - CONFIRMED
-      - CANCELED
-      - PROCESSING
-      - FAILED
-      - BRIDGE_FAILED
-      - BRIDGE_CANCELED
-      type: string
-      x-enum-varnames:
-      - CREATED
-      - CONFIRMED
-      - CANCELED
-      - PROCESSING
-      - FAILED
-      - BRIDGE_FAILED
-      - BRIDGE_CANCELED
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
     KycInformation:
       description: 'Represents the user''s KYC information for a payout.
 
@@ -515,100 +526,89 @@ components:
       - payinId
       type: object
       additionalProperties: false
-    PayoutResponse:
-      description: Represents a Payout Object
-      properties:
-        id:
-          $ref: '#/components/schemas/Uuid'
-          description: This is the unique identifier for the payout.
-        bulkPayoutId:
-          $ref: '#/components/schemas/Uuid'
-          description: The identifier of the bulk payout that created this payout.
-        hash:
-          type: string
-          description: Unique hash for the payout operation within the Airtm system.
-        code:
-          type: string
-          description: A unique code used to identify the payout.
-        airtmUserId:
-          $ref: '#/components/schemas/Uuid'
-          description: This is the unique identifier for the AirTM user associated with this payout.
-        airtmUserEmail:
-          $ref: '#/components/schemas/Email'
-          description: This is the email of the Airtm user associated with this payout.
-        requireIdVerified:
-          type: boolean
-          description: Whether the recipient must be ID-verified to receive the funds
-          default: false
-        notes:
-          type: string
-          description: An arbitrary string describing the payment. This information is displayed to the recipient.
-        internalNote:
-          type: string
-          description: The description of the payout; visible to internal users
-        status:
-          $ref: '#/components/schemas/PayoutStatus'
-        grossAmount:
-          type: number
-          format: double
-          description: amount originally intended for the payout
-          example: 10
-        amount:
-          type: number
-          format: double
-          description: amount to be deducted from the enterprise account (grossAmount - enterpriseFee)
-          example: 9.5
-        netAmount:
-          type: number
-          format: double
-          description: amount received by the user (grossAmount - enterpriseFee - airtmFee)
-          example: 9
-        airtmFee:
-          type: number
-          format: double
-          description: The airtm fee applied to the payout
-          example: 0.5
-        enterpriseFee:
-          type: number
-          format: double
-          description: The enterprise fee applied to the payout
-          example: 0.5
-        reasonCode:
-          type: string
-          description: Machine-friendly code relating to the reason why the payout has the current status
-          example: 522443
-        reasonDescription:
-          type: string
-          description: Human-readable message describing the reason why the payout has the current status
-        kycInformation:
-          $ref: '#/components/schemas/KycInformation'
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp of when the payout was created.
-        updatedAt:
-          type: string
-          format: date-time
-          description: Timestamp of the last update made to the payout.
-      required:
-      - id
-      - airtmUserId
-      - airtmUserEmail
-      - status
-      - grossAmount
-      - amount
-      - netAmount
-      - createdAt
-      - updatedAt
-      type: object
-      additionalProperties: false
+    PayoutStatus:
+      description: "The current status of the payout.\n\n- `CREATED`: The payout instruction has been registered and is awaiting you to call the commit endpoint.\n- `COMMITTED`: The payout was committed and is in the process of being executed.\n- `PENDING`: Funds have been placed in escrow and waiting for the recipient to take the following action to complete the payout\n  1. If a new user, create an Airtm account.\n  2. If a user receiving an amount taking them over the $1,000 inflow threshold requiring KYC.\n  3. If a US user, complete KYC and configure payment method.\n- `COMPLETED`: The payout has been completed successfully, funds have been credited to the customer's account.\n- `CANCELED`: Payout has been canceled and funds have been returned to your account.\n- `FAILED`: The payout has failed and funds have been returned to your account.\n- `ERROR`: A temporary error state. Payouts in this state should be fixed and retried until they reach a final state (COMPLETED or CANCELED)."
+      enum:
+      - BRIDGE_COMPLETED
+      - BRIDGE_CREATED
+      - BRIDGE_FAILED
+      - BRIDGE_MAX_RETRIES_REACHED
+      - BRIDGE_USER_SIGNUP_PENDING
+      - CANCELED
+      - CANCEL_REQUESTED
+      - COMMITTED
+      - COMPLETED
+      - COSMOEM_COMPLETED
+      - CREATED
+      - ERROR
+      - FAILED
+      - PENDING
+      - PENDING_SIGNATURE
+      - SIGNED
+      - PENDING_USER_ACTION
+      - PROCESSING
+      type: string
+      x-enum-varnames:
+      - BRIDGE_COMPLETED
+      - BRIDGE_CREATED
+      - BRIDGE_FAILED
+      - BRIDGE_MAX_RETRIES_REACHED
+      - BRIDGE_USER_SIGNUP_PENDING
+      - CANCELED
+      - CANCEL_REQUESTED
+      - COMMITTED
+      - COMPLETED
+      - COSMOEM_COMPLETED
+      - CREATED
+      - ERROR
+      - FAILED
+      - PENDING
+      - PENDING_SIGNATURE
+      - SIGNED
+      - PENDING_USER_ACTION
+      - PROCESSING
+    PayinStatus:
+      description: 'The current status of the payin
+
+
+        - `CREATED`: The payin has been created but not yet confirmed.
+
+        - `CONFIRMED`: The payin has been confirmed and is ready for processing.
+
+        - `CANCELED`: The payin has been canceled by the user or system.
+
+        - `PROCESSING`: The payin is currently being processed.
+
+        - `FAILED`: The payin has failed due to an error.
+
+        - `BRIDGE_FAILED`: The payin has failed due to an error in Bridge.
+
+        - `BRIDGE_CANCELED`: The payin has been canceled due to an error in Bridge.'
+      enum:
+      - CREATED
+      - CONFIRMED
+      - CANCELED
+      - PROCESSING
+      - FAILED
+      - BRIDGE_FAILED
+      - BRIDGE_CANCELED
+      type: string
+      x-enum-varnames:
+      - CREATED
+      - CONFIRMED
+      - CANCELED
+      - PROCESSING
+      - FAILED
+      - BRIDGE_FAILED
+      - BRIDGE_CANCELED
     Email:
       type: string
       pattern: ^(.+)@(.+)$
-    Uuid:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

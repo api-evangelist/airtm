@@ -32,7 +32,7 @@ paths:
         ongoing bulk payment with any of the endpoints described further down
 
         this section.'
-      operationId: Bulk Payments_bulk-payments/new-bulk-payment
+      operationId: BulkPayments_bulk-payments/new-bulk-payment
       parameters:
       - name: Content-Type
         in: header
@@ -150,6 +150,8 @@ paths:
                       description: ''
                       example: system number 45113-231
                   required: []
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Payments_bulk-payments/new-bulk-payment
     get:
       security:
       - basicAuth: []
@@ -163,7 +165,7 @@ paths:
         endpoint is paginated, so make sure to "flip through the pages" via the
 
         query parameter "page" if you need to get all the information.'
-      operationId: Bulk Payments_bulk-payments/get-bulk-payments-history
+      operationId: BulkPayments_bulk-payments/get-bulk-payments-history
       parameters:
       - name: page
         in: query
@@ -248,6 +250,8 @@ paths:
                     type: number
                     description: Current page that the partner is exploring.
                     example: 1
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Payments_bulk-payments/get-bulk-payments-history
   bulk-payments/{bulkPaymentId}:
     get:
       security:
@@ -264,7 +268,7 @@ paths:
         them have processed yet. Once that has happened, the status will switch
 
         to `DONE`.'
-      operationId: Bulk Payments_bulk-payments/get-bulk-payments-details
+      operationId: BulkPayments_bulk-payments/get-bulk-payments-details
       parameters:
       - name: bulkPaymentId
         in: path
@@ -353,6 +357,8 @@ paths:
                     type: boolean
                     description: ''
                     example: false
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Payments_bulk-payments/get-bulk-payments-details
   bulk-payments/{bulkPaymentId}/errors:
     get:
       security:
@@ -381,7 +387,7 @@ paths:
         This endpoint is paginated, so make sure to "flip through the pages" via
 
         the query parameter "page" if you need to get all the information.'
-      operationId: Bulk Payments_bulk-payments/get-failed-bulk-payments
+      operationId: BulkPayments_bulk-payments/get-failed-bulk-payments
       parameters:
       - name: bulkPaymentId
         in: path
@@ -522,6 +528,8 @@ paths:
                     type: string
                     description: Status of the payments displayed. Always FAILED.
                     example: FAILED
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Payments_bulk-payments/get-failed-bulk-payments
   bulk-payments/{bulkPaymentId}/payments:
     get:
       security:
@@ -538,7 +546,7 @@ paths:
         "flip through the pages" via the query parameter "page" if you need to
 
         get all the information.'
-      operationId: Bulk Payments_bulk-payments/get-bulk-payments-by-id
+      operationId: BulkPayments_bulk-payments/get-bulk-payments-by-id
       parameters:
       - name: bulkPaymentId
         in: path
@@ -644,6 +652,8 @@ paths:
                     type: number
                     description: Current page that the partner is exploring.
                     example: 1
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Payments_bulk-payments/get-bulk-payments-by-id
   bulk-payments/{bulkPaymentId}/payments/cancel:
     post:
       security:
@@ -670,7 +680,7 @@ paths:
         user''s Airtm balance, and individual payout status are updated to
 
         `canceled`.'
-      operationId: Bulk Payments_bulk-payments/cancel-pending-payments-1
+      operationId: BulkPayments_bulk-payments/cancel-pending-payments-1
       parameters:
       - name: bulkPaymentId
         in: path
@@ -760,6 +770,8 @@ paths:
                         description: ''
                         example: CADBEW460EXAMPLE
                     required: []
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Payments_bulk-payments/cancel-pending-payments-1
 components:
   securitySchemes:
     basicAuth:

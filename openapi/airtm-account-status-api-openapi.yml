@@ -41,7 +41,7 @@ paths:
         encoding urls here:**
 
         **https://www.w3schools.com/tags/ref\_urlencode.ASP**'
-      operationId: Account Status_account-status/get-account-status
+      operationId: AccountStatus_account-status/get-account-status
       parameters:
       - name: email
         in: query
@@ -96,6 +96,8 @@ paths:
                     type: string
                     description: The user's full name as registered in Airtm
                     example: Luciano PM
+      x-operation-id-source: normalized
+      x-operation-id-original: Account Status_account-status/get-account-status
 components:
   securitySchemes:
     basicAuth:

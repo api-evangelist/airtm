@@ -262,74 +262,6 @@ paths:
               $ref: '#/components/schemas/UpdateSenderRequest'
 components:
   schemas:
-    CreateSenderContact:
-      description: Contact information for the sender.
-      properties:
-        email:
-          type: string
-          pattern: ^(.+)@(.+)$
-        phoneNumber:
-          type: string
-        phoneCountryCode:
-          type: string
-          pattern: ^\+\d{1,3}$
-      required:
-      - email
-      - phoneNumber
-      - phoneCountryCode
-      type: object
-      additionalProperties: false
-    KycLevel:
-      enum:
-      - BASIC
-      - FULL
-      type: string
-      x-enum-varnames:
-      - BASIC
-      - FULL
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    CreateSenderKycReliance:
-      description: KYC reliance information from the partner's KYC provider.
-      properties:
-        performedBy:
-          type: string
-        kycReferenceId:
-          type: string
-        status:
-          $ref: '#/components/schemas/KycStatus'
-        performedAt:
-          type: string
-        level:
-          $ref: '#/components/schemas/KycLevel'
-        documentType:
-          $ref: '#/components/schemas/DocumentType'
-        provider:
-          properties:
-            result:
-              $ref: '#/components/schemas/ProviderResult'
-            applicantId:
-              type: string
-            name:
-              type: string
-          required:
-          - result
-          - applicantId
-          - name
-          type: object
-      required:
-      - performedBy
-      - kycReferenceId
-      - status
-      - performedAt
-      - level
-      - documentType
-      - provider
-      type: object
-      additionalProperties: false
     Partial_CreateSenderCompliance_:
       properties:
         kycReliance:
@@ -340,60 +272,6 @@ components:
           $ref: '#/components/schemas/SessionContext'
       type: object
       description: Make all properties in T optional
-    RiskRating:
-      enum:
-      - LOW
-      - MEDIUM
-      - HIGH
-      type: string
-      x-enum-varnames:
-      - LOW
-      - MEDIUM
-      - HIGH
-    DocumentType:
-      enum:
-      - PASSPORT
-      - NATIONAL_ID
-      - DRIVER_LICENSE
-      type: string
-      x-enum-varnames:
-      - PASSPORT
-      - NATIONAL_ID
-      - DRIVER_LICENSE
-    CreateSenderAddress:
-      description: Address information for the sender.
-      properties:
-        line1:
-          type: string
-        city:
-          type: string
-        region:
-          type: string
-        postalCode:
-          type: string
-        country:
-          type: string
-          description: Country code 3 letter ISO code.
-          minLength: 3
-          maxLength: 3
-      required:
-      - line1
-      - city
-      - region
-      - postalCode
-      - country
-      type: object
-      additionalProperties: false
-    ProviderResult:
-      enum:
-      - GREEN
-      - AMBER
-      - RED
-      type: string
-      x-enum-varnames:
-      - GREEN
-      - AMBER
-      - RED
     Partial_UpdateSenderContact_:
       properties:
         phoneNumber:
@@ -403,129 +281,20 @@ components:
           pattern: ^\+\d{1,3}$
       type: object
       description: Make all properties in T optional
-    FundingRailId:
-      enum:
-      - stellar.usdc
-      type: string
-      x-enum-varnames:
-      - STELLAR_USDC
-    Screening:
+    SessionContext:
       properties:
-        sanctionsHit:
-          type: boolean
-          description: 'true = a sanctions match was found during partner screening.
-
-            false = the user was screened and no sanctions match was found.'
-        pepHit:
-          type: boolean
-          description: 'true = a PEP match was found during partner screening.
-
-            false = the user was screened and no PEP match was found.'
-        adverseMediaHit:
-          type: boolean
-          description: 'true = an adverse media match was found during partner screening.
-
-            false = the user was screened and no adverse media match was found.'
-        riskRating:
-          $ref: '#/components/schemas/RiskRating'
-        screenedAt:
+        ipAddress:
+          type: string
+        userAgent:
+          type: string
+        deviceId:
           type: string
       required:
-      - sanctionsHit
-      - pepHit
-      - adverseMediaHit
-      - riskRating
-      - screenedAt
+      - ipAddress
+      - userAgent
+      - deviceId
       type: object
       additionalProperties: false
-    KycStatus:
-      enum:
-      - VERIFIED
-      - PARTIALLY_VERIFIED
-      - NOT_VERIFIED
-      type: string
-      x-enum-varnames:
-      - VERIFIED
-      - PARTIALLY_VERIFIED
-      - NOT_VERIFIED
-    Partial_CreateSenderAddress_:
-      properties:
-        line1:
-          type: string
-        city:
-          type: string
-        region:
-          type: string
-        postalCode:
-          type: string
-        country:
-          type: string
-          description: Country code 3 letter ISO code.
-          minLength: 3
-          maxLength: 3
-      type: object
-      description: Make all properties in T optional
-    UpdateSenderRequest:
-      properties:
-        partyType:
-          type: string
-          enum:
-          - individual
-          - business
-          description: 'The type of party: individual or business.'
-          pattern: ^(individual|business)$
-        countryOfResidence:
-          type: string
-          description: Country code 3 letter ISO code.
-          minLength: 3
-          maxLength: 3
-        enabledFundingRailIds:
-          items:
-            type: string
-          type: array
-          description: List of funding rail IDs to enable for this sender.
-        individual:
-          $ref: '#/components/schemas/Partial_CreateSenderIndividual_'
-          description: Individual party details (all fields optional for partial update).
-        contact:
-          $ref: '#/components/schemas/Partial_UpdateSenderContact_'
-          description: Contact information (phone can be updated; email is immutable).
-        address:
-          $ref: '#/components/schemas/Partial_CreateSenderAddress_'
-          description: Address information (all fields optional for partial update).
-        compliance:
-          $ref: '#/components/schemas/Partial_CreateSenderCompliance_'
-          description: Compliance and KYC reliance information (partial update).
-      type: object
-      additionalProperties: false
-    CreateSenderCompliance:
-      properties:
-        kycReliance:
-          $ref: '#/components/schemas/CreateSenderKycReliance'
-        screening:
-          $ref: '#/components/schemas/Screening'
-        sessionContext:
-          $ref: '#/components/schemas/SessionContext'
-      required:
-      - kycReliance
-      - screening
-      - sessionContext
-      type: object
-      additionalProperties: false
-    Partial_CreateSenderIndividual_:
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        dob:
-          type: string
-        nationalIdNumber:
-          type: string
-        nationality:
-          type: string
-      type: object
-      description: Make all properties in T optional
     SenderApiResponse:
       properties:
         id:
@@ -701,6 +470,78 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
+    DocumentType:
+      enum:
+      - PASSPORT
+      - NATIONAL_ID
+      - DRIVER_LICENSE
+      type: string
+      x-enum-varnames:
+      - PASSPORT
+      - NATIONAL_ID
+      - DRIVER_LICENSE
+    CreateSenderKycReliance:
+      description: KYC reliance information from the partner's KYC provider.
+      properties:
+        performedBy:
+          type: string
+        kycReferenceId:
+          type: string
+        status:
+          $ref: '#/components/schemas/KycStatus'
+        performedAt:
+          type: string
+        level:
+          $ref: '#/components/schemas/KycLevel'
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        provider:
+          properties:
+            result:
+              $ref: '#/components/schemas/ProviderResult'
+            applicantId:
+              type: string
+            name:
+              type: string
+          required:
+          - result
+          - applicantId
+          - name
+          type: object
+      required:
+      - performedBy
+      - kycReferenceId
+      - status
+      - performedAt
+      - level
+      - documentType
+      - provider
+      type: object
+      additionalProperties: false
+    ProviderResult:
+      enum:
+      - GREEN
+      - AMBER
+      - RED
+      type: string
+      x-enum-varnames:
+      - GREEN
+      - AMBER
+      - RED
+    CreateSenderCompliance:
+      properties:
+        kycReliance:
+          $ref: '#/components/schemas/CreateSenderKycReliance'
+        screening:
+          $ref: '#/components/schemas/Screening'
+        sessionContext:
+          $ref: '#/components/schemas/SessionContext'
+      required:
+      - kycReliance
+      - screening
+      - sessionContext
+      type: object
+      additionalProperties: false
     CreateSenderIndividual:
       description: Individual party details. Required when partyType is 'individual'.
       properties:
@@ -722,6 +563,154 @@ components:
       - nationality
       type: object
       additionalProperties: false
+    RiskRating:
+      enum:
+      - LOW
+      - MEDIUM
+      - HIGH
+      type: string
+      x-enum-varnames:
+      - LOW
+      - MEDIUM
+      - HIGH
+    FundingRailId:
+      enum:
+      - stellar.usdc
+      type: string
+      x-enum-varnames:
+      - STELLAR_USDC
+    Partial_CreateSenderIndividual_:
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+        nationalIdNumber:
+          type: string
+        nationality:
+          type: string
+      type: object
+      description: Make all properties in T optional
+    Screening:
+      properties:
+        sanctionsHit:
+          type: boolean
+          description: 'true = a sanctions match was found during partner screening.
+
+            false = the user was screened and no sanctions match was found.'
+        pepHit:
+          type: boolean
+          description: 'true = a PEP match was found during partner screening.
+
+            false = the user was screened and no PEP match was found.'
+        adverseMediaHit:
+          type: boolean
+          description: 'true = an adverse media match was found during partner screening.
+
+            false = the user was screened and no adverse media match was found.'
+        riskRating:
+          $ref: '#/components/schemas/RiskRating'
+        screenedAt:
+          type: string
+      required:
+      - sanctionsHit
+      - pepHit
+      - adverseMediaHit
+      - riskRating
+      - screenedAt
+      type: object
+      additionalProperties: false
+    Partial_CreateSenderAddress_:
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+      type: object
+      description: Make all properties in T optional
+    UpdateSenderRequest:
+      properties:
+        partyType:
+          type: string
+          enum:
+          - individual
+          - business
+          description: 'The type of party: individual or business.'
+          pattern: ^(individual|business)$
+        countryOfResidence:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+        enabledFundingRailIds:
+          items:
+            type: string
+          type: array
+          description: List of funding rail IDs to enable for this sender.
+        individual:
+          $ref: '#/components/schemas/Partial_CreateSenderIndividual_'
+          description: Individual party details (all fields optional for partial update).
+        contact:
+          $ref: '#/components/schemas/Partial_UpdateSenderContact_'
+          description: Contact information (phone can be updated; email is immutable).
+        address:
+          $ref: '#/components/schemas/Partial_CreateSenderAddress_'
+          description: Address information (all fields optional for partial update).
+        compliance:
+          $ref: '#/components/schemas/Partial_CreateSenderCompliance_'
+          description: Compliance and KYC reliance information (partial update).
+      type: object
+      additionalProperties: false
+    CreateSenderAddress:
+      description: Address information for the sender.
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+      required:
+      - line1
+      - city
+      - region
+      - postalCode
+      - country
+      type: object
+      additionalProperties: false
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    KycStatus:
+      enum:
+      - VERIFIED
+      - PARTIALLY_VERIFIED
+      - NOT_VERIFIED
+      type: string
+      x-enum-varnames:
+      - VERIFIED
+      - PARTIALLY_VERIFIED
+      - NOT_VERIFIED
     CreateSenderRequest:
       properties:
         externalSenderId:
@@ -767,20 +756,31 @@ components:
       - compliance
       type: object
       additionalProperties: false
-    SessionContext:
+    CreateSenderContact:
+      description: Contact information for the sender.
       properties:
-        ipAddress:
+        email:
           type: string
-        userAgent:
+          pattern: ^(.+)@(.+)$
+        phoneNumber:
           type: string
-        deviceId:
+        phoneCountryCode:
           type: string
+          pattern: ^\+\d{1,3}$
       required:
-      - ipAddress
-      - userAgent
-      - deviceId
+      - email
+      - phoneNumber
+      - phoneCountryCode
       type: object
       additionalProperties: false
+    KycLevel:
+      enum:
+      - BASIC
+      - FULL
+      type: string
+      x-enum-varnames:
+      - BASIC
+      - FULL
   securitySchemes:
     basicAuth:
       type: http

@@ -452,127 +452,6 @@ paths:
           type: string
 components:
   schemas:
-    Email:
-      type: string
-      pattern: ^(.+)@(.+)$
-    PayinStatus:
-      description: 'The current status of the payin
-
-
-        - `CREATED`: The payin has been created but not yet confirmed.
-
-        - `CONFIRMED`: The payin has been confirmed and is ready for processing.
-
-        - `CANCELED`: The payin has been canceled by the user or system.
-
-        - `PROCESSING`: The payin is currently being processed.
-
-        - `FAILED`: The payin has failed due to an error.
-
-        - `BRIDGE_FAILED`: The payin has failed due to an error in Bridge.
-
-        - `BRIDGE_CANCELED`: The payin has been canceled due to an error in Bridge.'
-      enum:
-      - CREATED
-      - CONFIRMED
-      - CANCELED
-      - PROCESSING
-      - FAILED
-      - BRIDGE_FAILED
-      - BRIDGE_CANCELED
-      type: string
-      x-enum-varnames:
-      - CREATED
-      - CONFIRMED
-      - CANCELED
-      - PROCESSING
-      - FAILED
-      - BRIDGE_FAILED
-      - BRIDGE_CANCELED
-    Paginated_PayinResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/PayinResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
-    CreatePayinItem:
-      properties:
-        description:
-          type: string
-          description: An arbitrary string describing the individual item.
-        amount:
-          type: number
-          format: double
-          description: The price in USD of the individual item.
-          example: 10
-          minimum: 0.01
-        quantity:
-          type: number
-          format: double
-          description: 'The number of items being purchased.
-
-            This will be multiplied with the ''amount'' value to calculate the total.'
-          example: 1
-          minimum: 1
-      required:
-      - description
-      - amount
-      - quantity
-      type: object
-      additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    PayinItem:
-      description: An item within a payin transaction
-      properties:
-        description:
-          type: string
-          description: An arbitrary string describing the individual item.
-        amount:
-          type: number
-          format: double
-          description: The price in USD of the individual item.
-          example: 10
-          minimum: 0.01
-        quantity:
-          type: number
-          format: double
-          description: 'The number of items being purchased.
-
-            This will be multiplied with the ''amount'' value to calculate the total.'
-          example: 1
-          minimum: 1
-        id:
-          type: string
-          description: The unique identifier for the item
-          format: uuid
-        payinId:
-          type: string
-          description: The unique identifier for the payin.
-          format: uuid
-      required:
-      - description
-      - amount
-      - quantity
-      - id
-      - payinId
-      type: object
-      additionalProperties: false
     PayinResponse:
       description: 'A payin is a transaction that transfers funds from a user''s Airtm account to an enterprise''s account.
 
@@ -662,6 +541,28 @@ components:
       - cancelUri
       type: object
       additionalProperties: false
+    Paginated_PayinResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayinResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
     CreatePayinRequest:
       properties:
         code:
@@ -707,10 +608,109 @@ components:
       - cancelUri
       type: object
       additionalProperties: false
-    Uuid:
+    CreatePayinItem:
+      properties:
+        description:
+          type: string
+          description: An arbitrary string describing the individual item.
+        amount:
+          type: number
+          format: double
+          description: The price in USD of the individual item.
+          example: 10
+          minimum: 0.01
+        quantity:
+          type: number
+          format: double
+          description: 'The number of items being purchased.
+
+            This will be multiplied with the ''amount'' value to calculate the total.'
+          example: 1
+          minimum: 1
+      required:
+      - description
+      - amount
+      - quantity
+      type: object
+      additionalProperties: false
+    PayinItem:
+      description: An item within a payin transaction
+      properties:
+        description:
+          type: string
+          description: An arbitrary string describing the individual item.
+        amount:
+          type: number
+          format: double
+          description: The price in USD of the individual item.
+          example: 10
+          minimum: 0.01
+        quantity:
+          type: number
+          format: double
+          description: 'The number of items being purchased.
+
+            This will be multiplied with the ''amount'' value to calculate the total.'
+          example: 1
+          minimum: 1
+        id:
+          type: string
+          description: The unique identifier for the item
+          format: uuid
+        payinId:
+          type: string
+          description: The unique identifier for the payin.
+          format: uuid
+      required:
+      - description
+      - amount
+      - quantity
+      - id
+      - payinId
+      type: object
+      additionalProperties: false
+    PayinStatus:
+      description: 'The current status of the payin
+
+
+        - `CREATED`: The payin has been created but not yet confirmed.
+
+        - `CONFIRMED`: The payin has been confirmed and is ready for processing.
+
+        - `CANCELED`: The payin has been canceled by the user or system.
+
+        - `PROCESSING`: The payin is currently being processed.
+
+        - `FAILED`: The payin has failed due to an error.
+
+        - `BRIDGE_FAILED`: The payin has failed due to an error in Bridge.
+
+        - `BRIDGE_CANCELED`: The payin has been canceled due to an error in Bridge.'
+      enum:
+      - CREATED
+      - CONFIRMED
+      - CANCELED
+      - PROCESSING
+      - FAILED
+      - BRIDGE_FAILED
+      - BRIDGE_CANCELED
       type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      x-enum-varnames:
+      - CREATED
+      - CONFIRMED
+      - CANCELED
+      - PROCESSING
+      - FAILED
+      - BRIDGE_FAILED
+      - BRIDGE_CANCELED
+    Email:
+      type: string
+      pattern: ^(.+)@(.+)$
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

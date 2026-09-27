@@ -187,6 +187,20 @@ paths:
           type: string
 components:
   schemas:
+    EnterpriseDirectWithdrawStatus:
+      enum:
+      - COMPLETED
+      - CREATED
+      - FAILED
+      type: string
+      x-enum-varnames:
+      - COMPLETED
+      - CREATED
+      - FAILED
+    PaymentRail:
+      anyOf:
+      - $ref: '#/components/schemas/BankPaymentRail'
+      - $ref: '#/components/schemas/CryptoPaymentRail'
     WithdrawalResponse:
       properties:
         id:
@@ -222,33 +236,6 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    CryptoPaymentRail:
-      enum:
-      - stellar
-      - ethereum
-      type: string
-      x-enum-varnames:
-      - STELLAR
-      - ETHEREUM
-    PaymentRail:
-      anyOf:
-      - $ref: '#/components/schemas/BankPaymentRail'
-      - $ref: '#/components/schemas/CryptoPaymentRail'
-    EnterpriseDirectWithdrawStatus:
-      enum:
-      - COMPLETED
-      - CREATED
-      - FAILED
-      type: string
-      x-enum-varnames:
-      - COMPLETED
-      - CREATED
-      - FAILED
     Paginated_WithdrawalResponse_:
       description: Represents a paginated collection of items.
       properties:
@@ -267,18 +254,6 @@ components:
       - items
       type: object
       additionalProperties: false
-    BankPaymentRail:
-      enum:
-      - wire
-      - ach
-      - sepa
-      - swift
-      type: string
-      x-enum-varnames:
-      - WIRE
-      - ACH
-      - SEPA
-      - SWIFT
     CreateWithdrawalRequest:
       properties:
         amount:
@@ -308,6 +283,31 @@ components:
       - externalAccountId
       type: object
       additionalProperties: false
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    CryptoPaymentRail:
+      enum:
+      - stellar
+      - ethereum
+      type: string
+      x-enum-varnames:
+      - STELLAR
+      - ETHEREUM
+    BankPaymentRail:
+      enum:
+      - wire
+      - ach
+      - sepa
+      - swift
+      type: string
+      x-enum-varnames:
+      - WIRE
+      - ACH
+      - SEPA
+      - SWIFT
   securitySchemes:
     basicAuth:
       type: http

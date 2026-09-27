@@ -199,11 +199,10 @@ paths:
           type: string
 components:
   schemas:
-    SortOrder:
-      type: string
-      enum:
-      - asc
-      - desc
+    DepositInstructions:
+      anyOf:
+      - $ref: '#/components/schemas/CryptoDepositInstructions'
+      - $ref: '#/components/schemas/FiatDepositInstructions'
     QuoteAmounts:
       properties:
         amount:
@@ -215,11 +214,56 @@ components:
       - amount
       - currency
       type: object
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    Paginated_TransactionApiResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TransactionApiResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
       type: object
-      description: Construct a type with a set of properties K of type T
+      additionalProperties: false
+    TransactionStatusEnum:
+      enum:
+      - PENDING_FUNDING
+      - PROCESSING_WITHDRAW
+      - COMPLETED
+      - CANCELED
+      - REFUNDED
+      - DISPUTE_CANCELED
+      - DISPUTE_REFUNDED
+      type: string
+      x-enum-varnames:
+      - PENDING_FUNDING
+      - PROCESSING_WITHDRAW
+      - COMPLETED
+      - CANCELED
+      - REFUNDED
+      - DISPUTE_CANCELED
+      - DISPUTE_REFUNDED
+    ExecutionChannel:
+      type: string
+      enum:
+      - DIRECT_OFFRAMP
+      - P2P_NETWORK
     CryptoDepositInstructions:
       properties:
         type:
@@ -254,18 +298,6 @@ components:
       - amount
       type: object
       additionalProperties: false
-    QuoteFeesApiResponse:
-      properties:
-        airtmFeeAmount:
-          type: number
-          format: double
-        airtmFeePercentage:
-          type: number
-          format: double
-      required:
-      - airtmFeeAmount
-      - airtmFeePercentage
-      type: object
     FiatDepositInstructions:
       properties:
         type:
@@ -329,6 +361,34 @@ components:
       - depositInstructions
       type: object
       additionalProperties: false
+    CreateTransactionRequest:
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/Uuid'
+          description: The ID of the locked-in quote to use for this transaction.
+          format: uuid
+        executionChannel:
+          $ref: '#/components/schemas/ExecutionChannel'
+          description: The execution channel to use for this transaction.
+        refundInstructions:
+          properties:
+            memo:
+              type: string
+              description: Optional memo to attach to the refund (e.g. required by custodial destinations).
+            address:
+              type: string
+              description: The destination address to refund to.
+          required:
+          - address
+          type: object
+          description: 'Optional refund destination. When provided, if this transaction is refunded the
+
+            funds are sent to this address (and memo) instead of the original payment source.'
+      required:
+      - quoteId
+      - executionChannel
+      type: object
+      additionalProperties: false
     RefundInstructions:
       properties:
         address:
@@ -339,15 +399,6 @@ components:
       - address
       type: object
       additionalProperties: false
-    ExecutionChannel:
-      type: string
-      enum:
-      - DIRECT_OFFRAMP
-      - P2P_NETWORK
-    DepositInstructions:
-      anyOf:
-      - $ref: '#/components/schemas/CryptoDepositInstructions'
-      - $ref: '#/components/schemas/FiatDepositInstructions'
     TransactionApiResponse:
       properties:
         id:
@@ -423,74 +474,23 @@ components:
       - createdAt
       type: object
       additionalProperties: false
-    TransactionStatusEnum:
-      enum:
-      - PENDING_FUNDING
-      - PROCESSING_WITHDRAW
-      - COMPLETED
-      - CANCELED
-      - REFUNDED
-      - DISPUTE_CANCELED
-      - DISPUTE_REFUNDED
-      type: string
-      x-enum-varnames:
-      - PENDING_FUNDING
-      - PROCESSING_WITHDRAW
-      - COMPLETED
-      - CANCELED
-      - REFUNDED
-      - DISPUTE_CANCELED
-      - DISPUTE_REFUNDED
-    Paginated_TransactionApiResponse_:
-      description: Represents a paginated collection of items.
+    QuoteFeesApiResponse:
       properties:
-        items:
-          items:
-            $ref: '#/components/schemas/TransactionApiResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
+        airtmFeeAmount:
+          type: number
+          format: double
+        airtmFeePercentage:
+          type: number
+          format: double
       required:
-      - items
+      - airtmFeeAmount
+      - airtmFeePercentage
       type: object
-      additionalProperties: false
-    CreateTransactionRequest:
-      properties:
-        quoteId:
-          $ref: '#/components/schemas/Uuid'
-          description: The ID of the locked-in quote to use for this transaction.
-          format: uuid
-        executionChannel:
-          $ref: '#/components/schemas/ExecutionChannel'
-          description: The execution channel to use for this transaction.
-        refundInstructions:
-          properties:
-            memo:
-              type: string
-              description: Optional memo to attach to the refund (e.g. required by custodial destinations).
-            address:
-              type: string
-              description: The destination address to refund to.
-          required:
-          - address
-          type: object
-          description: 'Optional refund destination. When provided, if this transaction is refunded the
-
-            funds are sent to this address (and memo) instead of the original payment source.'
-      required:
-      - quoteId
-      - executionChannel
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
       type: object
-      additionalProperties: false
-    Uuid:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

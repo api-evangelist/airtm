@@ -101,7 +101,7 @@ paths:
         > Partner account and then commit it, this will move money from your Airtm
 
         > account to your user''s Airtm account.'
-      operationId: Purchases _ Payins_purchases-payins/create-purchase
+      operationId: Purchases_Payins_purchases-payins/create-purchase
       parameters: []
       responses:
         '200':
@@ -358,6 +358,8 @@ paths:
               - description
               - amount
               - items
+      x-operation-id-source: normalized
+      x-operation-id-original: Purchases _ Payins_purchases-payins/create-purchase
     get:
       security:
       - basicAuth: []
@@ -369,7 +371,7 @@ paths:
         parameter as ‘purchase’ in the endpoint to get the list of all
 
         purchases.'
-      operationId: Purchases _ Payins_purchases-payins/get-purchase
+      operationId: Purchases_Payins_purchases-payins/get-purchase
       parameters: []
       responses:
         '200':
@@ -596,6 +598,8 @@ paths:
                     type: string
                     description: ''
                     example: Internal server error
+      x-operation-id-source: normalized
+      x-operation-id-original: Purchases _ Payins_purchases-payins/get-purchase
 components:
   securitySchemes:
     basicAuth:

@@ -140,6 +140,14 @@ paths:
           $ref: '#/components/schemas/CryptoWalletType'
 components:
   schemas:
+    CryptoWalletType:
+      enum:
+      - stellar usdc
+      - ethereum usdc
+      type: string
+      x-enum-varnames:
+      - STELLAR_USDC
+      - ETHEREUM_USDC
     CreateCryptoExternalAccountRequest:
       properties:
         type:
@@ -165,14 +173,12 @@ components:
       - address
       type: object
       additionalProperties: false
-    CryptoWalletType:
+    CryptoCurrency:
       enum:
-      - stellar usdc
-      - ethereum usdc
+      - USDC
       type: string
       x-enum-varnames:
-      - STELLAR_USDC
-      - ETHEREUM_USDC
+      - USDC
     Paginated_CryptoExternalAccountResponse_:
       description: Represents a paginated collection of items.
       properties:
@@ -191,17 +197,6 @@ components:
       - items
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    CryptoCurrency:
-      enum:
-      - USDC
-      type: string
-      x-enum-varnames:
-      - USDC
     CryptoExternalAccountResponse:
       properties:
         id:
@@ -235,6 +230,11 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

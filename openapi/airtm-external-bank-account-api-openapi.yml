@@ -140,6 +140,24 @@ paths:
           $ref: '#/components/schemas/AccountType'
 components:
   schemas:
+    AccountType:
+      enum:
+      - us_ach
+      - us_wire
+      - iban
+      type: string
+      x-enum-varnames:
+      - US_ACH
+      - US_WIRE
+      - IBAN
+    Currency:
+      enum:
+      - USD
+      - EUR
+      type: string
+      x-enum-varnames:
+      - USD
+      - EUR
     BankExternalAccountResponse:
       properties:
         id:
@@ -278,11 +296,6 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
     Paginated_BankExternalAccountResponse_:
       description: Represents a paginated collection of items.
       properties:
@@ -301,14 +314,6 @@ components:
       - items
       type: object
       additionalProperties: false
-    Currency:
-      enum:
-      - USD
-      - EUR
-      type: string
-      x-enum-varnames:
-      - USD
-      - EUR
     CreateBankExternalAccountRequest:
       properties:
         accountType:
@@ -443,16 +448,11 @@ components:
       - businessName
       type: object
       additionalProperties: false
-    AccountType:
-      enum:
-      - us_ach
-      - us_wire
-      - iban
-      type: string
-      x-enum-varnames:
-      - US_ACH
-      - US_WIRE
-      - IBAN
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

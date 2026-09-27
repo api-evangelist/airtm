@@ -231,24 +231,11 @@ paths:
               $ref: '#/components/schemas/IpItem'
 components:
   schemas:
-    Paginated_ApiKey_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/ApiKey'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
       type: object
-      additionalProperties: false
+      description: Construct a type with a set of properties K of type T
     IpItem:
       properties:
         ip:
@@ -288,11 +275,24 @@ components:
       - enterpriseId
       - id
       type: object
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
+    Paginated_ApiKey_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/ApiKey'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
       type: object
-      description: Construct a type with a set of properties K of type T
+      additionalProperties: false
   securitySchemes:
     basicAuth:
       type: http

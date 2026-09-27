@@ -208,100 +208,9 @@ paths:
           type: string
 components:
   schemas:
-    Pick_CreatePayoutRequest.Exclude_keyofCreatePayoutRequest.commit__:
-      properties:
-        airtmUserEmail:
-          type: string
-          description: The recipient's email address that is associated with their Airtm account
-        amount:
-          type: number
-          format: double
-          description: The payment amount in USD.
-          minimum: 0.01
-        code:
-          type: string
-          description: 'A unique code used to identify the payout.
-
-            Populate this value with the identifier on your system.
-
-
-            > [!important]
-
-            > It must be unique across all existing payouts.'
-        enterpriseFee:
-          type: number
-          format: double
-          description: The enterprise fee to apply to the payout
-          minimum: 0
-        notes:
-          type: string
-          description: 'An arbitrary string describing the payment.
-
-            This information is displayed to the recipient.
-
-            It''s recommended that the string summarizes the purpose of the payment.'
-        internalNote:
-          type: string
-          description: The description of the payout; visible to internal users
-        requireIdVerified:
-          type: boolean
-          description: Set this to true to require that the recipient is ID-verified
-          default: false
-      required:
-      - airtmUserEmail
-      - amount
-      - notes
-      type: object
-      description: From T, pick a set of properties whose keys are in the union K
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    BulkPayoutStatus:
-      description: 'The current status of the bulk payout
-
-
-        - `PENDING`: The bulk payout was received, but it has yet to be started
-
-        - `IN_PROGRESS`: Our system is currently processing all the individual payouts contained in this bulk payout.
-
-        - `COMPLETED`: This doesn''t mean all payouts were completed successfully, it may have guest or failed items. It means only that the processing, validations and creation of operations related to that task is completed.
-
-        - `REJECTED`: The enterprise rejected the bulk payout
-
-        - `UNCOMPLETED`: Reserved for future use'
-      enum:
-      - PENDING
-      - IN_PROGRESS
-      - UNCOMPLETED
-      - COMPLETED
-      - REJECTED
-      type: string
-      x-enum-varnames:
-      - PENDING
-      - IN_PROGRESS
-      - UNCOMPLETED
-      - COMPLETED
-      - REJECTED
-    Paginated_BulkPayout_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/BulkPayout'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
+    Omit_CreatePayoutRequest.commit_:
+      $ref: '#/components/schemas/Pick_CreatePayoutRequest.Exclude_keyofCreatePayoutRequest.commit__'
+      description: Construct a type with the properties of T except for those in type K.
     BulkPayout:
       properties:
         updatedAt:
@@ -354,9 +263,51 @@ components:
       - enterpriseUserId
       - id
       type: object
-    Omit_CreatePayoutRequest.commit_:
-      $ref: '#/components/schemas/Pick_CreatePayoutRequest.Exclude_keyofCreatePayoutRequest.commit__'
-      description: Construct a type with the properties of T except for those in type K.
+    Pick_CreatePayoutRequest.Exclude_keyofCreatePayoutRequest.commit__:
+      properties:
+        airtmUserEmail:
+          type: string
+          description: The recipient's email address that is associated with their Airtm account
+        amount:
+          type: number
+          format: double
+          description: The payment amount in USD.
+          minimum: 0.01
+        code:
+          type: string
+          description: 'A unique code used to identify the payout.
+
+            Populate this value with the identifier on your system.
+
+
+            > [!important]
+
+            > It must be unique across all existing payouts.'
+        enterpriseFee:
+          type: number
+          format: double
+          description: The enterprise fee to apply to the payout
+          minimum: 0
+        notes:
+          type: string
+          description: 'An arbitrary string describing the payment.
+
+            This information is displayed to the recipient.
+
+            It''s recommended that the string summarizes the purpose of the payment.'
+        internalNote:
+          type: string
+          description: The description of the payout; visible to internal users
+        requireIdVerified:
+          type: boolean
+          description: Set this to true to require that the recipient is ID-verified
+          default: false
+      required:
+      - airtmUserEmail
+      - amount
+      - notes
+      type: object
+      description: From T, pick a set of properties whose keys are in the union K
     CreateBulkPayoutRequest:
       properties:
         payouts:
@@ -366,6 +317,55 @@ components:
           description: A list of individual payouts to process in bulk
       required:
       - payouts
+      type: object
+      additionalProperties: false
+    BulkPayoutStatus:
+      description: 'The current status of the bulk payout
+
+
+        - `PENDING`: The bulk payout was received, but it has yet to be started
+
+        - `IN_PROGRESS`: Our system is currently processing all the individual payouts contained in this bulk payout.
+
+        - `COMPLETED`: This doesn''t mean all payouts were completed successfully, it may have guest or failed items. It means only that the processing, validations and creation of operations related to that task is completed.
+
+        - `REJECTED`: The enterprise rejected the bulk payout
+
+        - `UNCOMPLETED`: Reserved for future use'
+      enum:
+      - PENDING
+      - IN_PROGRESS
+      - UNCOMPLETED
+      - COMPLETED
+      - REJECTED
+      type: string
+      x-enum-varnames:
+      - PENDING
+      - IN_PROGRESS
+      - UNCOMPLETED
+      - COMPLETED
+      - REJECTED
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    Paginated_BulkPayout_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/BulkPayout'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
       type: object
       additionalProperties: false
   securitySchemes:

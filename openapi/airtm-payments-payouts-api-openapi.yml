@@ -41,7 +41,7 @@ paths:
         moving the money to a user you must call the payouts/:id/commit endpoint
 
         with the id from this response.'
-      operationId: Payments _ Payouts_payments-payouts/create-payout
+      operationId: Payments_Payouts_payments-payouts/create-payout
       parameters: []
       responses:
         '200':
@@ -258,6 +258,8 @@ paths:
               - amount
               - confirmation_uri
               - failure_uri
+      x-operation-id-source: normalized
+      x-operation-id-original: Payments _ Payouts_payments-payouts/create-payout
   payouts/{payoutId}/commit:
     post:
       security:
@@ -304,7 +306,7 @@ paths:
         finishes. Extra information of the recently `completed` payout can be
 
         queried by calling /operations/:id'
-      operationId: Payments _ Payouts_payments-payouts/commit-payout
+      operationId: Payments_Payouts_payments-payouts/commit-payout
       parameters:
       - name: payoutId
         in: path
@@ -462,6 +464,8 @@ paths:
             schema:
               type: object
               properties: {}
+      x-operation-id-source: normalized
+      x-operation-id-original: Payments _ Payouts_payments-payouts/commit-payout
   payouts/one-step:
     post:
       security:
@@ -495,7 +499,7 @@ paths:
         endpoint, the effective result of the executed payout is reported on the
 
         callbacks URI'
-      operationId: Payments _ Payouts_payments-payouts/one-step-payout
+      operationId: Payments_Payouts_payments-payouts/one-step-payout
       parameters: []
       responses:
         '200':
@@ -695,6 +699,8 @@ paths:
               - amount
               - confirmation_uri
               - failure_uri
+      x-operation-id-source: normalized
+      x-operation-id-original: Payments _ Payouts_payments-payouts/one-step-payout
   payouts/events/:payoutId:
     get:
       security:
@@ -707,7 +713,7 @@ paths:
         called; this information helps track the status and whatever is
 
         happening with the committed Payout.'
-      operationId: Payments _ Payouts_payments-payouts/get-payout-event
+      operationId: Payments_Payouts_payments-payouts/get-payout-event
       parameters: []
       responses:
         '200':
@@ -735,6 +741,8 @@ paths:
                     type: boolean
                     description: ''
                     example: true
+      x-operation-id-source: normalized
+      x-operation-id-original: Payments _ Payouts_payments-payouts/get-payout-event
   payouts/{payoutId}/cancel:
     post:
       security:
@@ -784,7 +792,7 @@ paths:
         **Note:** _This feature is only available for partners who have migrated
 
         to the new infrastructure solution based on Bridge Ventures._'
-      operationId: Payments _ Payouts_payments-payouts/cancel-pending-payments-copy-1
+      operationId: Payments_Payouts_payments-payouts/cancel-pending-payments-copy-1
       parameters:
       - name: payoutId
         in: path
@@ -914,6 +922,8 @@ paths:
             schema:
               type: object
               properties: {}
+      x-operation-id-source: normalized
+      x-operation-id-original: Payments _ Payouts_payments-payouts/cancel-pending-payments-copy-1
 components:
   securitySchemes:
     basicAuth:

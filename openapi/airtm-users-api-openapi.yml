@@ -76,20 +76,6 @@ paths:
           $ref: '#/components/schemas/Email'
 components:
   schemas:
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    UserStatus:
-      description: Whether the user is active or inactive in Airtm
-      enum:
-      - active
-      - inactive
-      type: string
-      x-enum-varnames:
-      - Active
-      - Inactive
     User:
       description: A user in Airtm
       properties:
@@ -126,13 +112,27 @@ components:
       - isVerified
       type: object
       additionalProperties: false
-    Email:
-      type: string
-      pattern: ^(.+)@(.+)$
     Uuid:
       type: string
       format: uuid
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    UserStatus:
+      description: Whether the user is active or inactive in Airtm
+      enum:
+      - active
+      - inactive
+      type: string
+      x-enum-varnames:
+      - Active
+      - Inactive
+    Email:
+      type: string
+      pattern: ^(.+)@(.+)$
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http
