@@ -249,60 +249,14 @@ paths:
           type: string
 components:
   schemas:
-    ReportType:
-      description: Type of activity report
-      enum:
-      - PDF
-      - CSV
-      type: string
-      x-enum-varnames:
-      - PDF
-      - CSV
-      example: CSV
-    ReportStatus:
-      description: 'The current status of the report
-
-
-        - `PENDING`: The report is pending generation.
-
-        - `IN_PROGRESS`: The report is currently being generated.
-
-        - `COMPLETED`: The report has been generated and is ready for download.
-
-        - `FAILED`: The report generation failed.'
-      enum:
-      - PENDING
-      - IN_PROGRESS
-      - COMPLETED
-      - FAILED
-      type: string
-      x-enum-varnames:
-      - PENDING
-      - IN_PROGRESS
-      - COMPLETED
-      - FAILED
-    CreateReportRequest:
+    ReportFile:
+      description: An Activity Report File
       properties:
-        year:
-          type: number
-          format: double
-          description: The year of the report to generate
-          example: 2025
-          minimum: 2023
-        month:
-          type: number
-          format: double
-          description: The month of the report to generate
-          example: 6
-          minimum: 1
-          maximum: 12
-        type:
-          $ref: '#/components/schemas/ReportType'
-          description: The type of the report to generate
-          example: CSV
+        url:
+          type: string
+          description: The URL of the activity report file.
       required:
-      - year
-      - month
+      - url
       type: object
       additionalProperties: false
     Report:
@@ -364,21 +318,67 @@ components:
       - items
       type: object
       additionalProperties: false
-    ReportFile:
-      description: An Activity Report File
-      properties:
-        url:
-          type: string
-          description: The URL of the activity report file.
-      required:
-      - url
-      type: object
-      additionalProperties: false
+    ReportType:
+      description: Type of activity report
+      enum:
+      - PDF
+      - CSV
+      type: string
+      x-enum-varnames:
+      - PDF
+      - CSV
+      example: CSV
+    ReportStatus:
+      description: 'The current status of the report
+
+
+        - `PENDING`: The report is pending generation.
+
+        - `IN_PROGRESS`: The report is currently being generated.
+
+        - `COMPLETED`: The report has been generated and is ready for download.
+
+        - `FAILED`: The report generation failed.'
+      enum:
+      - PENDING
+      - IN_PROGRESS
+      - COMPLETED
+      - FAILED
+      type: string
+      x-enum-varnames:
+      - PENDING
+      - IN_PROGRESS
+      - COMPLETED
+      - FAILED
     Record_string.unknown_:
       properties: {}
       additionalProperties: {}
       type: object
       description: Construct a type with a set of properties K of type T
+    CreateReportRequest:
+      properties:
+        year:
+          type: number
+          format: double
+          description: The year of the report to generate
+          example: 2025
+          minimum: 2023
+        month:
+          type: number
+          format: double
+          description: The month of the report to generate
+          example: 6
+          minimum: 1
+          maximum: 12
+        type:
+          $ref: '#/components/schemas/ReportType'
+          description: The type of the report to generate
+          example: CSV
+      required:
+      - year
+      - month
+      type: object
+      additionalProperties: false
   securitySchemes:
     basicAuth:
       type: http

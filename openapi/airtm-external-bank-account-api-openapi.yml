@@ -140,162 +140,6 @@ paths:
           $ref: '#/components/schemas/AccountType'
 components:
   schemas:
-    AccountType:
-      enum:
-      - us_ach
-      - us_wire
-      - iban
-      type: string
-      x-enum-varnames:
-      - US_ACH
-      - US_WIRE
-      - IBAN
-    Currency:
-      enum:
-      - USD
-      - EUR
-      type: string
-      x-enum-varnames:
-      - USD
-      - EUR
-    BankExternalAccountResponse:
-      properties:
-        id:
-          type: string
-          description: The id of the bank external account.
-        accountType:
-          $ref: '#/components/schemas/AccountType'
-          description: The type of account to create.
-        currency:
-          $ref: '#/components/schemas/Currency'
-          description: The currency of the account.
-        bankName:
-          type: string
-          description: The name of the bank.
-        accountOwnerName:
-          type: string
-          description: The name of the account owner.
-        businessName:
-          type: string
-          description: The name of the business.
-        address:
-          properties:
-            country:
-              type: string
-            postalCode:
-              type: string
-            state:
-              type: string
-            city:
-              type: string
-            streetLine2:
-              type: string
-            streetLine1:
-              type: string
-          required:
-          - country
-          - state
-          - city
-          - streetLine1
-          type: object
-          description: The address of the business.
-        usAccount:
-          properties:
-            checkingOrSavings:
-              type: string
-            routingNumber:
-              type: string
-            accountNumber:
-              type: string
-          required:
-          - routingNumber
-          - accountNumber
-          type: object
-          description: The account details for US ACH or US Wire accounts.
-        iban:
-          properties:
-            country:
-              type: string
-            bic:
-              type: string
-            accountNumber:
-              type: string
-          required:
-          - country
-          - bic
-          - accountNumber
-          type: object
-          description: The IBAN details for IBAN accounts.
-        swift:
-          properties:
-            shortBusinessDescription:
-              type: string
-            purposeOfFunds:
-              items:
-                type: string
-              type: array
-            category:
-              type: string
-            address:
-              properties:
-                country:
-                  type: string
-                postalCode:
-                  type: string
-                state:
-                  type: string
-                city:
-                  type: string
-                streetLine2:
-                  type: string
-                streetLine1:
-                  type: string
-              required:
-              - country
-              - state
-              - city
-              - streetLine1
-              type: object
-            account:
-              properties:
-                country:
-                  type: string
-                bic:
-                  type: string
-                accountNumber:
-                  type: string
-              required:
-              - country
-              - bic
-              - accountNumber
-              type: object
-          required:
-          - shortBusinessDescription
-          - purposeOfFunds
-          - category
-          - address
-          - account
-          type: object
-          description: 'Optional: The SWIFT details for IBAN account.
-
-            When accountType is ''iban'', the swift field is optional, meaning you can include it to provide additional SWIFT-specific information (like business context, purpose of funds, etc.), but it''s not required for basic IBAN account creation.'
-        createdAt:
-          type: string
-          description: The date and time the bank external account was created.
-        updatedAt:
-          type: string
-          description: The date and time the bank external account was updated.
-      required:
-      - id
-      - accountType
-      - currency
-      - bankName
-      - accountOwnerName
-      - businessName
-      - createdAt
-      - updatedAt
-      type: object
-      additionalProperties: false
     Paginated_BankExternalAccountResponse_:
       description: Represents a paginated collection of items.
       properties:
@@ -448,6 +292,162 @@ components:
       - businessName
       type: object
       additionalProperties: false
+    Currency:
+      enum:
+      - USD
+      - EUR
+      type: string
+      x-enum-varnames:
+      - USD
+      - EUR
+    BankExternalAccountResponse:
+      properties:
+        id:
+          type: string
+          description: The id of the bank external account.
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+          description: The type of account to create.
+        currency:
+          $ref: '#/components/schemas/Currency'
+          description: The currency of the account.
+        bankName:
+          type: string
+          description: The name of the bank.
+        accountOwnerName:
+          type: string
+          description: The name of the account owner.
+        businessName:
+          type: string
+          description: The name of the business.
+        address:
+          properties:
+            country:
+              type: string
+            postalCode:
+              type: string
+            state:
+              type: string
+            city:
+              type: string
+            streetLine2:
+              type: string
+            streetLine1:
+              type: string
+          required:
+          - country
+          - state
+          - city
+          - streetLine1
+          type: object
+          description: The address of the business.
+        usAccount:
+          properties:
+            checkingOrSavings:
+              type: string
+            routingNumber:
+              type: string
+            accountNumber:
+              type: string
+          required:
+          - routingNumber
+          - accountNumber
+          type: object
+          description: The account details for US ACH or US Wire accounts.
+        iban:
+          properties:
+            country:
+              type: string
+            bic:
+              type: string
+            accountNumber:
+              type: string
+          required:
+          - country
+          - bic
+          - accountNumber
+          type: object
+          description: The IBAN details for IBAN accounts.
+        swift:
+          properties:
+            shortBusinessDescription:
+              type: string
+            purposeOfFunds:
+              items:
+                type: string
+              type: array
+            category:
+              type: string
+            address:
+              properties:
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                state:
+                  type: string
+                city:
+                  type: string
+                streetLine2:
+                  type: string
+                streetLine1:
+                  type: string
+              required:
+              - country
+              - state
+              - city
+              - streetLine1
+              type: object
+            account:
+              properties:
+                country:
+                  type: string
+                bic:
+                  type: string
+                accountNumber:
+                  type: string
+              required:
+              - country
+              - bic
+              - accountNumber
+              type: object
+          required:
+          - shortBusinessDescription
+          - purposeOfFunds
+          - category
+          - address
+          - account
+          type: object
+          description: 'Optional: The SWIFT details for IBAN account.
+
+            When accountType is ''iban'', the swift field is optional, meaning you can include it to provide additional SWIFT-specific information (like business context, purpose of funds, etc.), but it''s not required for basic IBAN account creation.'
+        createdAt:
+          type: string
+          description: The date and time the bank external account was created.
+        updatedAt:
+          type: string
+          description: The date and time the bank external account was updated.
+      required:
+      - id
+      - accountType
+      - currency
+      - bankName
+      - accountOwnerName
+      - businessName
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
+    AccountType:
+      enum:
+      - us_ach
+      - us_wire
+      - iban
+      type: string
+      x-enum-varnames:
+      - US_ACH
+      - US_WIRE
+      - IBAN
     Record_string.unknown_:
       properties: {}
       additionalProperties: {}

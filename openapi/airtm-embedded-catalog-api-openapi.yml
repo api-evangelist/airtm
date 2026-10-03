@@ -98,28 +98,9 @@ paths:
           type: string
 components:
   schemas:
-    Paginated_EmbeddedCatalogRailItem_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/EmbeddedCatalogRailItem'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
-    Record_string.DestinationFieldDescriptor_:
+    Record_string.unknown_:
       properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/DestinationFieldDescriptor'
+      additionalProperties: {}
       type: object
       description: Construct a type with a set of properties K of type T
     EmbeddedCatalogRailItem:
@@ -173,9 +154,28 @@ components:
       - required
       type: object
       description: One field in a payout destination form, derived from Vivillon version schema.properties.
-    Record_string.unknown_:
+    Paginated_EmbeddedCatalogRailItem_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/EmbeddedCatalogRailItem'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
+    Record_string.DestinationFieldDescriptor_:
       properties: {}
-      additionalProperties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/DestinationFieldDescriptor'
       type: object
       description: Construct a type with a set of properties K of type T
   securitySchemes:

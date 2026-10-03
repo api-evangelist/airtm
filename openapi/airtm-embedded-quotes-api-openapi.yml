@@ -69,27 +69,74 @@ paths:
               $ref: '#/components/schemas/CreateQuoteRequest'
 components:
   schemas:
-    QuoteAmounts:
-      properties:
-        amount:
-          type: number
-          format: double
-        currency:
-          type: string
-      required:
-      - amount
-      - currency
-      type: object
-    Uuid:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
     FundingRailId:
       enum:
       - stellar.usdc
       type: string
       x-enum-varnames:
       - STELLAR_USDC
+    QuoteFeesApiResponse:
+      properties:
+        airtmFeeAmount:
+          type: number
+          format: double
+        airtmFeePercentage:
+          type: number
+          format: double
+      required:
+      - airtmFeeAmount
+      - airtmFeePercentage
+      type: object
+    CreateQuoteRequest:
+      properties:
+        senderId:
+          $ref: '#/components/schemas/Uuid'
+          description: The sender id.
+          format: uuid
+        receiverId:
+          $ref: '#/components/schemas/Uuid'
+          description: The receiver id.
+          format: uuid
+        fundingRailId:
+          $ref: '#/components/schemas/FundingRailId'
+          description: Id of any supported funding rails. Today only "stellar.usdc" is supported. More to come later.
+        paymentRailId:
+          type: string
+          description: 'Payment rail identifier configured for the receiver. This refers to the ID of the payment rail in the catalog.
+
+            Example: airtm:bank:venezuela:mercantil
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        amountToSend:
+          type: number
+          format: double
+          description: 'Amount to send in the funding rail asset (USDC).
+
+            Exactly one of amountToSend or amountToReceive must be provided.'
+          minimum: 1
+        amountToReceive:
+          type: number
+          format: double
+          description: 'Amount to receive in the destination currency.
+
+            Exactly one of amountToSend or amountToReceive must be provided.'
+          minimum: 1
+        partnerFee:
+          type: number
+          format: double
+          description: Fixed partner fee amount. Currently expected to be 0.00.
+      required:
+      - senderId
+      - receiverId
+      - fundingRailId
+      - paymentRailId
+      type: object
+      additionalProperties: false
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
     QuoteApiResponse:
       properties:
         id:
@@ -152,68 +199,21 @@ components:
       - createdAt
       type: object
       additionalProperties: false
-    CreateQuoteRequest:
+    QuoteAmounts:
       properties:
-        senderId:
-          $ref: '#/components/schemas/Uuid'
-          description: The sender id.
-          format: uuid
-        receiverId:
-          $ref: '#/components/schemas/Uuid'
-          description: The receiver id.
-          format: uuid
-        fundingRailId:
-          $ref: '#/components/schemas/FundingRailId'
-          description: Id of any supported funding rails. Today only "stellar.usdc" is supported. More to come later.
-        paymentRailId:
+        amount:
+          type: number
+          format: double
+        currency:
           type: string
-          description: 'Payment rail identifier configured for the receiver. This refers to the ID of the payment rail in the catalog.
-
-            Example: airtm:bank:venezuela:mercantil
-
-            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
-        amountToSend:
-          type: number
-          format: double
-          description: 'Amount to send in the funding rail asset (USDC).
-
-            Exactly one of amountToSend or amountToReceive must be provided.'
-          minimum: 1
-        amountToReceive:
-          type: number
-          format: double
-          description: 'Amount to receive in the destination currency.
-
-            Exactly one of amountToSend or amountToReceive must be provided.'
-          minimum: 1
-        partnerFee:
-          type: number
-          format: double
-          description: Fixed partner fee amount. Currently expected to be 0.00.
       required:
-      - senderId
-      - receiverId
-      - fundingRailId
-      - paymentRailId
+      - amount
+      - currency
       type: object
-      additionalProperties: false
-    QuoteFeesApiResponse:
-      properties:
-        airtmFeeAmount:
-          type: number
-          format: double
-        airtmFeePercentage:
-          type: number
-          format: double
-      required:
-      - airtmFeeAmount
-      - airtmFeePercentage
-      type: object
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
   securitySchemes:
     basicAuth:
       type: http

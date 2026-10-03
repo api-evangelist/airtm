@@ -140,63 +140,6 @@ paths:
           $ref: '#/components/schemas/CryptoWalletType'
 components:
   schemas:
-    CryptoWalletType:
-      enum:
-      - stellar usdc
-      - ethereum usdc
-      type: string
-      x-enum-varnames:
-      - STELLAR_USDC
-      - ETHEREUM_USDC
-    CreateCryptoExternalAccountRequest:
-      properties:
-        type:
-          $ref: '#/components/schemas/CryptoWalletType'
-          description: The type of crypto wallet to create.
-        currency:
-          $ref: '#/components/schemas/CryptoCurrency'
-          description: The currency of the crypto wallet. Only USDC is supported.
-        alias:
-          type: string
-          description: The alias of the crypto wallet.
-        address:
-          type: string
-          description: The address of the crypto wallet.
-        memo:
-          type: string
-          description: The memo of the crypto wallet.
-          example: 1234567890
-      required:
-      - type
-      - currency
-      - alias
-      - address
-      type: object
-      additionalProperties: false
-    CryptoCurrency:
-      enum:
-      - USDC
-      type: string
-      x-enum-varnames:
-      - USDC
-    Paginated_CryptoExternalAccountResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/CryptoExternalAccountResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
     CryptoExternalAccountResponse:
       properties:
         id:
@@ -230,11 +173,68 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
+    CryptoWalletType:
+      enum:
+      - stellar usdc
+      - ethereum usdc
+      type: string
+      x-enum-varnames:
+      - STELLAR_USDC
+      - ETHEREUM_USDC
     Record_string.unknown_:
       properties: {}
       additionalProperties: {}
       type: object
       description: Construct a type with a set of properties K of type T
+    CreateCryptoExternalAccountRequest:
+      properties:
+        type:
+          $ref: '#/components/schemas/CryptoWalletType'
+          description: The type of crypto wallet to create.
+        currency:
+          $ref: '#/components/schemas/CryptoCurrency'
+          description: The currency of the crypto wallet. Only USDC is supported.
+        alias:
+          type: string
+          description: The alias of the crypto wallet.
+        address:
+          type: string
+          description: The address of the crypto wallet.
+        memo:
+          type: string
+          description: The memo of the crypto wallet.
+          example: 1234567890
+      required:
+      - type
+      - currency
+      - alias
+      - address
+      type: object
+      additionalProperties: false
+    Paginated_CryptoExternalAccountResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/CryptoExternalAccountResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
+    CryptoCurrency:
+      enum:
+      - USDC
+      type: string
+      x-enum-varnames:
+      - USDC
   securitySchemes:
     basicAuth:
       type: http

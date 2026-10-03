@@ -187,20 +187,18 @@ paths:
           type: string
 components:
   schemas:
-    EnterpriseDirectWithdrawStatus:
+    BankPaymentRail:
       enum:
-      - COMPLETED
-      - CREATED
-      - FAILED
+      - wire
+      - ach
+      - sepa
+      - swift
       type: string
       x-enum-varnames:
-      - COMPLETED
-      - CREATED
-      - FAILED
-    PaymentRail:
-      anyOf:
-      - $ref: '#/components/schemas/BankPaymentRail'
-      - $ref: '#/components/schemas/CryptoPaymentRail'
+      - WIRE
+      - ACH
+      - SEPA
+      - SWIFT
     WithdrawalResponse:
       properties:
         id:
@@ -236,24 +234,10 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
-    Paginated_WithdrawalResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/WithdrawalResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
+    PaymentRail:
+      anyOf:
+      - $ref: '#/components/schemas/BankPaymentRail'
+      - $ref: '#/components/schemas/CryptoPaymentRail'
     CreateWithdrawalRequest:
       properties:
         amount:
@@ -288,6 +272,24 @@ components:
       additionalProperties: {}
       type: object
       description: Construct a type with a set of properties K of type T
+    Paginated_WithdrawalResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/WithdrawalResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
     CryptoPaymentRail:
       enum:
       - stellar
@@ -296,18 +298,16 @@ components:
       x-enum-varnames:
       - STELLAR
       - ETHEREUM
-    BankPaymentRail:
+    EnterpriseDirectWithdrawStatus:
       enum:
-      - wire
-      - ach
-      - sepa
-      - swift
+      - COMPLETED
+      - CREATED
+      - FAILED
       type: string
       x-enum-varnames:
-      - WIRE
-      - ACH
-      - SEPA
-      - SWIFT
+      - COMPLETED
+      - CREATED
+      - FAILED
   securitySchemes:
     basicAuth:
       type: http
