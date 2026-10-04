@@ -63,7 +63,6 @@ tags:
 - Emerging Markets
 - money-services-business
 - Authentication
-- OpenID Connect
 tags_raw:
 - payments
 - payouts
@@ -79,7 +78,6 @@ tags_raw:
 - emerging-markets
 - money-services-business
 - oauth2
-- openid-connect
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -1787,6 +1785,8 @@ apis:
   humanURL: https://docs.airtm.com/
   baseURL: https://api.enterprise.airtm.com/api/connect/v1
   tags:
+  - APIKeys
+  tags_raw:
   - API Keys
   properties:
   - type: OpenAPI
@@ -1798,6 +1798,9 @@ apis:
   - type: Webhooks
     url: asyncapi/airtm-webhooks.yml
 common:
+- type: CapabilityMap
+  url: capabilities/airtm-capability-edges.yml
+  name: Airtm Business Capability Map
 - type: Overlay
   url: overlays/airtm-enterprise-v1-overlay.yaml
 - type: Website
@@ -1885,3 +1888,5 @@ x-enrichment:
   status: enriched
   artifacts_added: 35
   pass: local-v1
+x-tags-removed:
+- OpenID Connect
