@@ -173,6 +173,12 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
+    CryptoCurrency:
+      enum:
+      - USDC
+      type: string
+      x-enum-varnames:
+      - USDC
     CryptoWalletType:
       enum:
       - stellar usdc
@@ -181,6 +187,24 @@ components:
       x-enum-varnames:
       - STELLAR_USDC
       - ETHEREUM_USDC
+    Paginated_CryptoExternalAccountResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/CryptoExternalAccountResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
     Record_string.unknown_:
       properties: {}
       additionalProperties: {}
@@ -211,30 +235,6 @@ components:
       - address
       type: object
       additionalProperties: false
-    Paginated_CryptoExternalAccountResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/CryptoExternalAccountResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
-    CryptoCurrency:
-      enum:
-      - USDC
-      type: string
-      x-enum-varnames:
-      - USDC
   securitySchemes:
     basicAuth:
       type: http

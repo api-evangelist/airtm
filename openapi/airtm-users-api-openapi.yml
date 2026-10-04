@@ -76,18 +76,6 @@ paths:
           $ref: '#/components/schemas/Email'
 components:
   schemas:
-    UserStatus:
-      description: Whether the user is active or inactive in Airtm
-      enum:
-      - active
-      - inactive
-      type: string
-      x-enum-varnames:
-      - Active
-      - Inactive
-    Email:
-      type: string
-      pattern: ^(.+)@(.+)$
     User:
       description: A user in Airtm
       properties:
@@ -133,6 +121,18 @@ components:
       type: string
       format: uuid
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    Email:
+      type: string
+      pattern: ^(.+)@(.+)$
+    UserStatus:
+      description: Whether the user is active or inactive in Airtm
+      enum:
+      - active
+      - inactive
+      type: string
+      x-enum-varnames:
+      - Active
+      - Inactive
   securitySchemes:
     basicAuth:
       type: http

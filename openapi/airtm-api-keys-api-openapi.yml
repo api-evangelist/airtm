@@ -249,11 +249,6 @@ components:
       - items
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
     ApiKey:
       properties:
         deletedAt:
@@ -283,6 +278,11 @@ components:
       - enterpriseId
       - id
       type: object
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
     IpItem:
       properties:
         ip:

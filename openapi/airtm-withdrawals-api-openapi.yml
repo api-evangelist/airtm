@@ -187,18 +187,6 @@ paths:
           type: string
 components:
   schemas:
-    BankPaymentRail:
-      enum:
-      - wire
-      - ach
-      - sepa
-      - swift
-      type: string
-      x-enum-varnames:
-      - WIRE
-      - ACH
-      - SEPA
-      - SWIFT
     WithdrawalResponse:
       properties:
         id:
@@ -234,10 +222,46 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
-    PaymentRail:
-      anyOf:
-      - $ref: '#/components/schemas/BankPaymentRail'
-      - $ref: '#/components/schemas/CryptoPaymentRail'
+    BankPaymentRail:
+      enum:
+      - wire
+      - ach
+      - sepa
+      - swift
+      type: string
+      x-enum-varnames:
+      - WIRE
+      - ACH
+      - SEPA
+      - SWIFT
+    EnterpriseDirectWithdrawStatus:
+      enum:
+      - COMPLETED
+      - CREATED
+      - FAILED
+      type: string
+      x-enum-varnames:
+      - COMPLETED
+      - CREATED
+      - FAILED
+    Paginated_WithdrawalResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/WithdrawalResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
     CreateWithdrawalRequest:
       properties:
         amount:
@@ -267,29 +291,6 @@ components:
       - externalAccountId
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    Paginated_WithdrawalResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/WithdrawalResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
     CryptoPaymentRail:
       enum:
       - stellar
@@ -298,16 +299,15 @@ components:
       x-enum-varnames:
       - STELLAR
       - ETHEREUM
-    EnterpriseDirectWithdrawStatus:
-      enum:
-      - COMPLETED
-      - CREATED
-      - FAILED
-      type: string
-      x-enum-varnames:
-      - COMPLETED
-      - CREATED
-      - FAILED
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    PaymentRail:
+      anyOf:
+      - $ref: '#/components/schemas/BankPaymentRail'
+      - $ref: '#/components/schemas/CryptoPaymentRail'
   securitySchemes:
     basicAuth:
       type: http

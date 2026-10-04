@@ -467,170 +467,6 @@ components:
       - FAILED
       - BRIDGE_FAILED
       - BRIDGE_CANCELED
-    PayoutStatus:
-      description: "The current status of the payout.\n\n- `CREATED`: The payout instruction has been registered and is awaiting you to call the commit endpoint.\n- `COMMITTED`: The payout was committed and is in the process of being executed.\n- `PENDING`: Funds have been placed in escrow and waiting for the recipient to take the following action to complete the payout\n  1. If a new user, create an Airtm account.\n  2. If a user receiving an amount taking them over the $1,000 inflow threshold requiring KYC.\n  3. If a US user, complete KYC and configure payment method.\n- `COMPLETED`: The payout has been completed successfully, funds have been credited to the customer's account.\n- `CANCELED`: Payout has been canceled and funds have been returned to your account.\n- `FAILED`: The payout has failed and funds have been returned to your account.\n- `ERROR`: A temporary error state. Payouts in this state should be fixed and retried until they reach a final state (COMPLETED or CANCELED)."
-      enum:
-      - BRIDGE_COMPLETED
-      - BRIDGE_CREATED
-      - BRIDGE_FAILED
-      - BRIDGE_MAX_RETRIES_REACHED
-      - BRIDGE_USER_SIGNUP_PENDING
-      - CANCELED
-      - CANCEL_REQUESTED
-      - COMMITTED
-      - COMPLETED
-      - COSMOEM_COMPLETED
-      - CREATED
-      - ERROR
-      - FAILED
-      - PENDING
-      - PENDING_SIGNATURE
-      - SIGNED
-      - PENDING_USER_ACTION
-      - PROCESSING
-      type: string
-      x-enum-varnames:
-      - BRIDGE_COMPLETED
-      - BRIDGE_CREATED
-      - BRIDGE_FAILED
-      - BRIDGE_MAX_RETRIES_REACHED
-      - BRIDGE_USER_SIGNUP_PENDING
-      - CANCELED
-      - CANCEL_REQUESTED
-      - COMMITTED
-      - COMPLETED
-      - COSMOEM_COMPLETED
-      - CREATED
-      - ERROR
-      - FAILED
-      - PENDING
-      - PENDING_SIGNATURE
-      - SIGNED
-      - PENDING_USER_ACTION
-      - PROCESSING
-    CreatePayoutRequest:
-      properties:
-        airtmUserEmail:
-          $ref: '#/components/schemas/Email'
-          description: The recipient's email address that is associated with their Airtm account
-        amount:
-          type: number
-          format: double
-          description: The payment amount in USD.
-          minimum: 0.01
-        commit:
-          type: boolean
-          description: 'Immediately commit the payout.
-
-
-            If `true`, the payout will be committed immediately after creation. Use this if you want to
-
-            create a payout in just one API call instead of a two-step process outlined in the Create / Commit
-
-            process.'
-          default: false
-        code:
-          type: string
-          description: 'A unique code used to identify the payout.
-
-            Populate this value with the identifier on your system.
-
-
-            > [!important]
-
-            > It must be unique across all existing payouts.'
-        enterpriseFee:
-          type: number
-          format: double
-          description: The enterprise fee to apply to the payout
-          minimum: 0
-        notes:
-          type: string
-          description: 'An arbitrary string describing the payment.
-
-            This information is displayed to the recipient.
-
-            It''s recommended that the string summarizes the purpose of the payment.'
-        internalNote:
-          type: string
-          description: The description of the payout; visible to internal users
-        requireIdVerified:
-          type: boolean
-          description: Set this to true to require that the recipient is ID-verified
-          default: false
-      required:
-      - airtmUserEmail
-      - amount
-      - notes
-      type: object
-      additionalProperties: false
-    KycInformation:
-      description: 'Represents the user''s KYC information for a payout.
-
-
-        > [!TIP]
-
-        > Only available in `payout.completed` webhook and only if ID verification is enabled in your account.
-
-        > If you want access to this information, please contact [enterprise@airtm.io](mailto:enterprise@airtm.io)
-
-        Represents the user''s KYC information for a payout.
-
-
-        > [!TIP]
-
-        > Only available in `payout.completed` webhook and only if ID verification is enabled in your account.
-
-        > If you want access to this information, please contact [enterprise@airtm.io](mailto:enterprise@airtm.io)'
-      properties:
-        fullName:
-          type:
-          - string
-          - 'null'
-        birthDate:
-          type:
-          - string
-          - 'null'
-        identificationNumber:
-          type:
-          - string
-          - 'null'
-        countryCode:
-          type:
-          - string
-          - 'null'
-        state:
-          type:
-          - string
-          - 'null'
-      required:
-      - fullName
-      - birthDate
-      - identificationNumber
-      - countryCode
-      type: object
-      additionalProperties: false
-    Email:
-      type: string
-      pattern: ^(.+)@(.+)$
-    Paginated_PayoutResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/PayoutResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
     PayoutResponse:
       description: Represents a Payout Object
       properties:
@@ -718,11 +554,6 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
     OperationEvent:
       properties:
         updatedAt:
@@ -806,10 +637,179 @@ components:
       - id
       type: object
       description: An operation event is generated when a payin or payout transitions status.
+    CreatePayoutRequest:
+      properties:
+        airtmUserEmail:
+          $ref: '#/components/schemas/Email'
+          description: The recipient's email address that is associated with their Airtm account
+        amount:
+          type: number
+          format: double
+          description: The payment amount in USD.
+          minimum: 0.01
+        commit:
+          type: boolean
+          description: 'Immediately commit the payout.
+
+
+            If `true`, the payout will be committed immediately after creation. Use this if you want to
+
+            create a payout in just one API call instead of a two-step process outlined in the Create / Commit
+
+            process.'
+          default: false
+        code:
+          type: string
+          description: 'A unique code used to identify the payout.
+
+            Populate this value with the identifier on your system.
+
+
+            > [!important]
+
+            > It must be unique across all existing payouts.'
+        enterpriseFee:
+          type: number
+          format: double
+          description: The enterprise fee to apply to the payout
+          minimum: 0
+        notes:
+          type: string
+          description: 'An arbitrary string describing the payment.
+
+            This information is displayed to the recipient.
+
+            It''s recommended that the string summarizes the purpose of the payment.'
+        internalNote:
+          type: string
+          description: The description of the payout; visible to internal users
+        requireIdVerified:
+          type: boolean
+          description: Set this to true to require that the recipient is ID-verified
+          default: false
+      required:
+      - airtmUserEmail
+      - amount
+      - notes
+      type: object
+      additionalProperties: false
+    PayoutStatus:
+      description: "The current status of the payout.\n\n- `CREATED`: The payout instruction has been registered and is awaiting you to call the commit endpoint.\n- `COMMITTED`: The payout was committed and is in the process of being executed.\n- `PENDING`: Funds have been placed in escrow and waiting for the recipient to take the following action to complete the payout\n  1. If a new user, create an Airtm account.\n  2. If a user receiving an amount taking them over the $1,000 inflow threshold requiring KYC.\n  3. If a US user, complete KYC and configure payment method.\n- `COMPLETED`: The payout has been completed successfully, funds have been credited to the customer's account.\n- `CANCELED`: Payout has been canceled and funds have been returned to your account.\n- `FAILED`: The payout has failed and funds have been returned to your account.\n- `ERROR`: A temporary error state. Payouts in this state should be fixed and retried until they reach a final state (COMPLETED or CANCELED)."
+      enum:
+      - BRIDGE_COMPLETED
+      - BRIDGE_CREATED
+      - BRIDGE_FAILED
+      - BRIDGE_MAX_RETRIES_REACHED
+      - BRIDGE_USER_SIGNUP_PENDING
+      - CANCELED
+      - CANCEL_REQUESTED
+      - COMMITTED
+      - COMPLETED
+      - COSMOEM_COMPLETED
+      - CREATED
+      - ERROR
+      - FAILED
+      - PENDING
+      - PENDING_SIGNATURE
+      - SIGNED
+      - PENDING_USER_ACTION
+      - PROCESSING
+      type: string
+      x-enum-varnames:
+      - BRIDGE_COMPLETED
+      - BRIDGE_CREATED
+      - BRIDGE_FAILED
+      - BRIDGE_MAX_RETRIES_REACHED
+      - BRIDGE_USER_SIGNUP_PENDING
+      - CANCELED
+      - CANCEL_REQUESTED
+      - COMMITTED
+      - COMPLETED
+      - COSMOEM_COMPLETED
+      - CREATED
+      - ERROR
+      - FAILED
+      - PENDING
+      - PENDING_SIGNATURE
+      - SIGNED
+      - PENDING_USER_ACTION
+      - PROCESSING
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    Paginated_PayoutResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayoutResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
     Uuid:
       type: string
       format: uuid
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    Email:
+      type: string
+      pattern: ^(.+)@(.+)$
+    KycInformation:
+      description: 'Represents the user''s KYC information for a payout.
+
+
+        > [!TIP]
+
+        > Only available in `payout.completed` webhook and only if ID verification is enabled in your account.
+
+        > If you want access to this information, please contact [enterprise@airtm.io](mailto:enterprise@airtm.io)
+
+        Represents the user''s KYC information for a payout.
+
+
+        > [!TIP]
+
+        > Only available in `payout.completed` webhook and only if ID verification is enabled in your account.
+
+        > If you want access to this information, please contact [enterprise@airtm.io](mailto:enterprise@airtm.io)'
+      properties:
+        fullName:
+          type:
+          - string
+          - 'null'
+        birthDate:
+          type:
+          - string
+          - 'null'
+        identificationNumber:
+          type:
+          - string
+          - 'null'
+        countryCode:
+          type:
+          - string
+          - 'null'
+        state:
+          type:
+          - string
+          - 'null'
+      required:
+      - fullName
+      - birthDate
+      - identificationNumber
+      - countryCode
+      type: object
+      additionalProperties: false
   securitySchemes:
     basicAuth:
       type: http

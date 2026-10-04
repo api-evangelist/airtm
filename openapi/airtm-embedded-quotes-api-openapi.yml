@@ -69,24 +69,6 @@ paths:
               $ref: '#/components/schemas/CreateQuoteRequest'
 components:
   schemas:
-    FundingRailId:
-      enum:
-      - stellar.usdc
-      type: string
-      x-enum-varnames:
-      - STELLAR_USDC
-    QuoteFeesApiResponse:
-      properties:
-        airtmFeeAmount:
-          type: number
-          format: double
-        airtmFeePercentage:
-          type: number
-          format: double
-      required:
-      - airtmFeeAmount
-      - airtmFeePercentage
-      type: object
     CreateQuoteRequest:
       properties:
         senderId:
@@ -132,11 +114,33 @@ components:
       - paymentRailId
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
+    QuoteFeesApiResponse:
+      properties:
+        airtmFeeAmount:
+          type: number
+          format: double
+        airtmFeePercentage:
+          type: number
+          format: double
+      required:
+      - airtmFeeAmount
+      - airtmFeePercentage
       type: object
-      description: Construct a type with a set of properties K of type T
+    QuoteAmounts:
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+      required:
+      - amount
+      - currency
+      type: object
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
     QuoteApiResponse:
       properties:
         id:
@@ -199,21 +203,17 @@ components:
       - createdAt
       type: object
       additionalProperties: false
-    QuoteAmounts:
-      properties:
-        amount:
-          type: number
-          format: double
-        currency:
-          type: string
-      required:
-      - amount
-      - currency
-      type: object
-    Uuid:
+    FundingRailId:
+      enum:
+      - stellar.usdc
       type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      x-enum-varnames:
+      - STELLAR_USDC
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

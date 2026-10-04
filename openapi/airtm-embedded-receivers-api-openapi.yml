@@ -380,8 +380,7 @@ components:
           pattern: ^\+[0-9]{1,3}[0-9]{6,}$
       type: object
       additionalProperties: false
-    CreateReceiverAddress:
-      description: Address information for the receiver.
+    Partial_CreateReceiverAddress_:
       properties:
         line1:
           type: string
@@ -397,9 +396,12 @@ components:
           minLength: 3
           maxLength: 3
       type: object
-      additionalProperties: false
-    UpdateReceiverRequest:
+      description: Make all properties in T optional
+    CreateReceiverRequest:
       properties:
+        externalReceiverId:
+          type: string
+          description: The unique identifier for this receiver in the partner's system.
         partyType:
           type: string
           enum:
@@ -412,25 +414,137 @@ components:
           description: Country code 3 letter ISO code.
           minLength: 3
           maxLength: 3
+        payoutDestinations:
+          items:
+            $ref: '#/components/schemas/CreateReceiverPayoutDestination'
+          type: array
+          description: "Payment rail instance information (bank destination details). And the sender id that will use this payment rail instance. Object example:\n`{\n \"paymentRailId\": \"airtm:bank:venezuela:mercantil\",\n \"destination\": {\n   \"accountNumber\": \"01719987567890123499\",\n   \"accountHolderName\": \"Jane Doe\"\n },\n \"senderId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}`"
+          default: []
         individual:
-          $ref: '#/components/schemas/Partial_CreateReceiverIndividual_'
-          description: Individual party details (partial update).
+          $ref: '#/components/schemas/CreateReceiverIndividual'
+          description: Individual party details. Required when partyType is 'individual'.
         contact:
-          $ref: '#/components/schemas/Partial_CreateReceiverContact_'
-          description: Contact information (partial update).
+          $ref: '#/components/schemas/CreateReceiverContact'
+          description: Contact information.
         address:
-          $ref: '#/components/schemas/Partial_CreateReceiverAddress_'
-          description: Address information (partial update).
+          $ref: '#/components/schemas/CreateReceiverAddress'
+          description: Address information.
         compliance:
-          $ref: '#/components/schemas/Partial_CreateReceiverCompliance_'
-          description: Compliance and KYC reliance information (partial update).
+          $ref: '#/components/schemas/CreateReceiverCompliance'
+          description: Compliance and KYC reliance information. Optional for receivers.
+      required:
+      - externalReceiverId
+      - partyType
+      - country
+      - individual
       type: object
       additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
+    KycLevel:
+      enum:
+      - BASIC
+      - FULL
+      type: string
+      x-enum-varnames:
+      - BASIC
+      - FULL
+    ProviderResult:
+      enum:
+      - GREEN
+      - AMBER
+      - RED
+      type: string
+      x-enum-varnames:
+      - GREEN
+      - AMBER
+      - RED
+    Partial_CreateReceiverIndividual_:
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+        nationalIdNumber:
+          type: string
       type: object
-      description: Construct a type with a set of properties K of type T
+      description: Make all properties in T optional
+    CreateReceiverIndividual:
+      description: Individual party details. Required when partyType is 'individual'.
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+        nationalIdNumber:
+          type: string
+      required:
+      - firstName
+      - lastName
+      - dob
+      - nationalIdNumber
+      type: object
+      additionalProperties: false
+    DocumentType:
+      enum:
+      - PASSPORT
+      - NATIONAL_ID
+      - DRIVER_LICENSE
+      type: string
+      x-enum-varnames:
+      - PASSPORT
+      - NATIONAL_ID
+      - DRIVER_LICENSE
+    KycStatus:
+      enum:
+      - VERIFIED
+      - PARTIALLY_VERIFIED
+      - NOT_VERIFIED
+      type: string
+      x-enum-varnames:
+      - VERIFIED
+      - PARTIALLY_VERIFIED
+      - NOT_VERIFIED
+    CreateReceiverKycReliance:
+      description: KYC reliance information from the partner's KYC provider.
+      properties:
+        performedBy:
+          type: string
+        kycReferenceId:
+          type: string
+        status:
+          $ref: '#/components/schemas/KycStatus'
+        performedAt:
+          type: string
+        level:
+          $ref: '#/components/schemas/KycLevel'
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        provider:
+          properties:
+            result:
+              $ref: '#/components/schemas/ProviderResult'
+            applicantId:
+              type: string
+            name:
+              type: string
+          required:
+          - result
+          - applicantId
+          - name
+          type: object
+      required:
+      - performedBy
+      - kycReferenceId
+      - status
+      - performedAt
+      - level
+      - documentType
+      - provider
+      type: object
+      additionalProperties: false
     ReceiverApiResponse:
       properties:
         id:
@@ -550,173 +664,6 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
-    Partial_CreateReceiverAddress_:
-      properties:
-        line1:
-          type: string
-        city:
-          type: string
-        region:
-          type: string
-        postalCode:
-          type: string
-        country:
-          type: string
-          description: Country code 3 letter ISO code.
-          minLength: 3
-          maxLength: 3
-      type: object
-      description: Make all properties in T optional
-    CreateReceiverIndividual:
-      description: Individual party details. Required when partyType is 'individual'.
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        dob:
-          type: string
-        nationalIdNumber:
-          type: string
-      required:
-      - firstName
-      - lastName
-      - dob
-      - nationalIdNumber
-      type: object
-      additionalProperties: false
-    DocumentType:
-      enum:
-      - PASSPORT
-      - NATIONAL_ID
-      - DRIVER_LICENSE
-      type: string
-      x-enum-varnames:
-      - PASSPORT
-      - NATIONAL_ID
-      - DRIVER_LICENSE
-    KycLevel:
-      enum:
-      - BASIC
-      - FULL
-      type: string
-      x-enum-varnames:
-      - BASIC
-      - FULL
-    ProviderResult:
-      enum:
-      - GREEN
-      - AMBER
-      - RED
-      type: string
-      x-enum-varnames:
-      - GREEN
-      - AMBER
-      - RED
-    KycStatus:
-      enum:
-      - VERIFIED
-      - PARTIALLY_VERIFIED
-      - NOT_VERIFIED
-      type: string
-      x-enum-varnames:
-      - VERIFIED
-      - PARTIALLY_VERIFIED
-      - NOT_VERIFIED
-    CreateReceiverKycReliance:
-      description: KYC reliance information from the partner's KYC provider.
-      properties:
-        performedBy:
-          type: string
-        kycReferenceId:
-          type: string
-        status:
-          $ref: '#/components/schemas/KycStatus'
-        performedAt:
-          type: string
-        level:
-          $ref: '#/components/schemas/KycLevel'
-        documentType:
-          $ref: '#/components/schemas/DocumentType'
-        provider:
-          properties:
-            result:
-              $ref: '#/components/schemas/ProviderResult'
-            applicantId:
-              type: string
-            name:
-              type: string
-          required:
-          - result
-          - applicantId
-          - name
-          type: object
-      required:
-      - performedBy
-      - kycReferenceId
-      - status
-      - performedAt
-      - level
-      - documentType
-      - provider
-      type: object
-      additionalProperties: false
-    Uuid:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-    CreateReceiverCompliance:
-      properties:
-        kycReliance:
-          $ref: '#/components/schemas/CreateReceiverKycReliance'
-      required:
-      - kycReliance
-      type: object
-      additionalProperties: false
-    CreateReceiverPayoutDestination:
-      description: 'Payout destination: a payment rail plus rail-specific destination data.'
-      properties:
-        paymentRailId:
-          type: string
-          description: 'Payment rail identifier (e.g. airtm:bank:venezuela:mercantil).
-
-            This refers to the ID of the payment rail in the catalog.
-
-            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
-        destination:
-          $ref: '#/components/schemas/Record_string.unknown_'
-          description: 'Rail-specific destination data (e.g. accountNumber, bankCode, accountHolderName).
-
-            The object to send must match the requirements of the payment rail in the catalog item''s `destinationFields`.
-
-            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
-        senderId:
-          $ref: '#/components/schemas/Uuid'
-          description: The sender id that will use this receiver payment instance.
-      required:
-      - paymentRailId
-      - destination
-      - senderId
-      type: object
-      additionalProperties: false
-    Partial_CreateReceiverCompliance_:
-      properties:
-        kycReliance:
-          $ref: '#/components/schemas/CreateReceiverKycReliance'
-      type: object
-      description: Make all properties in T optional
-    Partial_CreateReceiverIndividual_:
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        dob:
-          type: string
-        nationalIdNumber:
-          type: string
-      type: object
-      description: Make all properties in T optional
     AddPaymentRailInstanceRequest:
       description: Request body for adding a payment rail instance to a receiver.
       properties:
@@ -743,21 +690,8 @@ components:
       - senderId
       type: object
       additionalProperties: false
-    Partial_CreateReceiverContact_:
+    UpdateReceiverRequest:
       properties:
-        email:
-          type: string
-          pattern: ^(.+)@(.+)$
-        phone:
-          type: string
-          pattern: ^\+[0-9]{1,3}[0-9]{6,}$
-      type: object
-      description: Make all properties in T optional
-    CreateReceiverRequest:
-      properties:
-        externalReceiverId:
-          type: string
-          description: The unique identifier for this receiver in the partner's system.
         partyType:
           type: string
           enum:
@@ -770,29 +704,54 @@ components:
           description: Country code 3 letter ISO code.
           minLength: 3
           maxLength: 3
-        payoutDestinations:
-          items:
-            $ref: '#/components/schemas/CreateReceiverPayoutDestination'
-          type: array
-          description: "Payment rail instance information (bank destination details). And the sender id that will use this payment rail instance. Object example:\n`{\n \"paymentRailId\": \"airtm:bank:venezuela:mercantil\",\n \"destination\": {\n   \"accountNumber\": \"01719987567890123499\",\n   \"accountHolderName\": \"Jane Doe\"\n },\n \"senderId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}`"
-          default: []
         individual:
-          $ref: '#/components/schemas/CreateReceiverIndividual'
-          description: Individual party details. Required when partyType is 'individual'.
+          $ref: '#/components/schemas/Partial_CreateReceiverIndividual_'
+          description: Individual party details (partial update).
         contact:
-          $ref: '#/components/schemas/CreateReceiverContact'
-          description: Contact information.
+          $ref: '#/components/schemas/Partial_CreateReceiverContact_'
+          description: Contact information (partial update).
         address:
-          $ref: '#/components/schemas/CreateReceiverAddress'
-          description: Address information.
+          $ref: '#/components/schemas/Partial_CreateReceiverAddress_'
+          description: Address information (partial update).
         compliance:
-          $ref: '#/components/schemas/CreateReceiverCompliance'
-          description: Compliance and KYC reliance information. Optional for receivers.
+          $ref: '#/components/schemas/Partial_CreateReceiverCompliance_'
+          description: Compliance and KYC reliance information (partial update).
+      type: object
+      additionalProperties: false
+    Partial_CreateReceiverContact_:
+      properties:
+        email:
+          type: string
+          pattern: ^(.+)@(.+)$
+        phone:
+          type: string
+          pattern: ^\+[0-9]{1,3}[0-9]{6,}$
+      type: object
+      description: Make all properties in T optional
+    CreateReceiverAddress:
+      description: Address information for the receiver.
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          description: Country code 3 letter ISO code.
+          minLength: 3
+          maxLength: 3
+      type: object
+      additionalProperties: false
+    CreateReceiverCompliance:
+      properties:
+        kycReliance:
+          $ref: '#/components/schemas/CreateReceiverKycReliance'
       required:
-      - externalReceiverId
-      - partyType
-      - country
-      - individual
+      - kycReliance
       type: object
       additionalProperties: false
     PaymentRailInstanceApiResponse:
@@ -818,6 +777,47 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
+    Partial_CreateReceiverCompliance_:
+      properties:
+        kycReliance:
+          $ref: '#/components/schemas/CreateReceiverKycReliance'
+      type: object
+      description: Make all properties in T optional
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    CreateReceiverPayoutDestination:
+      description: 'Payout destination: a payment rail plus rail-specific destination data.'
+      properties:
+        paymentRailId:
+          type: string
+          description: 'Payment rail identifier (e.g. airtm:bank:venezuela:mercantil).
+
+            This refers to the ID of the payment rail in the catalog.
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        destination:
+          $ref: '#/components/schemas/Record_string.unknown_'
+          description: 'Rail-specific destination data (e.g. accountNumber, bankCode, accountHolderName).
+
+            The object to send must match the requirements of the payment rail in the catalog item''s `destinationFields`.
+
+            Refer to [Catalog](#tag/embedded-catalog) section for more information.'
+        senderId:
+          $ref: '#/components/schemas/Uuid'
+          description: The sender id that will use this receiver payment instance.
+      required:
+      - paymentRailId
+      - destination
+      - senderId
+      type: object
+      additionalProperties: false
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
   securitySchemes:
     basicAuth:
       type: http

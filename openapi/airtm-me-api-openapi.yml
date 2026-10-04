@@ -114,6 +114,28 @@ paths:
       parameters: []
 components:
   schemas:
+    Balance:
+      description: Information related to your account.
+      properties:
+        available:
+          type: number
+          format: double
+          description: Amount available in the account.
+          example: 1234.56
+        pending:
+          type: number
+          format: double
+          description: Amount committed to pending payouts in the account.
+          example: 123.45
+      required:
+      - available
+      - pending
+      type: object
+      additionalProperties: false
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
     Me:
       description: Information related to your account.
       properties:
@@ -144,28 +166,6 @@ components:
       additionalProperties: {}
       type: object
       description: Construct a type with a set of properties K of type T
-    Balance:
-      description: Information related to your account.
-      properties:
-        available:
-          type: number
-          format: double
-          description: Amount available in the account.
-          example: 1234.56
-        pending:
-          type: number
-          format: double
-          description: Amount committed to pending payouts in the account.
-          example: 123.45
-      required:
-      - available
-      - pending
-      type: object
-      additionalProperties: false
-    Uuid:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
   securitySchemes:
     basicAuth:
       type: http

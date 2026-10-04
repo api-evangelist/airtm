@@ -203,6 +203,16 @@ components:
       anyOf:
       - $ref: '#/components/schemas/CryptoDepositInstructions'
       - $ref: '#/components/schemas/FiatDepositInstructions'
+    RefundInstructions:
+      properties:
+        address:
+          type: string
+        memo:
+          type: string
+      required:
+      - address
+      type: object
+      additionalProperties: false
     CryptoDepositInstructions:
       properties:
         type:
@@ -237,84 +247,6 @@ components:
       - amount
       type: object
       additionalProperties: false
-    ExecutionChannel:
-      type: string
-      enum:
-      - DIRECT_OFFRAMP
-      - P2P_NETWORK
-    FiatDepositInstructions:
-      properties:
-        type:
-          type: string
-          enum:
-          - FIAT
-        method:
-          type: string
-        asset:
-          type: string
-        reference:
-          type: string
-        amount:
-          properties:
-            value:
-              type: number
-              format: double
-            currency:
-              type: string
-          required:
-          - value
-          - currency
-          type: object
-        depositInstructions:
-          properties:
-            depositMessage:
-              type: string
-            bankBeneficiaryAddress:
-              type: string
-            bankBeneficiaryName:
-              type: string
-            bankAccountNumber:
-              type: string
-            bankRoutingNumber:
-              type: string
-            bankAddress:
-              type: string
-            bankName:
-              type: string
-            currency:
-              type: string
-            amount:
-              type: string
-          required:
-          - depositMessage
-          - bankBeneficiaryAddress
-          - bankBeneficiaryName
-          - bankAccountNumber
-          - bankRoutingNumber
-          - bankAddress
-          - bankName
-          - currency
-          - amount
-          type: object
-      required:
-      - type
-      - method
-      - asset
-      - reference
-      - amount
-      - depositInstructions
-      type: object
-      additionalProperties: false
-    RefundInstructions:
-      properties:
-        address:
-          type: string
-        memo:
-          type: string
-      required:
-      - address
-      type: object
-      additionalProperties: false
     QuoteFeesApiResponse:
       properties:
         airtmFeeAmount:
@@ -327,45 +259,11 @@ components:
       - airtmFeeAmount
       - airtmFeePercentage
       type: object
-    SortOrder:
+    ExecutionChannel:
       type: string
       enum:
-      - asc
-      - desc
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    Paginated_TransactionApiResponse_:
-      description: Represents a paginated collection of items.
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/TransactionApiResponse'
-          type: array
-          description: The items in the current page.
-        startCursor:
-          type: string
-          description: The cursor for the first item in the current page.
-        endCursor:
-          type: string
-          description: The cursor for the last item in the current page.
-      required:
-      - items
-      type: object
-      additionalProperties: false
-    QuoteAmounts:
-      properties:
-        amount:
-          type: number
-          format: double
-        currency:
-          type: string
-      required:
-      - amount
-      - currency
-      type: object
+      - DIRECT_OFFRAMP
+      - P2P_NETWORK
     TransactionApiResponse:
       properties:
         id:
@@ -441,10 +339,17 @@ components:
       - createdAt
       type: object
       additionalProperties: false
-    Uuid:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    QuoteAmounts:
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+      required:
+      - amount
+      - currency
+      type: object
     TransactionStatusEnum:
       enum:
       - PENDING_FUNDING
@@ -463,6 +368,33 @@ components:
       - REFUNDED
       - DISPUTE_CANCELED
       - DISPUTE_REFUNDED
+    Record_string.unknown_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    Paginated_TransactionApiResponse_:
+      description: Represents a paginated collection of items.
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TransactionApiResponse'
+          type: array
+          description: The items in the current page.
+        startCursor:
+          type: string
+          description: The cursor for the first item in the current page.
+        endCursor:
+          type: string
+          description: The cursor for the last item in the current page.
+      required:
+      - items
+      type: object
+      additionalProperties: false
+    Uuid:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
     CreateTransactionRequest:
       properties:
         quoteId:
@@ -489,6 +421,74 @@ components:
       required:
       - quoteId
       - executionChannel
+      type: object
+      additionalProperties: false
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    FiatDepositInstructions:
+      properties:
+        type:
+          type: string
+          enum:
+          - FIAT
+        method:
+          type: string
+        asset:
+          type: string
+        reference:
+          type: string
+        amount:
+          properties:
+            value:
+              type: number
+              format: double
+            currency:
+              type: string
+          required:
+          - value
+          - currency
+          type: object
+        depositInstructions:
+          properties:
+            depositMessage:
+              type: string
+            bankBeneficiaryAddress:
+              type: string
+            bankBeneficiaryName:
+              type: string
+            bankAccountNumber:
+              type: string
+            bankRoutingNumber:
+              type: string
+            bankAddress:
+              type: string
+            bankName:
+              type: string
+            currency:
+              type: string
+            amount:
+              type: string
+          required:
+          - depositMessage
+          - bankBeneficiaryAddress
+          - bankBeneficiaryName
+          - bankAccountNumber
+          - bankRoutingNumber
+          - bankAddress
+          - bankName
+          - currency
+          - amount
+          type: object
+      required:
+      - type
+      - method
+      - asset
+      - reference
+      - amount
+      - depositInstructions
       type: object
       additionalProperties: false
   securitySchemes:
