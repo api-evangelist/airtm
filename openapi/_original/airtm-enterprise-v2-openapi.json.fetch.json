@@ -1,0 +1,12 @@
+{
+ "url": "https://api.enterprise.airtm.com/openapi.json",
+ "requested_url": "https://api.enterprise.airtm.com/openapi.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 201360,
+ "sha256": "36c202aa5fca620c756deb13863112316a7e438c09b50938850341e09fd4eb36",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.967), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
