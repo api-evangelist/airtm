@@ -1,0 +1,44 @@
+edges:
+- partner_name: FinCEN (MSB registration)
+  partner: null
+  partner_match: register-name
+  type: contract
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://msb.fincen.gov/
+  category: Money services business
+  contract_reference:
+    register: FinCEN MSB Registrant Search (msb.fincen.gov, full list export)
+    spec_file: null
+    standard: FinCEN MSB registration (US Bank Secrecy Act)
+    role: fincen-msb-registrant
+    registered_name: Airtm INC
+    dba_name: null
+    register_id: Airtm INC
+    matched_domain: null
+    matched_by: register-name
+    identity: 'register-name: register-name ''airtm'' = airtm; no wikidata P856'
+    identity_source: register-name
+    msb_activities:
+    - 409 money transmitter
+    states_of_activity: 59
+    received_date: 05/07/2026
+    signal_note: 'participation only: an MSB registration is not a licence or a certification; activities and states
+      are context, never counted'
+    detected_by: sweep-regtech-aml.py
+    detected: '2026-10-20'
+    identity_note: register gave only the name; exact normalised match to the repo's apis.yml name, one repo, Wikidata
+      P856 not contradicting (Kin 2026-10-20 decision 2)
+  detected_by: sweep-regtech-aml.py
+  first_seen: '2026-10-20'
+generated: '2026-10-20'
+method: searched
+source:
+- https://msb.fincen.gov/
+- https://www.access-dvs-register.service.gov.uk/register/download-register
+- https://kantarainitiative.org/trust-status-list/
+checked:
+- https://kantarainitiative.org/trust-status-list/
+- https://msb.fincen.gov/
+- https://www.access-dvs-register.service.gov.uk/register/download-register
